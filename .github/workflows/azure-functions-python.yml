@@ -38,14 +38,6 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
 
-      # Run tests with pytest
-      #- name: Run Tests
-      #  run: |
-      #    source venv/bin/activate
-      #    pytest -s tests/ --input-file ${{ vars.TEST_INPUT_FILE }} --imo ${{ vars.TEST_IMO_1 }}
-      #    pytest -s tests/ --input-dir ${{ vars.TEST_INPUT_DIR }} --imo ${{ vars.TEST_IMO_2 }}
-          
-
       # Log in to Azure
       - name: Log in to Azure
         uses: azure/login@v1
@@ -54,7 +46,8 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: 'Run Azure Functions Action'
+      # Deploy to Azure
+      - name: Run Azure Functions Action
         uses: Azure/functions-action@v1
         id: fa
         with:
