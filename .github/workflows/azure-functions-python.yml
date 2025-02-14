@@ -31,12 +31,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}  # Change if using a different Python version
 
-      # Install dependencies
-      - name: Install dependencies
+      # Resolve and install dependencies
+      - name: Resolve Project Dependencies Using Pip
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
 
       # Log in to Azure
       - name: Log in to Azure
@@ -53,6 +52,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          scm-do-build-during-deployment: true
           enable-oryx-build: true
 
       # Logout from Azure (cleanup)
