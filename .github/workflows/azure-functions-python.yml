@@ -33,16 +33,12 @@ jobs:
 
       # Resolve and install dependencies
       - name: 'Resolve Project Dependencies Using Pip'
+        shell: bash
         run: |
-          cd ./AzureHttpTrigger
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           python -m pip install --upgrade pip
-          pip install --target="./.python_packages/lib/site-packages" -r requirements.txt
-      
-      - name: Zip the Azure Function Deploy folder
-        run: |
-          cd AzureHttpTrigger
-          zip -r ../AzureHttpTrigger.zip ./*
-
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
       #- name: Resolve Project Dependencies Using Pip
       #  run: |
       #    python -m pip install --upgrade pip
@@ -59,12 +55,13 @@ jobs:
       # Deploy to Azure
       - name: Run Azure Functions Action
         uses: Azure/functions-action@v1
+        id: fa
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           scm-do-build-during-deployment: true
-      #    enable-oryx-build: true
+          enable-oryx-build: true
 
       # Logout from Azure (cleanup)
-      - name: Logout from Azure
-        run: az logout
+      #- name: Logout from Azure
+      #  run: az logout
