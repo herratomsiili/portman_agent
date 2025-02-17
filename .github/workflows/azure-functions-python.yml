@@ -11,7 +11,7 @@ permissions:
 
 env:
   AZURE_FUNCTIONAPP_NAME: "therranen-portman-func"  # set this to the name of your Azure Web App
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: "./AzureHttpTrigger"
   PYTHON_VERSION: "3.11"
 
 jobs:
@@ -57,12 +57,12 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # Deploy to Azure
-      #- name: Run Azure Functions Action
-      #  uses: Azure/functions-action@v1
-      #  id: fa
-      #  with:
-      #    app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-      #    package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+      - name: Run Azure Functions Action
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          remote-build: true
       #    scm-do-build-during-deployment: true
       #    enable-oryx-build: true
 
