@@ -56,23 +56,15 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and deploy to Azure
-        run: |
-          az functionapp deployment source config-zip \
-            --resource-group "therranen-portman-rg" \
-            --name "therranen-portman-func" \
-            --src "./AzureHttpTrigger.zip"
-
       # Deploy to Azure
-      #- name: Run Azure Functions Action
-      #  uses: Azure/functions-action@v1
-      #  id: fa
-      #  with:
-      #    app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-      #    package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-      #    scm-do-build-during-deployment: true
+      - name: Run Azure Functions Action
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          scm-do-build-during-deployment: true
       #    enable-oryx-build: true
 
       # Logout from Azure (cleanup)
-      #- name: Logout from Azure
-      #  run: az logout
+      - name: Logout from Azure
+        run: az logout
