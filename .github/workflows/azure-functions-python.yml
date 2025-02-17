@@ -63,5 +63,5 @@ jobs:
           enable-oryx-build: true
 
       # Logout from Azure (cleanup)
-      - name: Logout from Azure
-        run: az logout
+      #- name: Logout from Azure
+      #  run: az logout
