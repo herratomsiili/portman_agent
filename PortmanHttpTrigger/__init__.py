@@ -1,10 +1,5 @@
-import sys
-import os
 import logging
 import azure.functions as func
-
-# Ensure parent-dir is in the Python module search path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
 from portman import main as portman_main
 
