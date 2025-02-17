@@ -34,14 +34,14 @@ jobs:
       # Resolve and install dependencies
       - name: Resolve Project Dependencies Using Pip
         run: |
-          cd ./AzureHttpTrigger
+          cd ./httpTrigger1
           python -m pip install --upgrade pip
           pip install --target="./.python_packages/lib/site-packages" -r requirements.txt
       
       - name: Zip the Azure Function Deploy folder
         run: |
-          cd AzureHttpTrigger
-          zip -r ../AzureHttpTrigger.zip ./*
+          cd httpTrigger1
+          zip -r ../httpTrigger1.zip ./*
 
       #- name: Resolve Project Dependencies Using Pip
       #  run: |
