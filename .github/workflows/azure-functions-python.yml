@@ -11,7 +11,7 @@ permissions:
 
 env:
   AZURE_FUNCTIONAPP_NAME: "therranen-portman-func"  # set this to the name of your Azure Web App
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: "./AzureHttpTrigger"
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
   PYTHON_VERSION: "3.11"
 
 jobs:
