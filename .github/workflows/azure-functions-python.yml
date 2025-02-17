@@ -32,13 +32,17 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}  # Change if using a different Python version
 
       # Resolve and install dependencies
-      - name: 'Resolve Project Dependencies Using Pip'
-        shell: bash
+      - name: Resolve Project Dependencies Using Pip
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          cd ./AzureHttpTrigger
           python -m pip install --upgrade pip
-          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
-          popd
+          pip install --target="./.python_packages/lib/site-packages" -r requirements.txt
+      
+      - name: Zip the Azure Function Deploy folder
+        run: |
+          cd AzureHttpTrigger
+          zip -r ../AzureHttpTrigger.zip ./*
+
       #- name: Resolve Project Dependencies Using Pip
       #  run: |
       #    python -m pip install --upgrade pip
@@ -53,14 +57,14 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # Deploy to Azure
-      - name: Run Azure Functions Action
-        uses: Azure/functions-action@v1
-        id: fa
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          scm-do-build-during-deployment: true
-          enable-oryx-build: true
+      #- name: Run Azure Functions Action
+      #  uses: Azure/functions-action@v1
+      #  id: fa
+      #  with:
+      #    app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+      #    package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+      #    scm-do-build-during-deployment: true
+      #    enable-oryx-build: true
 
       # Logout from Azure (cleanup)
       #- name: Logout from Azure
