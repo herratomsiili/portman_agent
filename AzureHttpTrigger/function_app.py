@@ -17,7 +17,7 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 @app.route(route="http_trigger")
 def http_trigger(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+    log('Python HTTP trigger function processed a request.')
 
     name = req.params.get('name')
     if not name:
@@ -38,9 +38,12 @@ def http_trigger(req: func.HttpRequest) -> func.HttpResponse:
         )
 
 def log(message):
-    """Log a message with a timestamp."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{timestamp}] {message}")
+    logging.info(message)
+
+#def log(message):
+#    """Log a message with a timestamp."""
+#    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+#    print(f"[{timestamp}] {message}")
 
 def job():
     """Function that runs every 5 minutes."""
@@ -472,7 +475,6 @@ def main(req=None):
     # Parse CLI arguments and environment variables
     args = {}
     if req:
-        log("CALLED FROM HTTP-TRIGGER")
         req.params.get("input-file"), req.params.get("input-dir"), req.params.get("tracked-vessels")
         args = {
             "input_file": req.params.get("input-file"),
