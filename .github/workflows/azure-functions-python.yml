@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  AZURE_FUNCTIONAPP_NAME: "therranen-portman-func2"  # set this to the name of your Azure Web App
+  AZURE_FUNCTIONAPP_NAME: "therranen-portman-func"  # set this to the name of your Azure Web App
   AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
   PYTHON_VERSION: "3.11"
 
@@ -18,7 +18,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment:
-      name: Testing
+      name: Development
 
     steps:
       # Checkout the repository
@@ -32,10 +32,17 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}  # Change if using a different Python version
 
       # Resolve and install dependencies
-      - name: Resolve Project Dependencies Using Pip
+      - name: 'Resolve Project Dependencies Using Pip'
+        shell: bash
         run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           python -m pip install --upgrade pip
           pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
+      #- name: Resolve Project Dependencies Using Pip
+      #  run: |
+      #    python -m pip install --upgrade pip
+      #    pip install -r requirements.txt --target=".python_packages/lib/site-packages"
 
       # Log in to Azure
       - name: Log in to Azure
