@@ -57,14 +57,14 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # Deploy to Azure
-      - name: Run Azure Functions Action
-        uses: Azure/functions-action@v1
-        id: fa
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          scm-do-build-during-deployment: true
-          enable-oryx-build: true
+      #- name: Run Azure Functions Action
+      #  uses: Azure/functions-action@v1
+      #  id: fa
+      #  with:
+      #    app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+      #    package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+      #    scm-do-build-during-deployment: true
+      #    enable-oryx-build: true
 
       # Logout from Azure (cleanup)
       #- name: Logout from Azure
