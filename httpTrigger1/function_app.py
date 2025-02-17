@@ -15,8 +15,8 @@ import azure.functions as func
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-@app.route(route="httpTrigger1")
-def httpTrigger1(req: func.HttpRequest) -> func.HttpResponse:
+@app.route(route="http_trigger")
+def http_trigger(req: func.HttpRequest) -> func.HttpResponse:
     log('Python HTTP trigger function processed a request.')
 
     name = req.params.get('name')
