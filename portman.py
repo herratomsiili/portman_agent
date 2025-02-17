@@ -11,39 +11,9 @@ import glob
 import natsort
 import logging
 from config import DATABASE_CONFIG
-import azure.functions as func
-
-app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
-
-@app.route(route="http_trigger")
-def http_trigger(req: func.HttpRequest) -> func.HttpResponse:
-    log('Python HTTP trigger function processed a request.')
-
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
-
-    if name:
-        main(req)
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-    else:
-        return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
-        )
 
 def log(message):
     logging.info(message)
-
-#def log(message):
-#    """Log a message with a timestamp."""
-#    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-#    print(f"[{timestamp}] {message}")
 
 def job():
     """Function that runs every 5 minutes."""
@@ -475,11 +445,11 @@ def main(req=None):
     # Parse CLI arguments and environment variables
     args = {}
     if req:
-        req.params.get("input-file"), req.params.get("input-dir"), req.params.get("tracked-vessels")
+        req.params.get("input-file"), req.params.get("input-dir"), req.params.get("imo")
         args = {
             "input_file": req.params.get("input-file"),
             "input_dir": req.params.get("input-dir"),
-            "tracked_vessels": set(map(int, req.params.get("tracked-vessels").split(","))) if req.params.get("tracked-vessels") else None
+            "tracked_vessels": set(map(int, req.params.get("imo").split(","))) if req.params.get("imo") else None
         }
     else:
         args = parse_arguments()
@@ -503,3 +473,6 @@ def main(req=None):
         log("No data available to process.")
 
     log("Program completed.")
+
+if __name__ == "__main__":
+    main()
