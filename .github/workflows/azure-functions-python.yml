@@ -31,22 +31,10 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}  # Change if using a different Python version
 
-      # Resolve and install dependencies
       - name: Resolve Project Dependencies Using Pip
         run: |
-          cd ./httpTrigger1
           python -m pip install --upgrade pip
-          pip install --target="./.python_packages/lib/site-packages" -r requirements.txt
-      
-      - name: Zip the Azure Function Deploy folder
-        run: |
-          cd httpTrigger1
-          zip -r ../httpTrigger1.zip ./*
-
-      #- name: Resolve Project Dependencies Using Pip
-      #  run: |
-      #    python -m pip install --upgrade pip
-      #    pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
 
       # Log in to Azure
       - name: Log in to Azure
