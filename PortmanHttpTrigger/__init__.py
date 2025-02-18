@@ -436,7 +436,7 @@ def save_results_to_db(results, conn=None):
                     f"Laituri: {entry['berthName']}\n\n"
                     f"Saapuminen\n"
                     f"Arvioitu saapumisaika (UTC): {datetime.strptime(entry['eta'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if entry.get('eta') else 'N/A'}\n"
-                    f"Toteutunut saapumisaika (UTC): {datetime.strptime(new_ata, "%Y-%m-%dT%H:%M:%S.%f%z").strftime("%Y-%m-%d %H:%M") if new_ata else 'N/A'}\n"
+                    f"Toteutunut saapumisaika (UTC): {datetime.strptime(new_ata, '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if new_ata else 'N/A'}\n"
                     f"Miehistön lukumäärä: {entry['crewOnArrival']}\n"
                     f"Matkustajien lukumäärä: {entry['passengersOnArrival']}\n\n"
                     f"Lähtö\n"
