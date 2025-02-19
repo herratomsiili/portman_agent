@@ -44,6 +44,19 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      # Set Environment Variables in Azure Function
+      - name: Set Environment Variables
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          settings-json: |
+            {
+              "DB_HOST": "${{ secrets.DB_HOST }}",
+              "DB_NAME": "${{ secrets.DB_NAME }}",
+              "DB_USER": "${{ secrets.DB_USER }}",
+              "DB_PASSWORD": "${{ secrets.DB_PASSWORD }}"
+            }
+
       # Deploy to Azure
       - name: Run Azure Functions Action
         uses: Azure/functions-action@v1
