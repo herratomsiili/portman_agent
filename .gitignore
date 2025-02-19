@@ -139,3 +139,7 @@ __azurite_db*__.json
 
 # Mac file system
 .DS_Store
+
+# Local Terraform directory and files
+.terraform*
+*.tfplan
