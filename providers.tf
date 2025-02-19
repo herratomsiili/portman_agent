@@ -10,7 +10,7 @@ terraform {
     resource_group_name  = "therranen-portman-rg"
     storage_account_name = "therranenportmanstorage"
     container_name       = "tfstate"
-    key                  = "postgres.tfstate"
+    key                  = "terraform.tfstate"
   }
 }
 
