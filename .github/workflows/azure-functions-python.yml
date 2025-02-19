@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  AZURE_FUNCTIONAPP_NAME: "therranen-portman-func2"  # set this to the name of your Azure Web App
+  AZURE_FUNCTIONAPP_NAME: "therranen-portman-func"  # set this to the name of your Azure Web App
   AZURE_RESOURCE_GROUP: "therranen-portman-rg"
   AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
   PYTHON_VERSION: "3.11"
@@ -64,7 +64,3 @@ jobs:
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           scm-do-build-during-deployment: true
           enable-oryx-build: true
-
-      # Logout from Azure (cleanup)
-      #- name: Logout from Azure
-      #  run: az logout
