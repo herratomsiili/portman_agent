@@ -69,16 +69,21 @@ jobs:
       - name: Terraform Plan
         id: tf-plan-step
         run: |
-          export exitcode=100
-          terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+          terraform plan -detailed-exitcode -no-color -out=tfplan
+          exitcode=$?
+
+          echo "Terraform Plan exit code: $exitcode"
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
-          
+
           if [ $exitcode -eq 1 ]; then
-            echo Terraform Plan Failed!
+            echo "Terraform Plan Failed!"
             exit 1
+          elif [ $exitcode -eq 2 ]; then
+            echo "Changes detected in Terraform Plan."
+            exit 0
           else
-            echo Terraform Plan exitcode: $exitcode! 
+            echo "No changes detected."
             exit 0
           fi
 
