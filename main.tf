@@ -2,7 +2,7 @@
 resource "azurerm_resource_group" "default" {
   name     = "${var.name_prefix}-rg"
   location = var.location
-  tags     = {
+  tags = {
     owner = "tommi.herranen@siili.com"
   }
 }
@@ -18,15 +18,15 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
   resource_group_name = azurerm_resource_group.default.name
   location            = azurerm_resource_group.default.location
 
-  sku_name          = "B_Standard_B1ms"  # Change this for production
-  storage_mb        = 32768
-  version           = "15"
+  sku_name               = "B_Standard_B1ms" # Change this for production
+  storage_mb             = 32768
+  version                = "15"
   administrator_login    = "adminuser"
   administrator_password = random_password.pass.result
 
-  backup_retention_days = 7
-  geo_redundant_backup_enabled = false
-  public_network_access_enabled = true  # Change to false if using private access
+  backup_retention_days         = 7
+  geo_redundant_backup_enabled  = false
+  public_network_access_enabled = true # Change to false if using private access
 
   zone = "1"
 }
@@ -50,6 +50,6 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_service
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_local_access" {
   name             = "AllowLocalAccess"
   server_id        = azurerm_postgresql_flexible_server.postgres.id
-  start_ip_address = "${var.allowed_ip_start}"
-  end_ip_address   = "${var.allowed_ip_end}"
+  start_ip_address = var.allowed_ip_start
+  end_ip_address   = var.allowed_ip_end
 }
