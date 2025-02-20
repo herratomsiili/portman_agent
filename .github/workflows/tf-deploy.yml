@@ -44,7 +44,7 @@ jobs:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs: tf-unit-tests  # Apply only if tests pass
-    environment: development  # Use environment for GitHub Secrets
+    environment: Development  # Use environment for GitHub Secrets
 
     steps:
       # Checkout the repository
@@ -75,7 +75,7 @@ jobs:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs: tf-plan  # Apply only if plan passes
-    environment: development  # Use environment for GitHub Secrets
+    environment: Development  # Use environment for GitHub Secrets
 
     steps:
       # Checkout the repository
@@ -106,7 +106,7 @@ jobs:
     name: Terraform Destroy
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'  # Only runs manually
-    environment: development  # Uses correct environment
+    environment: Development  # Uses correct environment
 
     steps:
       - name: Checkout Code
