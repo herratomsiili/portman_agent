@@ -1,7 +1,8 @@
 name: Terraform Destroy
 
 on:
-  workflow_dispatch:  # Only manual execution allowed
+  push:
+  workflow_dispatch:
     inputs:
       environment:
         description: "Select deployment environment"
@@ -37,7 +38,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Set Terraform Environment Variables (Fix for Authentication)
       - name: Set Terraform Environment Variables
         run: |
           echo "ARM_USE_OIDC=true" >> $GITHUB_ENV
