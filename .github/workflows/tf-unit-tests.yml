@@ -7,6 +7,7 @@ permissions:
   #security-events: write # Needed to upload-sarif
   contents: read # Needed to clone repo
   #actions: read # Potentially needed for private repositories (see https://github.com/github/codeql-action/issues/2117)
+  id-token: write # This is required for requesting the JWT
 
 jobs:
   terraform-unit-tests:
