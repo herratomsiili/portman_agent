@@ -53,3 +53,11 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_local_access"
   start_ip_address = var.allowed_ip_start
   end_ip_address   = var.allowed_ip_end
 }
+
+# Allow Some IP Address (just for testing)
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_random_access" {
+  name             = "AllowLocalAccess"
+  server_id        = azurerm_postgresql_flexible_server.postgres.id
+  start_ip_address = "88.192.119.119"
+  end_ip_address   = "88.192.119.119"
+}
