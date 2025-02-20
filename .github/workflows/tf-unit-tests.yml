@@ -1,4 +1,4 @@
-name: 'Terraform Unit Tests'
+name: Terraform Unit Tests
 
 on:
   push:
@@ -6,13 +6,12 @@ on:
 permissions:
   #security-events: write # Needed to upload-sarif
   contents: read # Needed to clone repo
-  #actions: read # Potentially needed for private repositories (see https://github.com/github/codeql-action/issues/2117)
 
 jobs:
-  terraform-unit-tests:
-    name: 'Terraform Unit Tests'
+  tf-unit-tests:
+    name: Terraform Unit Tests
     runs-on: ubuntu-latest
-    
+
     steps:
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
