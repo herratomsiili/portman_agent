@@ -132,7 +132,7 @@ jobs:
   tf-apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && needs.terraform-plan.outputs.tfplanExitCode == 2
+    if: github.ref == 'refs/heads/main' && needs.tf-plan.outputs.tfplanExitCode == 2
     needs: tf-plan  # Apply only if plan passes
     environment: ${{ github.event.inputs.environment || 'Development' }}  # Use selected environment
 
