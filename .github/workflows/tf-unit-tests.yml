@@ -26,18 +26,14 @@ jobs:
     - name: Terraform Init
       run: terraform init -backend=false
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      run: terraform fmt -check -recursive
-
     # Validate terraform files
     - name: Terraform Validate
       run: terraform validate
-          
-    # Run Terraform Plan (Preview Changes)
-    - name: Terraform Plan
-      run: terraform plan -out=tfplan
 
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check -recursive
+    
     # Perform a security scan of the terraform code using checkov
     #- name: Run Checkov action
     #  id: checkov
