@@ -77,11 +77,8 @@ jobs:
           if [ $exitcode -eq 1 ]; then
             echo Terraform Plan Failed!
             exit 1
-          else if [ $exitcode -eq 2 ]; then
-            echo Terraform Plan contains pending changes.
-            exit 0
           else
-            echo Terraform Plan contains no changes.
+            echo Terraform Plan exitcode: $exitcode! 
             exit 0
           fi
 
