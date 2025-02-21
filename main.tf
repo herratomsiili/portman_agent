@@ -19,7 +19,7 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
   administrator_login    = "adminuser"
   administrator_password = var.admin_password
 
-  backup_retention_days         = 6
+  backup_retention_days         = 8
   geo_redundant_backup_enabled  = false
   public_network_access_enabled = true # Change to false if using private access
 
