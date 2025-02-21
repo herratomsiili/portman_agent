@@ -78,7 +78,7 @@ jobs:
           echo "Terraform Plan exit code: $exitcode"
 
           # Pass exit code to GitHub Actions output
-          echo "exitcode=$exitcode" >> $GITHUB_ENV
+          #echo "exitcode=$exitcode" >> $GITHUB_ENV
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
 
           if [ $exitcode -eq 1 ]; then
