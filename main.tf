@@ -46,18 +46,18 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_service
   end_ip_address   = "0.0.0.0"
 }
 
-# Allow Specific IP Address (Change This)
-resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_local_access" {
-  name             = "AllowLocalAccess"
+# Allow Specific IP Address (office)
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_office_access" {
+  name             = "AllowOfficeAccess"
   server_id        = azurerm_postgresql_flexible_server.postgres.id
   start_ip_address = var.allowed_ip_start
   end_ip_address   = var.allowed_ip_end
 }
 
-# Allow Some IP Address (just for testing)
-resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_random_access" {
-  name             = "AllowRandomAccess"
+# Allow Specific IP Address (local)
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_local_access" {
+  name             = "AllowLocalAccess"
   server_id        = azurerm_postgresql_flexible_server.postgres.id
-  start_ip_address = "88.192.119.119"
-  end_ip_address   = "88.192.119.119"
+  start_ip_address = "87.95.52.56"
+  end_ip_address   = "87.95.52.56"
 }
