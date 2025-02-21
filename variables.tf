@@ -17,3 +17,9 @@ variable "allowed_ip_end" {
   default     = "88.148.163.255"
   description = "Allowed ip range end for firewall rule."
 }
+
+variable "admin_password" {
+  description = "PostgreSQL Admin Password"
+  type        = string
+  sensitive   = true
+}

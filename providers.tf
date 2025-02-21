@@ -11,7 +11,6 @@ terraform {
     storage_account_name = "therranenportmanstorage"
     container_name       = "tfstate"
     key                  = "terraform.tfstate"
-    #use_oidc             = true # Enables OpenID Connect authentication
   }
 }
 
