@@ -69,8 +69,10 @@ jobs:
       - name: Terraform Plan
         id: tf-plan-step
         run: |
-          export exitcode=0
-          terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+          set +e  # Disable automatic exit on error to capture the correct exit code
+
+          terraform plan -detailed-exitcode -no-color -out tfplan
+          exitcode=$?  # Capture the correct exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
 
