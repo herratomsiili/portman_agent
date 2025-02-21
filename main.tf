@@ -58,6 +58,6 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_office_access
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_local_access" {
   name             = "AllowLocalAccess"
   server_id        = azurerm_postgresql_flexible_server.postgres.id
-  start_ip_address = 87.95.52.56
-  end_ip_address   = 87.95.52.56
+  start_ip_address = "87.95.52.56"
+  end_ip_address   = "87.95.52.56"
 }
