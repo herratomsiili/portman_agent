@@ -2,7 +2,7 @@ name: Deploy Python App to Azure Function App
 
 on:
   push:
-    branches: ["main"]  # Triggers deployment when pushing to main branch
+    branches: ["prod"]  # Triggers deployment when pushing to main branch
   workflow_dispatch:  # Allows manual execution from GitHub Actions UI
 
 permissions:
