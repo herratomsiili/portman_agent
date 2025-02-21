@@ -71,8 +71,7 @@ jobs:
         run: |
           set -e  # Ensures script exits on any failure
 
-          terraform plan -detailed-exitcode -no-color -out=tfplan
-          exitcode=$?  # Capture the exit code immediately
+          terraform plan -detailed-exitcode -no-color -out=tfplan || exitcode=$? # Capture the exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
 
