@@ -80,10 +80,6 @@ jobs:
           # Pass exit code to GitHub Actions output
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
 
-          # Output Terraform secrets
-          echo "Printing terraform output-json:"
-          terraform output -json
-
           if [ $exitcode -eq 1 ]; then
             echo "Terraform Plan Failed!"
             exit 1
