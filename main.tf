@@ -7,11 +7,6 @@ resource "azurerm_resource_group" "default" {
   }
 }
 
-# Generate random password
-resource "random_password" "pass" {
-  length = 20
-}
-
 # Define PostgreSQL Flexible Server
 resource "azurerm_postgresql_flexible_server" "postgres" {
   name                = "${var.name_prefix}-flexserver"
@@ -22,9 +17,9 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
   storage_mb             = 32768
   version                = "15"
   administrator_login    = "adminuser"
-  administrator_password = random_password.pass.result
+  administrator_password = var.admin_password
 
-  backup_retention_days         = 7
+  backup_retention_days         = 8
   geo_redundant_backup_enabled  = false
   public_network_access_enabled = true # Change to false if using private access
 

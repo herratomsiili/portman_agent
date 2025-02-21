@@ -73,7 +73,7 @@ jobs:
         run: |
           export exitcode=0
 
-          terraform plan -detailed-exitcode -no-color -out=tfplan || exitcode=$?  # Capture the exit code immediately
+          terraform plan -var="admin_password=${{ secrets.DB_PASSWORD }}" -detailed-exitcode -no-color -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
 
@@ -81,6 +81,7 @@ jobs:
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
 
           # Output Terraform secrets
+          echo "Printing terraform output-json:"
           terraform output -json
 
           if [ $exitcode -eq 1 ]; then
@@ -186,8 +187,4 @@ jobs:
 
       # Apply Terraform changes
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
-
-      # Output Terraform secrets
-      - name: Terraform Output
-        run: terraform output -json
+        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" tfplan
