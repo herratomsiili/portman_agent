@@ -38,6 +38,8 @@ jobs:
       # Install Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
 
       # Log in to Azure
       - name: Log in to Azure
@@ -69,10 +71,9 @@ jobs:
       - name: Terraform Plan
         id: tf-plan-step
         run: |
-          set +e  # Disable automatic exit on error to capture the correct exit code
+          export exitcode=0
 
-          terraform plan -detailed-exitcode -no-color -out tfplan
-          exitcode=$?  # Capture the correct exit code immediately
+          terraform plan -detailed-exitcode -no-color -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
 
