@@ -64,13 +64,6 @@ jobs:
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: |
-          echo "ENV=${{ github.job.environment }}"
-          echo "ENV2=${{ github.job.environment.name }}"
-          echo "ENV3=${{ github.job.terraform-plan.environment }}"
-          echo "ENV4=${{ github.job.terraform-plan.environment.name }}"
-          echo "Current Environment: ${{ steps.context.outputs.environment }}"
-          echo "Current Environment2: ${{ env.ENVIRONMENT }}"
-
           terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
@@ -124,7 +117,7 @@ jobs:
       - name: Create String Output
         id: tf-plan-string
         run: |
-          TERRAFORM_PLAN=$(terraform show -no-color tfplan)
+          TERRAFORM_PLAN=$(terraform show -no-color environments/${{ env.ENVIRONMENT }}/tfplan)
           
           delimiter="$(openssl rand -hex 8)"
           echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
