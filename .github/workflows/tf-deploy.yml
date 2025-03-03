@@ -61,7 +61,7 @@ jobs:
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: |
-          terraform init  \
+          terraform -chdir=environments/${{ github.job.environment }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
@@ -82,7 +82,9 @@ jobs:
 
           export exitcode=0
 
-          terraform plan -detailed-exitcode -no-color -var-file=environments/${{ github.event.inputs.environment || 'development' }}/terraform.tfvars -out=tfplan || exitcode=$?  # Capture the exit code immediately
+          terraform -chdir=environments/${{ github.job.environment }} plan \
+            -detailed-exitcode -no-color \
+            -var-file=terraform.tfvars -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
 
@@ -102,10 +104,11 @@ jobs:
 
       # Save plan to artifacts  
       - name: Publish Terraform Plan
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: tfplan
+          path: environments/${{ github.job.environment }}/tfplan
 
       # Create string output of Terraform Plan
       - name: Create String Output
@@ -183,7 +186,7 @@ jobs:
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: |
-          terraform init \
+          terraform -chdir=environments/${{ github.job.environment }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
@@ -194,7 +197,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tfplan
+          path: environments/${{ github.job.environment }}/
 
       # Apply Terraform changes
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" tfplan
+        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" environments/${{ github.job.environment }}/tfplan
