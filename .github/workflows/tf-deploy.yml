@@ -111,13 +111,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: environments/${{ env.ENVIRONMENT }}/tfplan
+          path: .
 
       # Create string output of Terraform Plan
       - name: Create String Output
         id: tf-plan-string
         run: |
-          TERRAFORM_PLAN=$(terraform show -no-color environments/${{ env.ENVIRONMENT }}/tfplan)
+          TERRAFORM_PLAN=$(terraform show -no-color tfplan)
           
           delimiter="$(openssl rand -hex 8)"
           echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
@@ -161,6 +161,9 @@ jobs:
     needs: tf-plan  # Apply only if plan passes
     environment: ${{ github.event.inputs.environment || 'development' }}  # Use selected environment
 
+    env:
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'development' }}
+
     steps:
       # Checkout the repository
       - name: Checkout Code
@@ -189,7 +192,7 @@ jobs:
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: |
-          terraform -chdir=environments/${{ github.job.environment }} init \
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
@@ -200,8 +203,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tfplan
-          path: environments/${{ github.job.environment }}/
+          path: .
 
       # Apply Terraform changes
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" environments/${{ github.job.environment }}/tfplan
+        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" tfplan
