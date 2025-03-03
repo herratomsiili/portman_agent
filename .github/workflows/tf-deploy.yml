@@ -78,8 +78,6 @@ jobs:
         id: tf-plan-step
         run: |
           export TF_VAR_admin_password="${{ secrets.DB_PASSWORD }}"
-          export TF_VAR_resource_group_name="${{ secrets.BACKEND_RESOURCE_GROUP }}"
-          export TF_VAR_location="North Europe"
 
           export exitcode=0
 
