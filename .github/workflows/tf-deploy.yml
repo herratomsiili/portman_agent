@@ -78,6 +78,7 @@ jobs:
         id: tf-plan-step
         run: |
           export TF_VAR_admin_password="${{ secrets.DB_PASSWORD }}"
+          export TF_VAR_resource_group_name="${{ secrets.RESOURCE_GROUP }}"
 
           export exitcode=0
 
