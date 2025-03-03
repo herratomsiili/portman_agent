@@ -1,4 +1,4 @@
-resource_group_name = "therranen-portman-rg"
+#resource_group_name = "therranen-portman-rg"
 location            = "North Europe"
 naming_prefix       = "therranen-portman"
 #admin_password      = "secure-password"
