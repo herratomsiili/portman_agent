@@ -30,6 +30,9 @@ jobs:
     environment: ${{ github.event.inputs.environment || 'development' }}  # Use selected environment
     outputs:
       tfplanExitCode: ${{ steps.tf-plan-step.outputs.exitcode }}
+    
+    env:
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'development' }}
 
     steps:
       # Checkout the repository
@@ -61,7 +64,14 @@ jobs:
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: |
-          terraform -chdir=environments/${{ github.job.environment }} init \
+          echo "ENV=${{ github.job.environment }}"
+          echo "ENV2=${{ github.job.environment.name }}"
+          echo "ENV3=${{ github.job.terraform-plan.environment }}"
+          echo "ENV4=${{ github.job.terraform-plan.environment.name }}"
+          echo "Current Environment: ${{ steps.context.outputs.environment }}"
+          echo "Current Environment2: ${{ env.ENVIRONMENT }}"
+
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
@@ -82,7 +92,7 @@ jobs:
 
           export exitcode=0
 
-          terraform -chdir=environments/${{ github.job.environment }} plan \
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} plan \
             -detailed-exitcode -no-color \
             -var-file=terraform.tfvars -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
