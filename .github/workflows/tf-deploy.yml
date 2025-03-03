@@ -79,7 +79,7 @@ jobs:
         run: |
           export exitcode=0
 
-          terraform plan -var="admin_password=${{ secrets.DB_PASSWORD }}" -detailed-exitcode -no-color -var-file=environments/${{ github.event.inputs.environment }}/terraform.tfvars -out=tfplan || exitcode=$?  # Capture the exit code immediately
+          terraform plan -var="admin_password=${{ secrets.DB_PASSWORD }}" -detailed-exitcode -no-color -var-file=environments/${{ github.event.inputs.environment || 'Development' }}/terraform.tfvars -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
 
