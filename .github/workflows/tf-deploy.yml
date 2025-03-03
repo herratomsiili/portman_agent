@@ -77,9 +77,13 @@ jobs:
       - name: Terraform Plan
         id: tf-plan-step
         run: |
+          export TF_VAR_admin_password="${{ secrets.DB_PASSWORD }}"
+          export TF_VAR_resource_group_name="${{ secrets.BACKEND_RESOURCE_GROUP }}"
+          export TF_VAR_location="North Europe"
+
           export exitcode=0
 
-          terraform plan -var="admin_password=${{ secrets.DB_PASSWORD }}" -detailed-exitcode -no-color -var-file=environments/${{ github.event.inputs.environment || 'development' }}/terraform.tfvars -out=tfplan || exitcode=$?  # Capture the exit code immediately
+          terraform plan -detailed-exitcode -no-color -var-file=environments/${{ github.event.inputs.environment || 'development' }}/terraform.tfvars -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
 
