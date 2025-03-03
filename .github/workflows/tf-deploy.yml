@@ -12,12 +12,12 @@ on:
       environment:
         description: "Select deployment environment"
         required: true
-        default: "Development"
+        default: "development"
         type: choice
         options:
-          - Development
-          - Testing
-          - Production
+          - development
+          - testing
+          - production
 
 permissions:
   id-token: write
@@ -27,7 +27,7 @@ jobs:
   tf-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'Development' }}  # Use selected environment
+    environment: ${{ github.event.inputs.environment || 'development' }}  # Use selected environment
     outputs:
       tfplanExitCode: ${{ steps.tf-plan-step.outputs.exitcode }}
 
@@ -79,7 +79,7 @@ jobs:
         run: |
           export exitcode=0
 
-          terraform plan -var="admin_password=${{ secrets.DB_PASSWORD }}" -detailed-exitcode -no-color -var-file=environments/${{ github.event.inputs.environment || 'Development' }}/terraform.tfvars -out=tfplan || exitcode=$?  # Capture the exit code immediately
+          terraform plan -var="admin_password=${{ secrets.DB_PASSWORD }}" -detailed-exitcode -no-color -var-file=environments/${{ github.event.inputs.environment || 'development' }}/terraform.tfvars -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
 
@@ -150,7 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && needs.tf-plan.outputs.tfplanExitCode == 2
     needs: tf-plan  # Apply only if plan passes
-    environment: ${{ github.event.inputs.environment || 'Development' }}  # Use selected environment
+    environment: ${{ github.event.inputs.environment || 'development' }}  # Use selected environment
 
     steps:
       # Checkout the repository
