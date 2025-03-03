@@ -110,14 +110,14 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: tfplan
-          path: .
+          name: tf-plan
+          path: environments/${{ env.ENVIRONMENT }}/tfplan
 
       # Create string output of Terraform Plan
       - name: Create String Output
         id: tf-plan-string
         run: |
-          TERRAFORM_PLAN=$(terraform show -no-color tfplan)
+          TERRAFORM_PLAN=$(terraform -chdir=environments/${{ env.ENVIRONMENT }} show -no-color tfplan)
           
           delimiter="$(openssl rand -hex 8)"
           echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
@@ -202,9 +202,9 @@ jobs:
       - name: Download Terraform Plan
         uses: actions/download-artifact@v4
         with:
-          name: tfplan
-          path: .
+          name: tf-plan
+          path: environments/${{ env.ENVIRONMENT }}/
 
       # Apply Terraform changes
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" tfplan
+        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" environments/${{ env.ENVIRONMENT }}/tfplan
