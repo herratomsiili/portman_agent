@@ -1,0 +1,7 @@
+resource_group_name = "therranen-portman-rg"
+location            = "North Europe"
+naming_prefix       = "therranen-portman"
+#admin_password      = "secure-password"
+allowed_ip_start = "88.148.163.0"
+allowed_ip_end   = "88.148.163.255"
+allowed_ip_local = "85.76.118.58"
