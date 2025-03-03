@@ -111,7 +111,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: environments/${{ github.job.environment }}/tfplan
+          path: environments/${{ env.ENVIRONMENT }}/tfplan
 
       # Create string output of Terraform Plan
       - name: Create String Output
