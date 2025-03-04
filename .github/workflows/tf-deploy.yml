@@ -82,6 +82,7 @@ jobs:
         run: |
           export TF_VAR_admin_password="${{ secrets.DB_PASSWORD }}"
           export TF_VAR_resource_group_name="${{ vars.RESOURCE_GROUP }}"
+          export TF_VAR_naming_prefix="${{ vars.NAMING_PREFIX }}"
 
           export exitcode=0
 
