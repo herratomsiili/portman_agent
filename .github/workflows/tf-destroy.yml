@@ -60,7 +60,12 @@ jobs:
       - name: Show Destroy plan
         id: tf-destroy-plan-step
         run: |
-          terraform -chdir=environments/${{ env.ENVIRONMENT }} plan -destroy -out=tfplan
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} plan -destroy \
+            -var-file=terraform.tfvars \
+            -var="admin_password=${{ secrets.DB_PASSWORD }}" \
+            -var="resource_group_name=${{ vars.RESOURCE_GROUP }}" \
+            -var="naming_prefix=${{ vars.NAMING_PREFIX }}" \
+            -out=tfplan
           echo "Terraform Destroy Plan generated."
 
       - name: Require Manual Approval for Destroy
