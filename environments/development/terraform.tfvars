@@ -1,6 +1,6 @@
 resource_group_name = "therranen-portman-rg"
 location            = "North Europe"
-naming_prefix       = "therranen-portman"
+naming_prefix       = "therranen-portman2"
 #admin_password      = "secure-password"
 allowed_ip_start = "88.148.163.0"
 allowed_ip_end   = "88.148.163.255"

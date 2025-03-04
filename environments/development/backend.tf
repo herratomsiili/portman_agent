@@ -4,7 +4,7 @@ terraform {
     storage_account_name = "therranenportmanstorage"
     container_name       = "tfstate"
     #key                  = "development.tfstate"
-    key = "terraform.tfstate"
+    key = "dev2.tfstate"
     #use_oidc             = true
   }
 }
