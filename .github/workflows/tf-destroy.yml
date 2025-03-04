@@ -58,7 +58,22 @@ jobs:
             -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}" \
 
       - name: Show Destroy plan
-        run: terraform -chdir=environments/${{ env.ENVIRONMENT }} plan -destroy
+        id: tf-destroy-plan-step
+        run: |
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} plan -destroy -out=tfplan
+          echo "Terraform Destroy Plan generated."
+
+      - name: Require Manual Approval for Destroy
+        uses: hmarr/auto-approve-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          required: true  # Ensures manual approval before executing destroy
+
+      # Step 2: Apply Terraform Destroy after manual approval
+      - name: Terraform Apply Destroy
+        if: github.event_name == 'workflow_dispatch'  # Ensures only runs when triggered manually
+        run: |
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} apply -auto-approve tfplan
 
       #- name: Terraform Destroy
       #  run: terraform destroy -auto-approve
