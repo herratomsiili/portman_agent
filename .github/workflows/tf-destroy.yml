@@ -6,11 +6,12 @@ on:
       environment:
         description: "Select deployment environment"
         required: true
-        default: "Development"
+        default: "development"
         type: choice
         options:
-          - Development
-          - Testing
+          - development
+          - testing
+          - production
 
 permissions:
   id-token: write
@@ -21,7 +22,10 @@ jobs:
     name: Terraform Destroy
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'  # Only runs manually
-    environment: ${{ github.event.inputs.environment || 'Development' }}  # Use selected environment
+    environment: ${{ github.event.inputs.environment || 'development' }}  # Use selected environment
+
+    env:
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'development' }}
 
     steps:
       - name: Checkout Code
@@ -44,8 +48,18 @@ jobs:
           echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
           echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
 
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
+            -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
+            -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
+            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}" \
 
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+      - name: Show Destroy plan
+        run: terraform -chdir=environments/${{ env.ENVIRONMENT }} plan -destroy
+
+      #- name: Terraform Destroy
+      #  run: terraform destroy -auto-approve
+      #  #run: terraform -chdir=environments/${{ env.ENVIRONMENT }} destroy -auto-approve tfplan
