@@ -1,0 +1,72 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select deployment environment"
+        required: true
+        default: "development"
+        type: choice
+        options:
+          - development
+          - testing
+          - production
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-force-unlock:
+    name: Terraform Force Unlock
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'  # Only run manually
+    environment: ${{ github.event.inputs.environment }}
+
+    env:
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'development' }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      # Log in to Azure
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Set Terraform Environment Variables (Fix for Authentication)
+      - name: Set Terraform Environment Variables
+        run: |
+          echo "ARM_USE_OIDC=true" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+
+      - name: Initialize Terraform
+        run: |
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
+            -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
+            -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
+            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}"
+
+      - name: Force Unlock Terraform State
+        run: |
+          LOCK_ID=$(terraform force-unlock -dry-run 2>&1 | grep "ID:" | awk '{print $2}')
+          if [ -n "$LOCK_ID" ]; then
+            echo "Unlocking Terraform state..."
+            terraform force-unlock -force $LOCK_ID
+            echo "Terraform state unlocked."
+          else
+            echo "No active lock found."
+          fi
