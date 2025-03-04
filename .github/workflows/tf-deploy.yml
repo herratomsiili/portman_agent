@@ -12,11 +12,12 @@ on:
       environment:
         description: "Select deployment environment"
         required: true
-        default: "Development"
+        default: "development"
         type: choice
         options:
-          - Development
-          - Testing
+          - development
+          - testing
+          - production
 
 permissions:
   id-token: write
@@ -26,9 +27,12 @@ jobs:
   tf-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'Development' }}  # Use selected environment
+    environment: ${{ github.event.inputs.environment || 'development' }}  # Use selected environment
     outputs:
       tfplanExitCode: ${{ steps.tf-plan-step.outputs.exitcode }}
+    
+    env:
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'development' }}
 
     steps:
       # Checkout the repository
@@ -59,7 +63,12 @@ jobs:
 
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
+            -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
+            -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
+            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}"
 
       # Checks that all Terraform configuration files adhere to a canonical format
       # Will fail the build if not
@@ -71,18 +80,24 @@ jobs:
       - name: Terraform Plan
         id: tf-plan-step
         run: |
+          #export TF_VAR_admin_password="${{ secrets.DB_PASSWORD }}"
+          #export TF_VAR_resource_group_name="${{ vars.RESOURCE_GROUP }}"
+          #export TF_VAR_naming_prefix="${{ vars.NAMING_PREFIX }}"
+
           export exitcode=0
 
-          terraform plan -var="admin_password=${{ secrets.DB_PASSWORD }}" -detailed-exitcode -no-color -out=tfplan || exitcode=$?  # Capture the exit code immediately
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} plan \
+            -detailed-exitcode -no-color \
+            -var-file=terraform.tfvars \
+            -var="admin_password=${{ secrets.DB_PASSWORD }}" \
+            -var="resource_group_name=${{ vars.RESOURCE_GROUP }}" \
+            -var="naming_prefix=${{ vars.NAMING_PREFIX }}" \
+            -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
 
           # Pass exit code to GitHub Actions output
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
-
-          # Output Terraform secrets
-          echo "Printing terraform output-json:"
-          terraform output -json
 
           if [ $exitcode -eq 1 ]; then
             echo "Terraform Plan Failed!"
@@ -97,16 +112,17 @@ jobs:
 
       # Save plan to artifacts  
       - name: Publish Terraform Plan
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: tfplan
-          path: tfplan
+          name: tf-plan
+          path: environments/${{ env.ENVIRONMENT }}/tfplan
 
       # Create string output of Terraform Plan
       - name: Create String Output
         id: tf-plan-string
         run: |
-          TERRAFORM_PLAN=$(terraform show -no-color tfplan)
+          TERRAFORM_PLAN=$(terraform -chdir=environments/${{ env.ENVIRONMENT }} show -no-color tfplan)
           
           delimiter="$(openssl rand -hex 8)"
           echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
@@ -148,7 +164,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && needs.tf-plan.outputs.tfplanExitCode == 2
     needs: tf-plan  # Apply only if plan passes
-    environment: ${{ github.event.inputs.environment || 'Development' }}  # Use selected environment
+    environment: ${{ github.event.inputs.environment || 'development' }}  # Use selected environment
+
+    env:
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'development' }}
 
     steps:
       # Checkout the repository
@@ -177,14 +196,20 @@ jobs:
 
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
+            -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
+            -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
+            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}"
 
       # Download saved plan from artifacts  
       - name: Download Terraform Plan
         uses: actions/download-artifact@v4
         with:
-          name: tfplan
+          name: tf-plan
+          path: environments/${{ env.ENVIRONMENT }}/
 
       # Apply Terraform changes
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" tfplan
+        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" environments/${{ env.ENVIRONMENT }}/tfplan
