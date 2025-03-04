@@ -68,7 +68,8 @@ jobs:
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
-            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}"
+            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}" \
+            -upgrade
 
       # Checks that all Terraform configuration files adhere to a canonical format
       # Will fail the build if not
@@ -177,6 +178,8 @@ jobs:
       # Install Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
 
       # Log in to Azure
       - name: Log in to Azure
@@ -201,7 +204,8 @@ jobs:
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
-            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}"
+            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}" \
+            -upgrade
 
       # Download saved plan from artifacts  
       - name: Download Terraform Plan
@@ -212,4 +216,4 @@ jobs:
 
       # Apply Terraform changes
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var="admin_password=${{ secrets.DB_PASSWORD }}" environments/${{ env.ENVIRONMENT }}/tfplan
+        run: terraform apply -auto-approve environments/${{ env.ENVIRONMENT }}/tfplan
