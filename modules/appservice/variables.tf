@@ -3,6 +3,11 @@ variable "naming_prefix" {
   type        = string
 }
 
+variable "storage_account_name" {
+  description = "Name of the storage account"
+  type        = string
+}
+
 variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
@@ -13,8 +18,7 @@ variable "location" {
   type        = string
 }
 
-variable "admin_password" {
-  description = "PostgreSQL Admin Password"
+variable "ai_instrumentation_key" {
+  description = "Instrumentation key of the Application Insights resource"
   type        = string
-  sensitive   = true
 }
