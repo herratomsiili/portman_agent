@@ -12,9 +12,3 @@ variable "location" {
   description = "Azure region"
   type        = string
 }
-
-variable "admin_password" {
-  description = "PostgreSQL Admin Password"
-  type        = string
-  sensitive   = true
-}

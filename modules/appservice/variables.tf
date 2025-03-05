@@ -3,6 +3,11 @@ variable "naming_prefix" {
   type        = string
 }
 
+variable "storage_account_name" {
+  description = "Name of the storage account"
+  type        = string
+}
+
 variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
@@ -11,10 +16,4 @@ variable "resource_group_name" {
 variable "location" {
   description = "Azure region"
   type        = string
-}
-
-variable "admin_password" {
-  description = "PostgreSQL Admin Password"
-  type        = string
-  sensitive   = true
 }
