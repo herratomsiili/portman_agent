@@ -9,7 +9,7 @@
 
 # Define PostgreSQL Flexible Server
 resource "azurerm_postgresql_flexible_server" "postgres" {
-  name                = var.postgres_name
+  name                = "${var.naming_prefix}-flexserver"
   resource_group_name = var.resource_group_name
   location            = var.location
 
