@@ -17,3 +17,8 @@ variable "location" {
   description = "Azure region"
   type        = string
 }
+
+variable "ai_instrumentation_key" {
+  description = "Instrumentation key of the Application Insights resource"
+  type        = string
+}

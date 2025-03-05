@@ -23,6 +23,6 @@ resource "azurerm_function_app" "function_app" {
   service_plan_id            = azurerm_service_plan.function_plan.id
   os_type                    = "linux"
   app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.app_insights.instrumentation_key
+    "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
   }
 }
