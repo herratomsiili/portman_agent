@@ -14,15 +14,29 @@ resource "azurerm_storage_account" "storage" {
   account_replication_type = "LRS"
 }
 
-resource "azurerm_function_app" "function_app" {
-  name                       = "${var.naming_prefix}-func"
-  resource_group_name        = var.resource_group_name
-  location                   = var.location
-  storage_account_name       = azurerm_storage_account.storage.name
-  storage_account_access_key = azurerm_storage_account.storage.primary_access_key
-  app_service_plan_id        = azurerm_service_plan.function_plan.id
-  os_type                    = "linux"
-  app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
+resource "azurerm_linux_function_app" "function_app" {
+  name                        = "${var.naming_prefix}-func"
+  resource_group_name         = var.resource_group_name
+  location                    = var.location
+  storage_account_name        = azurerm_storage_account.storage.name
+  storage_account_access_key  = azurerm_storage_account.storage.primary_access_key
+  service_plan_id             = azurerm_service_plan.function_plan.id
+  functions_extension_version = "~4"
+
+  site_config {
+    http2_enabled            = false
+    application_insights_key = var.ai_instrumentation_key
+    #application_insights_connection_string = var.ai_connection_string
+
+    application_stack {
+      python_version = "3.11"
+    }
+
+    cors {
+      allowed_origins = ["*"]
+    }
   }
+  #app_settings = {
+  #  "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
+  #}
 }
