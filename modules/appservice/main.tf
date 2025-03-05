@@ -15,7 +15,7 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_function_app" "function_app" {
-  name                       = var.function_app_name
+  name                       = "${var.naming_prefix}-func"
   resource_group_name        = var.resource_group_name
   location                   = var.location
   storage_account_name       = azurerm_storage_account.storage.name
