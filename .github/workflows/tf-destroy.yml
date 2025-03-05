@@ -82,7 +82,7 @@ jobs:
   tf-apply-destroy:
     name: Terraform Apply Destroy
     runs-on: ubuntu-latest
-    needs: terraform-plan-destroy
+    needs: tf-plan-destroy
     if: github.event_name == 'workflow_dispatch'
     environment: ${{ github.event.inputs.environment || 'development' }}
 
