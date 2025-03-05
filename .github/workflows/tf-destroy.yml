@@ -12,6 +12,14 @@ on:
           - development
           - testing
           - production
+      job:
+        description: "Select the Terraform destroy job to run"
+        required: true
+        default: "plan"
+        type: choice
+        options:
+          - plan
+          - apply
 
 permissions:
   id-token: write
@@ -21,7 +29,8 @@ jobs:
   tf-plan-destroy:
     name: Terraform Plan Destroy
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event.inputs.job == 'plan'
+    #if: github.event_name == 'workflow_dispatch'
     environment: ${{ github.event.inputs.environment || 'development' }}
 
     env:
@@ -82,8 +91,9 @@ jobs:
   tf-apply-destroy:
     name: Terraform Apply Destroy
     runs-on: ubuntu-latest
+    if: github.event.inputs.job == 'apply'
     needs: tf-plan-destroy
-    if: github.event_name == 'workflow_dispatch'
+    #if: github.event_name == 'workflow_dispatch'
     environment: ${{ github.event.inputs.environment || 'development' }}
 
     env:
