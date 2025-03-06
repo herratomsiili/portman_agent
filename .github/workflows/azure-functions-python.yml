@@ -10,10 +10,10 @@ permissions:
   contents: read
 
 env:
-  #AZURE_FUNCTIONAPP_NAME: "therranen-portman-func"  # set this to the name of your Azure Web App
-  #AZURE_RESOURCE_GROUP: "therranen-portman-rg"
   AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
   PYTHON_VERSION: "3.11"
+  DB_NAME: "portman"
+  DB_USER: "adminuser"
 
 jobs:
   build-and-deploy:
@@ -49,11 +49,11 @@ jobs:
       - name: Set Environment Variables
         run: |
           az functionapp config appsettings set --name ${{ vars.AZURE_FUNCTIONAPP_NAME }} \
-          --resource-group ${{ vars.RESOURCE_GROUP }} \
+          --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
           --settings \
             DB_HOST=${{ secrets.DB_HOST }} \
-            DB_NAME=${{ secrets.DB_NAME }} \
-            DB_USER=${{ secrets.DB_USER }} \
+            DB_NAME=${{ env.DB_NAME }} \
+            DB_USER=${{ env.DB_USER }} \
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 
       # Deploy to Azure
