@@ -53,7 +53,7 @@ jobs:
           terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=tfstate" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
             -backend-config="key=${{ env.ENVIRONMENT }}.tfstate"
 
       - name: Terraform Plan Destroy
@@ -64,6 +64,7 @@ jobs:
             -var="admin_password=${{ secrets.DB_PASSWORD }}" \
             -var="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP }}" \
             -var="naming_prefix=${{ vars.NAMING_PREFIX }}" \
+            -var="storage_account_name=${{ vars.STORAGE_ACCOUNT_NAME }}" \
             -out=tfdestroyplan
           echo "Terraform Destroy Plan generated. Review before running apply."
 
@@ -134,7 +135,7 @@ jobs:
           terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=tfstate" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
             -backend-config="key=${{ env.ENVIRONMENT }}.tfstate"
 
       - name: Download Terraform Destroy Plan

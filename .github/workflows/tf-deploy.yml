@@ -67,7 +67,7 @@ jobs:
           terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=tfstate" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
             -backend-config="key=${{ env.ENVIRONMENT }}.tfstate"
 
       # Checks that all Terraform configuration files adhere to a canonical format
@@ -88,6 +88,7 @@ jobs:
             -var="admin_password=${{ secrets.DB_PASSWORD }}" \
             -var="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP }}" \
             -var="naming_prefix=${{ vars.NAMING_PREFIX }}" \
+            -var="storage_account_name=${{ vars.STORAGE_ACCOUNT_NAME }}" \
             -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
           echo "Terraform Plan exit code: $exitcode"
@@ -196,7 +197,7 @@ jobs:
           terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=tfstate" \
+            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
             -backend-config="key=${{ env.ENVIRONMENT }}.tfstate"
 
       # Download saved plan from artifacts  
