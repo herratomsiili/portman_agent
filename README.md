@@ -1,24 +1,10 @@
-# **Portman Agent - Azure Deployment Guide** 🚀  
+# **Portman Agent - Azure Deployment and Usage Guide** 🚀  
 
 This repository **Portman Agent** contains **Terraform configurations and GitHub Actions workflows** for provisioning and managing infrastructure on Azure, including:  
 ✅ **Azure Function App with http-trigger launching Portman function**  
 ✅ **PostgreSQL Database (Azure Database for PostgreSQL flexible server)**  
 ✅ **Networking and Security Rules**  
 ✅ **Application Insights & Monitoring**  
-
----
-
-## **📌 Prerequisites**
-Before deploying **locally** or via **GitHub Actions**, ensure you have:
-
-✅ **Terraform Installed**: [Download Terraform](https://developer.hashicorp.com/terraform/downloads)  
-✅ **Azure CLI Installed**: [Download Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)  
-✅ **Logged into Azure**:
-```bash
-az login
-```
-✅ **GitHub Actions Secrets/Variables Configured** (For automated deployment)  
-✅ **Backend Storage for Terraform State** (Azure Storage Account with blob container)  
 
 ---
 
@@ -81,7 +67,7 @@ terraform destroy -var-file=terraform.tfvars \
 
 ## **📌 Deploy via GitHub Actions**  
 
-## **📌 Prerequisites**
+### **📌 Prerequisites**
 Before deploying via **GitHub Actions**, ensure you have:  
 ✅ **Existing Azure Resource Group in which you want to deploy Azure insfrastructure**  
 ✅ **Azure User-assigned Managed Identity with Federated GitHub Credentials**  
@@ -115,12 +101,11 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 ---
 
 ### **2️⃣ Deploy Infrastructure via GitHub Actions**  
-#### **🔹 Automatic Deployment (Push to `main`)**
-```bash
-git add .
-git commit -m "Deploy Terraform infrastructure"
-git push origin main
-```
+#### **🔹 Automatic Deployment (Pull Request to `main`)**
+- **Terraform Deployment workflow is launched**
+- **Changes made in Azure infrastructure can be verified from `Terraform Plan` job**
+- **Once the Pull Request is merged, the `Terraform Apply` job is automatically launched and changes deployed to Azure**
+
 ✅ **GitHub Actions automatically deploys the infrastructure.**  
 
 ---
@@ -151,6 +136,22 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 - **If approved, the "Terraform Apply Destroy" job will be launched automatically**  
 
 ✅ **Prevents accidental resource deletion.**  
+
+---
+
+## **📌 Usage**
+**The Portman Agent function URL can be found from:**  
+- **Azure Portal -> Function App -> Functions -> PortmanHttpTrigger**  
+- **GitHub Actions Deployment log**  
+
+**Invoke the Portman Agent function:**  
+- **Use the function URL with `code` parameter**
+- **Define trackable vessels with `imo` parameter (optional)**  
+
+**Query `voayges` and `arrivals` from Postgres DB:**  
+- **Use the GitHub Environment secret value `DB_HOST` as a Postgres DB host**  
+- **Use the GitHub Environment secret value `DB_USER` as a Postgres DB user**  
+- **Use the GitHub Environment secret value `DB_PASSWORD` or the admin password defined in local deployment process as a Postgres DB password**  
 
 ---
 
