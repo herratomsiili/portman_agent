@@ -87,6 +87,7 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 | **`AZURE_SUBSCRIPTION_ID`** | Azure Subscription ID of your Azure account |
 | **`BACKEND_RESOURCE_GROUP`** | Resource Group for Terraform Backend |
 | **`BACKEND_STORAGE_ACCOUNT`** | Azure Storage Account for Terraform State |
+| **`BACKEND_CONTAINER_NAME`** | Azure Blob Container for Terraform State |
 | **`DB_HOST`** | PostgreSQL Server Host |
 | **`DB_PASSWORD`** | PostgreSQL Admin Password |
 
