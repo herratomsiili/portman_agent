@@ -26,7 +26,6 @@ resource "azurerm_linux_function_app" "function_app" {
   site_config {
     http2_enabled            = false
     application_insights_key = var.ai_instrumentation_key
-    #application_insights_connection_string = var.ai_connection_string
 
     application_stack {
       python_version = "3.11"
@@ -36,7 +35,4 @@ resource "azurerm_linux_function_app" "function_app" {
       allowed_origins = ["*"]
     }
   }
-  #app_settings = {
-  #  "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
-  #}
 }

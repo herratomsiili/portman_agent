@@ -67,8 +67,8 @@ jobs:
           terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
-            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=${{ env.ENVIRONMENT }}.tfstate"
 
       # Checks that all Terraform configuration files adhere to a canonical format
       # Will fail the build if not
@@ -80,17 +80,13 @@ jobs:
       - name: Terraform Plan
         id: tf-plan-step
         run: |
-          #export TF_VAR_admin_password="${{ secrets.DB_PASSWORD }}"
-          #export TF_VAR_resource_group_name="${{ vars.RESOURCE_GROUP }}"
-          #export TF_VAR_naming_prefix="${{ vars.NAMING_PREFIX }}"
-
           export exitcode=0
 
           terraform -chdir=environments/${{ env.ENVIRONMENT }} plan \
             -detailed-exitcode -no-color \
             -var-file=terraform.tfvars \
             -var="admin_password=${{ secrets.DB_PASSWORD }}" \
-            -var="resource_group_name=${{ vars.RESOURCE_GROUP }}" \
+            -var="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP }}" \
             -var="naming_prefix=${{ vars.NAMING_PREFIX }}" \
             -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
@@ -142,7 +138,7 @@ jobs:
         run: |
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
         
-      # If this is a PR post the changes
+      # If this is a PR post the changes (TODO: Fixme, this did not work because of missing permissions)
       #- name: Push Terraform Output to PR
       #  if: github.ref != 'refs/heads/main'
       #  uses: actions/github-script@v7
@@ -200,8 +196,8 @@ jobs:
           terraform -chdir=environments/${{ env.ENVIRONMENT }} init \
             -backend-config="resource_group_name=${{ secrets.BACKEND_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ secrets.BACKEND_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=${{ secrets.BACKEND_CONTAINER_NAME }}" \
-            -backend-config="key=${{ secrets.BACKEND_STATE_FILE }}" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=${{ env.ENVIRONMENT }}.tfstate"
 
       # Download saved plan from artifacts  
       - name: Download Terraform Plan

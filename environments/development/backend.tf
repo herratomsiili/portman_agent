@@ -3,8 +3,6 @@ terraform {
     resource_group_name  = "therranen-portman-rg"
     storage_account_name = "therranenportmanstorage"
     container_name       = "tfstate"
-    #key                  = "development.tfstate"
-    key = "dev2.tfstate"
-    #use_oidc             = true
+    key                  = "development.tfstate"
   }
 }
