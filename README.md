@@ -35,13 +35,25 @@ Then initialize Terraform.
 terraform init -upgrade
 ```
 
+Or backend variables can also be defined as command-line options:
+```bash
+terraform init -upgrade \
+  -backend-config="resource_group_name=<your_resource_group_name>" \
+  -backend-config="storage_account_name=<your_storage_account_name>" \
+  -backend-config="container_name=<your_container_name>"
+```
+
 ### **3️⃣ Create Terraform Deployment Plan for Infrastructure**  
+The name of the storage account must to be defined separately because of the different Azure naming validations (no dashes allowed in storage account names). 
+
 ```bash
 terraform plan -var-file=terraform.tfvars \
-  -var="naming_prefix=<naming_prefix>" \
-  -var="storage_account_name=<storage_account_name>" \
-  -var="admin_password=<postgres_admin_password>" -out=main.tfplan
+  -var="naming_prefix=<your_naming_prefix>" \
+  -var="storage_account_name=<your_storage_account_name>" \
+  -var="resource_group_owner_tag_value=<your_azure_account_email>" \
+  -var="admin_password=<your_postgres_admin_password>" -out=main.tfplan
 ```
+🚨 **Use DIFFERENT storage account name than in `terraform init` in previous step**  
 
 ### **4️⃣ Deploy Infrastructure**  
 ```bash
@@ -55,10 +67,10 @@ terraform apply main.tfplan
 **To safely destroy all resources:**  
 ```bash
 terraform destroy -var-file=terraform.tfvars \
-  -var="resource_group_name=<resource_group_name>" \
-  -var="naming_prefix=<naming_prefix>" \
-  -var="storage_account_name=<storage_account_name>" \
-  -var="admin_password=<postgres_admin_password>" -auto-approve
+  -var="naming_prefix=<your_naming_prefix>" \
+  -var="storage_account_name=<your_storage_account_name>" \
+  -var="resource_group_owner_tag_value=<your_azure_account_email>" \
+  -var="admin_password=<your_postgres_admin_password>" -auto-approve
 ```
 ✅ **Destroys all resources for the selected environment.**  
 
@@ -93,7 +105,9 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 | Variable Name | Description |
 |------------|-------------|
 | **`AZURE_FUNCTIONAPP_NAME`** | Name of the Azure Function App service |
+| **`AZURE_RESOURCE_GROUP`** | Resource Group for Azure resources (needed for deploying the Portman agent function to Azure Function App) |
 | **`NAMING_PREFIX`** | Naming prefix for Azure resources |
+| **`OWNER_TAG`** | The value of the mandatory 'Owner' tag for created Azure resource group |
 
 ✅ **GitHub Actions will securely use these secrets/vars during deployment.**  
 

@@ -87,6 +87,7 @@ jobs:
             -var-file=terraform.tfvars \
             -var="admin_password=${{ secrets.DB_PASSWORD }}" \
             -var="naming_prefix=${{ vars.NAMING_PREFIX }}" \
+            -var="resource_group_owner_tag_value=${{ vars.OWNER_TAG }}" \
             -var="storage_account_name=${{ vars.STORAGE_ACCOUNT_NAME }}" \
             -out=tfplan || exitcode=$?  # Capture the exit code immediately
 
