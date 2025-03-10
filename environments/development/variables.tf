@@ -14,6 +14,11 @@ variable "storage_account_name" {
   type        = string
 }
 
+variable "resource_group_owner_tag_value" {
+  description = "The value of the mandatory 'Owner' tag for resource group"
+  type        = string
+}
+
 variable "admin_password" {
   description = "PostgreSQL Admin Password"
   type        = string

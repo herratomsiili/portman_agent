@@ -2,7 +2,7 @@ resource "azurerm_resource_group" "main" {
   name     = "${var.naming_prefix}-rg"
   location = var.location
   tags = {
-    owner = "tommi.herranen@siili.com"
+    owner = var.resource_group_owner_tag_value
   }
 }
 
