@@ -62,7 +62,6 @@ jobs:
           terraform -chdir=environments/${{ env.ENVIRONMENT }} plan -destroy \
             -var-file=terraform.tfvars \
             -var="admin_password=${{ secrets.DB_PASSWORD }}" \
-            -var="resource_group_name=${{ vars.AZURE_RESOURCE_GROUP }}" \
             -var="naming_prefix=${{ vars.NAMING_PREFIX }}" \
             -var="storage_account_name=${{ vars.STORAGE_ACCOUNT_NAME }}" \
             -out=tfdestroyplan
