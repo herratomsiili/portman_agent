@@ -28,7 +28,7 @@ cd environments/<environment>
 ```
 
 ### **2️⃣ Define Azure storage for storing Terraform state and Set Up Terraform**  
-There are defaults defined (`storage_account_name`, `resource_group_name`, `container_name`) for saving Terraform state in Azure in `backend.tf`. Set these according to your Azure account. Resource group and storage account can be different than used in `terraform plan` step.
+There are defaults defined (`storage_account_name`, `resource_group_name`, `container_name`) for saving Terraform state in Azure in `backend.tf`. Set these according to your Azure account. Resource group and storage account used for Terraform state better BE DIFFERENT than used in `terraform plan` step.
 
 Then initialize Terraform.
 ```bash
@@ -38,7 +38,6 @@ terraform init -upgrade
 ### **3️⃣ Create Terraform Deployment Plan for Infrastructure**  
 ```bash
 terraform plan -var-file=terraform.tfvars \
-  -var="resource_group_name=<resource_group_name>" \
   -var="naming_prefix=<naming_prefix>" \
   -var="storage_account_name=<storage_account_name>" \
   -var="admin_password=<postgres_admin_password>" -out=main.tfplan
@@ -69,13 +68,13 @@ terraform destroy -var-file=terraform.tfvars \
 
 ### **📌 Prerequisites**
 Before deploying via **GitHub Actions**, ensure you have:  
-✅ **Existing Azure Resource Group in which you want to deploy Azure insfrastructure**  
 ✅ **Azure User-assigned Managed Identity with Federated GitHub Credentials**  
-- Defined in the same Azure resource group
+- Defined in the same Azure resource group than your infrastructure is deployed 
 - Instructions in [SiiliHub](https://siilihub.atlassian.net/wiki/spaces/SW/pages/4166254596/Azure+CI+CD+authentication#Usage-with-Github-environment)
 
 ✅ **GitHub Actions Secrets/Variables Configured** (For automated deployment)  
 ✅ **Backend Storage for Terraform State** (Azure Storage Account with blob container)  
+- 🚨 **USE DIFFERENT resource group and storage account for storing Terraform state and for deploying your infrastructure!**
 
 ### **1️⃣ Set Up GitHub Environment Secrets**  
 Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and add/set these for desired environment (`development`, `testing`, `production`):  
@@ -94,7 +93,6 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 | Variable Name | Description |
 |------------|-------------|
 | **`AZURE_FUNCTIONAPP_NAME`** | Name of the Azure Function App service |
-| **`AZURE_RESOURCE_GROUP`** | Resource Group for Azure resources |
 | **`NAMING_PREFIX`** | Naming prefix for Azure resources |
 
 ✅ **GitHub Actions will securely use these secrets/vars during deployment.**  
@@ -142,17 +140,17 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 
 ## **📌 Usage**
 **The Portman Agent function URL can be found from:**  
-- **Azure Portal -> Function App -> Functions -> PortmanHttpTrigger**  
-- **GitHub Actions Deployment log**  
+- Azure Portal -> Function App -> Functions -> PortmanHttpTrigger  
+- GitHub Actions Deployment log  
 
 **Invoke the Portman Agent function:**  
-- **Use the function URL with `code` parameter**
-- **Define trackable vessels with `imo` parameter (optional)**  
+- Use the function URL with `code` parameter
+- Define trackable vessels (IMO-numbers separated with comma) with `imo` parameter (optional)  
 
 **Query `voayges` and `arrivals` from Postgres DB:**  
-- **Use the GitHub Environment secret value `DB_HOST` as a Postgres DB host**  
-- **Use the GitHub Environment secret value `DB_USER` as a Postgres DB user**  
-- **Use the GitHub Environment secret value `DB_PASSWORD` or the admin password defined in local deployment process as a Postgres DB password**  
+- Use the GitHub Environment secret value `DB_HOST` as a Postgres DB host  
+- Use the GitHub Environment secret value `DB_USER` as a Postgres DB user  
+- Use the GitHub Environment secret value `DB_PASSWORD` or the admin password defined in local deployment process as a Postgres DB password  
 
 ---
 
