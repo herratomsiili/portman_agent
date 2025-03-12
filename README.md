@@ -1,10 +1,49 @@
-# **Portman Agent - Azure Deployment and Usage Guide** 🚀  
+# **Portman Agent - Azure Deployment and Usage Guide** 🚀
 
-This repository **Portman Agent** contains **Terraform configurations and GitHub Actions workflows** for provisioning and managing infrastructure on Azure, including:  
-✅ **Azure Function App with http-trigger launching Portman function**  
-✅ **PostgreSQL Database (Azure Database for PostgreSQL flexible server)**  
-✅ **Networking and Security Rules**  
-✅ **Application Insights & Monitoring**  
+### Portman Agent is an Azure-based project that tracks vessel port calls. It consists of the following main components:
+
+#### 1. Infrastructure (Terraform):
+- Azure Function App with an HTTP trigger
+- PostgreSQL database (Azure Database for PostgreSQL flexible server)
+- Network and security rules
+- Application Insights monitoring
+
+#### 2. Functionality:
+- Fetches data from the Digitraffic port call API (https://meri.digitraffic.fi/api/port-call/v1/port-calls)
+- Stores information in two PostgreSQL tables:
+    - `voyages`: Contains all port calls (e.g., vessel details, schedules, passengers)
+    - `arrivals`: Tracks changes in arrival times
+
+#### 3. Features:
+- Can track specific vessels based on IMO number
+- Stores information such as:
+    - Vessel name and IMO number
+    - Estimated and actual arrival and departure times
+    - Number of passengers and crew
+    - Port and berth details
+    - Previous and next port
+
+#### 4. Usage:
+- Via HTTP trigger (Function App URL)
+- Parameters:
+    - `code`: Function App authentication
+    - `imo`: Vessels to track (comma-separated IMO numbers)
+
+#### 5. Environments:
+- Development
+- Testing
+- Production
+- Separate configurations for each environment
+
+#### 6. CI/CD:
+- GitHub Actions workflows for automatic deployment
+- Terraform state management in Azure Storage Account
+- Automated testing and deployment
+
+#### 7. Security:
+- Azure Function App authentication
+- PostgreSQL server firewall
+- Environment variables for sensitive data
 
 ---
 
