@@ -45,12 +45,6 @@
 - PostgreSQL server firewall
 - Environment variables for sensitive data
 
-This repository **Portman Agent** contains **Terraform configurations and GitHub Actions workflows** for provisioning and managing infrastructure on Azure, including:  
-✅ **Azure Function App with http-trigger launching Portman function**  
-✅ **PostgreSQL Database (Azure Database for PostgreSQL flexible server)**  
-✅ **Networking and Security Rules**  
-✅ **Application Insights & Monitoring**  
-
 ---
 
 ## **📌 Local Deployment Instructions**  
