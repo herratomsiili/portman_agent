@@ -1,9 +1,19 @@
 name: Deploy Python App to Azure Function App
 
 on:
-  push:
-    branches: ["main"]  # Triggers deployment when pushing to main branch
+  #push:
+  #  branches: ["main"]  # Triggers deployment when pushing to main branch
   workflow_dispatch:  # Allows manual execution from GitHub Actions UI
+    inputs:
+      environment:
+        description: "Select deployment environment"
+        required: true
+        default: "development"
+        type: choice
+        options:
+          - development
+          - testing
+          - production
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -19,7 +29,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment:
-      name: Development
+      name: ${{ github.event.inputs.environment || 'development' }}
 
     steps:
       # Checkout the repository

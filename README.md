@@ -215,6 +215,23 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 - Use the GitHub Environment secret value `DB_PASSWORD` or the admin password defined in local deployment process as a Postgres DB password  
 
 ---
+### **Running Azure functions locally**  
+Azure functions can be runned in local environment using Azure Functions Core Tools.  
+
+- Install [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=macos%2Cisolated-process%2Cnode-v4%2Cpython-v2%2Chttp-trigger%2Ccontainer-apps&pivots=programming-language-python)  
+- Add `local.settings.json` to the project root directory with following content:  
+```bash
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "<YOUR_AZURE_STORAGE_ACCOUNT_CONNECTION_STRING>",
+    "FUNCTIONS_WORKER_RUNTIME": "python"
+  }
+}
+```
+- Run `func start` at the project root directory  
+
+---
 
 ## **📌 Troubleshooting**
 | Issue | Solution |
