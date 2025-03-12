@@ -14,11 +14,6 @@ from config import DATABASE_CONFIG
 def log(message):
     logging.info(message)
 
-def job():
-    """Function that runs every 5 minutes."""
-    log("Fetching new data...")
-    main()  # Calls the existing main function
-
 def get_db_connection(dbName):
     """Establish and return a database connection to a specified database."""
     try:
