@@ -82,6 +82,15 @@ terraform init -upgrade \
   -backend-config="container_name=<your_container_name>"
 ```
 
+🚨 **If you are using Windows, you should also add subscription-id as a command-line variable:**  
+```bash
+terraform init -upgrade \
+  -backend-config="subscription_id=<your_azure_subscription_id>" \
+  -backend-config="resource_group_name=<your_resource_group_name>" \
+  -backend-config="storage_account_name=<your_storage_account_name>" \
+  -backend-config="container_name=<your_container_name>"
+```
+
 ### **3️⃣ Create Terraform Deployment Plan for Infrastructure**  
 The name of the storage account must to be defined separately because of the different Azure naming validations (no dashes allowed in storage account names). 
 
