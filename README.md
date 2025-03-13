@@ -47,6 +47,13 @@
 
 ---
 
+This diagram shows the Maritime National Single Window (MNSW) system’s data flows and integration with national authorities and international systems. It connects **Fintraffic Digitraffic**, **Portman**, and **MNSW**, facilitating automated (S2S) and manual data exchanges. The system ensures compliance with **EU Regulation 2019/1239**, streamlining maritime reporting across the EU.  
+
+![portman_agent_MNSW_graph.png](assets/portman_agent_MNSW_graph.png)
+Portman Agent project scope has been marked with a red box in the diagram.
+
+---
+
 ## **📌 Local Deployment Instructions**  
 
 ### **📌 Prerequisites**
@@ -220,6 +227,8 @@ Azure functions can be runned in local environment using Azure Functions Core To
 
 - Install [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=macos%2Cisolated-process%2Cnode-v4%2Cpython-v2%2Chttp-trigger%2Ccontainer-apps&pivots=programming-language-python)  
 - Add `local.settings.json` to the project root directory with following content:  
+
+Using Azure Storage Account:
 ```bash
 {
   "IsEncrypted": false,
@@ -229,7 +238,28 @@ Azure functions can be runned in local environment using Azure Functions Core To
   }
 }
 ```
-- Run `func start` at the project root directory  
+**OR** if you want to use local Azure Storage emulator `Azurite`:
+```bash
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python"
+  }
+}
+```
+- The default local storage connection (UseDevelopmentStorage=true) expects Azurite to run on localhost (127.0.0.1:10000)  
+- If you don’t have Azurite installed, install it via npm:
+```bash
+npm install -g azurite
+```
+
+Then, start it manually:
+
+```bash
+azurite --silent &
+```
+- Run `func start` at the project root directory after you have configured `local.settings.json` using Azure Storage or Azurite
 
 ---
 
@@ -240,3 +270,23 @@ Azure functions can be runned in local environment using Azure Functions Core To
 | **CORS settings not applied** | Check with `az functionapp cors show` |
 | **Deployment failed in GitHub Actions** | Go to **Actions → Terraform Deployment → Logs** |
 | **Database connection refused** | Ensure firewall rules allow your IP (`az postgres flexible-server firewall-rule create`) |
+
+## **📌 Architecture Diagram**
+```mermaid
+graph TD;
+    subgraph Azure
+        storage[Storage Account]
+        db[PostgreSQL Database]
+        function[Azure Function App]
+        insights[Application Insights]
+    end
+
+    subgraph FunctionTriggers
+        http[HTTP Trigger] --> function
+        timer[Timer Trigger] --> function
+    end
+
+    function -->|Uses| storage
+    function -->|Reads/Writes Data| db
+    function -->|Sends Logs| insights
+```
