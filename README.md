@@ -49,8 +49,7 @@
 
 This diagram shows the Maritime National Single Window (MNSW) system’s data flows and integration with national authorities and international systems. It connects **Fintraffic Digitraffic**, **Portman**, and **MNSW**, facilitating automated (S2S) and manual data exchanges. The system ensures compliance with **EU Regulation 2019/1239**, streamlining maritime reporting across the EU.  
 
-![portman_agent_kaavio2.png](assets/portman_agent_kaavio2.png)
-
+![portman_agent_MNSW_graph.png](assets/portman_agent_MNSW_graph.png)
 Portman Agent project scope has been marked with a red box in the diagram.
 
 ---
