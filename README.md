@@ -226,6 +226,47 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 Azure functions can be runned in local environment using Azure Functions Core Tools.  
 
 - Install [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=macos%2Cisolated-process%2Cnode-v4%2Cpython-v2%2Chttp-trigger%2Ccontainer-apps&pivots=programming-language-python)  
+- Install Python
+- Setup a virtual environment (venv):  
+
+```
+python3 -m venv .venv
+```
+```
+source .venv/bin/activate  # macOS/Linux
+```
+
+```
+.venv\Scripts\activate      # Windows
+```
+
+Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+- Install local PostgreSQL database  
+- Set the right db-credentials in [config.py](config.py) 
+```
+DATABASE_CONFIG = {
+    "dbname": "portman",
+    "user": "postgres",
+    "password": "your_password",
+    "host": "localhost",
+    "port": 5432
+}
+```
+
+Or set the credentials by environment variables:
+
+```
+export DB_NAME="portman_db"
+export DB_USER="custom_user"
+export DB_PASSWORD="secure_password"
+export DB_HOST="192.168.1.100"
+export DB_PORT="5432"
+```
+
 - Add `local.settings.json` to the project root directory with following content:  
 
 Using Azure Storage Account:
@@ -259,7 +300,10 @@ Then, start it manually:
 ```bash
 azurite --silent &
 ```
-- Run `func start` at the project root directory after you have configured `local.settings.json` using Azure Storage or Azurite
+- Start Azure functions locally: 
+```
+func start
+```
 
 ---
 
