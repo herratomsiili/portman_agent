@@ -222,11 +222,12 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 - Use the GitHub Environment secret value `DB_PASSWORD` or the admin password defined in local deployment process as a Postgres DB password  
 
 ---
-### **Running Azure functions locally**  
+
+## **Running Azure functions locally**  
 Azure functions can be runned in local environment using Azure Functions Core Tools.  
 
 - Install [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=macos%2Cisolated-process%2Cnode-v4%2Cpython-v2%2Chttp-trigger%2Ccontainer-apps&pivots=programming-language-python)  
-- Install Python
+- Install Python (*currently Azure Functions support Python version < 3.13*)
 - Setup a virtual environment (venv):  
 
 ```
@@ -246,27 +247,26 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 - Install local PostgreSQL database  
-- Set the right db-credentials in [config.py](config.py) 
+- Set the right db-credentials by environment variables:  
 ```
-DATABASE_CONFIG = {
-    "dbname": "portman",
-    "user": "postgres",
-    "password": "your_password",
-    "host": "localhost",
-    "port": 5432
-}
-```
+# macOS/Linux:
 
-Or set the credentials by environment variables:
-
-```
 export DB_NAME="portman_db"
 export DB_USER="custom_user"
 export DB_PASSWORD="secure_password"
 export DB_HOST="192.168.1.100"
 export DB_PORT="5432"
 ```
+Or
+```
+# Windows:
 
+set DB_NAME=portman_db
+set DB_USER=custom_user
+set DB_PASSWORD=secure_password
+set DB_HOST=192.168.1.100
+set DB_PORT=5432
+```
 - Add `local.settings.json` to the project root directory with following content:  
 
 Using Azure Storage Account:
