@@ -136,8 +136,7 @@ terraform destroy -var-file=terraform.tfvars \
 ### **📌 Prerequisites**
 Before deploying via **GitHub Actions**, ensure you have:  
 ✅ **Azure User-assigned Managed Identity with Federated GitHub Credentials**  
-- Defined in the same Azure resource group than your infrastructure is deployed 
-- Instructions in [SiiliHub](https://siilihub.atlassian.net/wiki/spaces/SW/pages/4166254596/Azure+CI+CD+authentication#Usage-with-Github-environment)
+- Detailed instructions in [SiiliHub](https://siilihub.atlassian.net/wiki/spaces/SW/pages/4166254596/Azure+CI+CD+authentication#Usage-with-Github-environment)
 
 ✅ **GitHub Actions Secrets/Variables Configured** (For automated deployment)  
 ✅ **Backend Storage for Terraform State** (Azure Storage Account with blob container)  
@@ -159,8 +158,6 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 
 | Variable Name | Description |
 |------------|-------------|
-| **`AZURE_FUNCTIONAPP_NAME`** | Name of the Azure Function App service |
-| **`AZURE_RESOURCE_GROUP`** | Resource Group for Azure resources (needed for deploying the Portman agent function to Azure Function App) |
 | **`NAMING_PREFIX`** | Naming prefix for Azure resources |
 | **`OWNER_TAG`** | The value of the mandatory 'Owner' tag for created Azure resource group |
 
@@ -204,6 +201,29 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 - **If approved, the "Terraform Apply Destroy" job will be launched automatically**  
 
 ✅ **Prevents accidental resource deletion.**  
+
+---
+
+## **📌 Deploy Portman function to Azure Function App via GitHub Actions**  
+
+### **1️⃣ Set Up GitHub Environment Variables**  
+
+| Variable Name | Description |
+|------------|-------------|
+| **`AZURE_FUNCTIONAPP_NAME`** | Name of the Azure Function App service created in infrastructure deployment |
+| **`AZURE_RESOURCE_GROUP`** | Resource Group of the Azure resources created in infrastructure deployment |
+
+---
+
+### **2️⃣ Manually Deploy Specific Environments**  
+#### **🔹 Run Workflow from GitHub Actions UI**  
+- **Go to GitHub Actions → Deploy Python App to Azure Function App**  
+- **Click "Run Workflow"**  
+- **Select Branch (`develop`, `test`, `main`)**  
+- **Select Deployment Environment (`development`, `testing`, `production`)**  
+- **Click "Run workflow"**  
+
+✅ **Terraform will now deploy Portman function to the selected environment.**  
 
 ---
 
