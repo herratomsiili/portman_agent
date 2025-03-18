@@ -160,6 +160,7 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 |------------|-------------|
 | **`NAMING_PREFIX`** | Naming prefix for Azure resources |
 | **`OWNER_TAG`** | The value of the mandatory 'Owner' tag for created Azure resource group |
+| **`STORAGE_ACCOUNT_NAME`** | Name of Azure Storage Account to be created (`NAMING_PREFIX` *can not be used here because there are stricter naming validation rules for Azure storage accounts)* |
 
 ✅ **GitHub Actions will securely use these secrets/vars during deployment.**  
 
@@ -215,7 +216,7 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 
 ---
 
-### **2️⃣ Manually Deploy Specific Environments**  
+### **2️⃣ Manually Deploy to Specific Environment**  
 #### **🔹 Run Workflow from GitHub Actions UI**  
 - **Go to GitHub Actions → Deploy Python App to Azure Function App**  
 - **Click "Run Workflow"**  
