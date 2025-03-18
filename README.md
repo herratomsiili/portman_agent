@@ -207,7 +207,11 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 
 ## **📌 Deploy Portman function to Azure Function App via GitHub Actions**  
 
-### **1️⃣ Set Up GitHub Environment Variables**  
+### **1️⃣ Set Up GitHub Environment Secret/Variables**  
+
+| Secret Name | Description |
+|------------|-------------|
+| **`DB_HOST`** | PostgreSQL Server Host created in infrastructure deployment |
 
 | Variable Name | Description |
 |------------|-------------|
