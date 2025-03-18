@@ -233,18 +233,24 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 ---
 
 ## **📌 Usage**
-**The Portman Agent function URL can be found from:**  
-- Azure Portal -> Function App -> Functions -> PortmanHttpTrigger  
+**There are 2 triggers for Portman Agent function:**  
+- http_trigger: REST API for function  
+- timer_trigger: Scheduled trigger, runs every 15mins  
+
+**The Portman Agent http-function URL can be found from:**  
+- Azure Portal -> Function App -> Functions -> http_trigger  
 - GitHub Actions Deployment log  
 
 **Invoke the Portman Agent function:**  
 - Use the function URL with `code` parameter
 - Define trackable vessels (IMO-numbers separated with comma) with `imo` parameter (optional)  
 
-**Query `voayges` and `arrivals` from Postgres DB:**  
-- Use the GitHub Environment secret value `DB_HOST` as a Postgres DB host  
-- Use the GitHub Environment secret value `DB_USER` as a Postgres DB user  
-- Use the GitHub Environment secret value `DB_PASSWORD` or the admin password defined in local deployment process as a Postgres DB password  
+**Query `voayges` and `arrivals` from Azure PortgreSQL Server:**  
+- Database (`portman`) and tables (`voayges` and `arrivals`) are automatically created by Portman function if they don't exist
+- db-host: Use the endpoint of the deployed Azure PortgreSQL Server as a Postgres DB host, also defined in environment variable `DB_HOST` for Azure Function App service  
+- db-user: Use `adminuser` as a Postgres DB user  
+- db-password: Use the value defined in environment variable `DB_PASSWORD` for Azure Function App service or the admin password defined in local deployment process as a Postgres DB password  
+- db-name: Use `postgres` as a Postgres database name  
 
 ---
 
