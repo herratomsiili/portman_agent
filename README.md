@@ -230,6 +230,24 @@ Destroying infrastructure needs manual approval on created GitHub Issue.
 
 ✅ **Terraform will now deploy Portman function to the selected environment.**  
 
+## **📌 Deploy Portman function to Azure Function App locally via Azure Cli**  
+
+**Set the db-credentials as environment variables (if not set yet) for Azure Function App:**  
+```
+az functionapp config appsettings set \
+  --name <your_function_app_name> \
+  --resource-group <your_resource_group> \
+  --settings \
+    "DB_HOST=<your_postgres_db_host>" \
+    "DB_NAME=portman" \
+    "DB_USER=adminuser" \
+    "DB_PASSWORD=<your_postgres_db_password>"
+```
+**Deploy Python App to Azure Function App via Azure Functions Core Tools:**  
+```
+func azure functionapp publish <your_function_app_name> --python
+```
+
 ---
 
 ## **📌 Usage**
