@@ -33,6 +33,9 @@ module "appservice" {
   naming_prefix          = var.naming_prefix
   storage_account_name   = var.storage_account_name
   ai_instrumentation_key = module.monitoring.ai_instrumentation_key
+  postgresql_fqdn        = module.postgres.postgresql_fqdn
+  admin_username         = module.postgres.admin_username
+  admin_password         = module.postgres.admin_password
 }
 
 module "monitoring" {
