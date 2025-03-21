@@ -391,3 +391,16 @@ graph TD;
     function -->|Reads/Writes Data| db
     function -->|Sends Logs| insights
 ```
+
+---
+
+## Contributors
+- Timo Lehtonen (Siili Solutions Oyj)
+- Tommi Herranen (Siili Solutions Oyj)
+- Ivo Kinnunen (Siili Solutions Oyj)
+- [insert name here] (TAMK)
+- [insert name here] (TAMK)
+- [insert name here] (TAMK)
+- [insert name here] (TAMK)
+
+---
