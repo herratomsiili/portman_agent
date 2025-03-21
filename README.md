@@ -372,6 +372,11 @@ graph TD;
         db[PostgreSQL Database]
         function[Azure Function App]
         insights[Application Insights]
+        dab[DAB - Azure Container App]
+    end
+
+    subgraph External
+      user[Browser / Client App]
     end
 
     subgraph FunctionTriggers
@@ -379,6 +384,9 @@ graph TD;
         timer[Timer Trigger] --> function
     end
 
+    user -->|Calls REST/GraphQL| dab
+    dab -->|Reads Data| db
+    dab -->|Sends Logs| insights
     function -->|Uses| storage
     function -->|Reads/Writes Data| db
     function -->|Sends Logs| insights
