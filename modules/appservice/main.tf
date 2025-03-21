@@ -35,4 +35,11 @@ resource "azurerm_linux_function_app" "function_app" {
       allowed_origins = ["*"]
     }
   }
+
+  app_settings = {
+    DB_HOST     = var.postgresql_fqdn
+    DB_USER     = var.admin_username
+    DB_PASSWORD = var.admin_password
+    DB_NAME     = "portman"
+  }
 }

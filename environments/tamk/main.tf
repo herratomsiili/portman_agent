@@ -30,5 +30,5 @@ output "dab_container_app_url" {
 
 # Load environment-specific variables
 variable "environment" {
-  default = "development"
+  default = "tamk"
 }

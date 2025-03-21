@@ -22,3 +22,18 @@ variable "ai_instrumentation_key" {
   description = "Instrumentation key of the Application Insights resource"
   type        = string
 }
+
+variable "postgresql_fqdn" {
+  description = "PostgreSQL Fully Qualified Domain Name"
+  type        = string
+}
+
+variable "admin_username" {
+  description = "PostgreSQL Admin User"
+  type        = string
+}
+
+variable "admin_password" {
+  description = "PostgreSQL Admin Password"
+  type        = string
+}
