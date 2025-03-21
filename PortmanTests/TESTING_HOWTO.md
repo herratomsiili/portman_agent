@@ -74,20 +74,27 @@ Now you have a database "portman" with a table "voyages" and a table "arrivals" 
 # If quick start didn't work:
 
 ## List installed python versions
+```bash
 py -0
+```
+
 
 ## Initialize the virtual environment with a different value (optional, if python version is lower than 3.13 and higher than 3.9)
-py -3.12 -m venv myenv
+```bash
+`py -3.12 -m venv myenv`
+```
 
-## Start (activate lol) the initialized virtual environment
+## Activate the initialized virtual environment
+```bash
 .venv\Scripts\activate
+```
 
 ### 1. Install required packages/libraries needed for testing:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. After installing the required packages, run the following command to execute ONE (1) test case, for example testing database connection:
+### 2. After installing the required packages, run the following command to execute ONE (1) test case for example testing database connection:
 #### (Note: You can replace the test case name with any other test case name)
 #### (Note: You need to have a local PostgreSQL database running on your machine to run this test case)
 ```bash
