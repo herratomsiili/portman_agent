@@ -10,7 +10,15 @@
     },
     "graphql": {
       "enabled": true,
-      "path": "/graphql"
+      "path": "/graphql",
+      "allow-introspection": true
+    },
+    "host": {
+      "cors": {
+        "origins": ["*"],
+        "allow-credentials": false
+      },
+      "mode": "development"
     }
   },
   "entities": {

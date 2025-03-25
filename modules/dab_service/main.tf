@@ -109,21 +109,20 @@ resource "azurerm_container_app" "dab_cont" {
   template {
     container {
       name   = "dab"
-      image  = "mcr.microsoft.com/azure-databases/data-api-builder:0.10.21"
+      image  = "mcr.microsoft.com/azure-databases/data-api-builder:0.11.132"
       cpu    = "0.5" # Minimum: 0.25, Recommended: 0.5 or 1.0
       memory = "1Gi" # Minimum: 0.5Gi, Recommended: 1Gi or more
 
       args = ["--ConfigFileName=./dab-config/dab-config.json"]
-      #args = ["-e", "DAB_CONFIG_PATH=/App/dab-config/dab-config.json"]
-
-      env {
-        name  = "DAB_CONFIG_PATH"
-        value = "/App/dab-config/dab-config.json"
-      }
 
       env {
         name  = "DATABASE_CONNECTION_STRING"
         value = var.database_connection_string
+      }
+
+      env {
+        name  = "DAB_ENVIRONMENT"
+        value = "Development"
       }
 
       volume_mounts {
