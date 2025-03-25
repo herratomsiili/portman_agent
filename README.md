@@ -279,11 +279,11 @@ func azure functionapp publish <your_function_app_name> --python
 - Url for DAB/APIs can be copied from Azure Portal -> Container App (DAB) -> Application Url, for example:
   - https://<AZURE_CONTAINER_APP_NAME>.<RANDOM_PART>.<AZURE_LOCATION>.azurecontainerapps.io
 - Swagger-UI and Graphql playground available at `/swagger` and `/graphql`
-- REST endpoints support the following query parameters (case sensitive) to control the returned items:
+- REST endpoints support the following [OData query parameters](https://learn.microsoft.com/en-us/azure/data-api-builder/rest?WT.mc_id=DT-MVP-5005050#query-parameters) (case sensitive) to control the returned items:
   - $select: returns only the selected columns
   - $filter: filters the returned items
   - $orderby: defines how the returned data is sorted
-  - $first and $after: returns only the top n items
+  - $first and $after: for pagination, returns only the top n items
 - REST-api usage example:
 ```
 GET https://<AZURE_CONTAINER_APP_NAME>.<RANDOM_PART>.<AZURE_LOCATION>.azurecontainerapps.io/api/arrivals?$select=portcallid,vesselname,ata&$filter=vesselname eq 'Finnsea'
@@ -293,7 +293,7 @@ GET https://<AZURE_CONTAINER_APP_NAME>.<RANDOM_PART>.<AZURE_LOCATION>.azureconta
 curl -L 'https://<AZURE_CONTAINER_APP_NAME>.<RANDOM_PART>.<AZURE_LOCATION>.azurecontainerapps.io/graphql' \
 -H 'Content-Type: application/json' \
 -d '{
-  "query": "{ arrivals(first: 10) { items { portcallid created vesselname ata } endCursor hasNextPage } }"
+  "query": "{ arrivals(first: 5) { items { portcallid vesselname ata } endCursor hasNextPage } }"
 }'
 ```
 - OpenAPI document available at endpoint `/openapi`
