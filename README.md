@@ -296,6 +296,7 @@ curl -L 'https://<AZURE_CONTAINER_APP_NAME>.<RANDOM_PART>.<AZURE_LOCATION>.azure
   "query": "{ arrivals(first: 10) { items { portcallid created vesselname ata } endCursor hasNextPage } }"
 }'
 ```
+- OpenAPI document available at endpoint `/openapi`
 ---
 
 ## **Running Azure functions locally**  
