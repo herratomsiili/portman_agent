@@ -31,7 +31,7 @@ resource "azurerm_storage_share" "dab_config_share" {
 resource "azurerm_storage_share_file" "dab_config_json" {
   name             = "dab-config.json"
   storage_share_id = azurerm_storage_share.dab_config_share.id
-  source           = "${path.module}/dab-config.json" # Ensure file exists locally
+  source_content   = file("${path.module}/dab-config.json") # Track changes to file and update to file share if necessary
 }
 
 #resource "azurerm_linux_web_app" "dab_app" {
