@@ -251,6 +251,8 @@ func azure functionapp publish <your_function_app_name> --python
 ---
 
 ## **📌 Usage**
+
+### **Portman Agent function**
 **There are 2 triggers for Portman Agent function:**  
 - http_trigger: REST API for function  
 - timer_trigger: Scheduled trigger, runs every 15mins  
@@ -262,14 +264,39 @@ func azure functionapp publish <your_function_app_name> --python
 **Invoke the Portman Agent function:**  
 - Use the function URL with `code` parameter
 - Define trackable vessels (IMO-numbers separated with comma) with `imo` parameter (optional)  
-
+---
+### **PostgreSQL Database**
 **Query `voayges` and `arrivals` from Azure PortgreSQL Server:**  
 - Database (`portman`) and tables (`voayges` and `arrivals`) are automatically created by Portman function if they don't exist
-- db-host: Use the endpoint of the deployed Azure PortgreSQL Server as a Postgres DB host, also defined in environment variable `DB_HOST` for Azure Function App service  
-- db-user: Use `adminuser` as a Postgres DB user  
-- db-password: Use the value defined in environment variable `DB_PASSWORD` for Azure Function App service or the admin password defined in local deployment process as a Postgres DB password  
-- db-name: Use `postgres` as a Postgres database name  
-
+- db-host: Use the endpoint of the deployed Azure PortgreSQL Server as a Postgres DB host, also defined in environment variable `DB_HOST` for Azure Function App service
+- db-user: Use `adminuser` as a Postgres DB user
+- db-password: Use the value defined in environment variable `DB_PASSWORD` for Azure Function App service or the admin password defined in local deployment process as a Postgres DB password
+- db-name: Use `postgres` as a Postgres database name
+---
+### **REST/Graphql APIs published via DAB**
+**Data API Builder (DAB) is deployed as a Azure Container App:**  
+- Rest and Graphql APIs with read-operations for both `voayges` and `arrivals` are automatically published by DAB
+- Url for DAB/APIs can be copied from Azure Portal -> Container App (DAB) -> Application Url, for example:
+  - https://<AZURE_CONTAINER_APP_NAME>.<RANDOM_PART>.<AZURE_LOCATION>.azurecontainerapps.io
+- Swagger-UI and Graphql playground available at `/swagger` and `/graphql`
+- REST endpoints support the following [OData query parameters](https://learn.microsoft.com/en-us/azure/data-api-builder/rest?WT.mc_id=DT-MVP-5005050#query-parameters) (case sensitive) to control the returned items:
+  - $select: returns only the selected columns
+  - $filter: filters the returned items
+  - $orderby: defines how the returned data is sorted
+  - $first and $after: for pagination, returns only the top n items
+- REST-api usage example:
+```
+GET https://<AZURE_CONTAINER_APP_NAME>.<RANDOM_PART>.<AZURE_LOCATION>.azurecontainerapps.io/api/arrivals?$select=portcallid,vesselname,ata&$filter=vesselname eq 'Finnsea'
+```
+- Graphql usage example (curl):
+```
+curl -L 'https://<AZURE_CONTAINER_APP_NAME>.<RANDOM_PART>.<AZURE_LOCATION>.azurecontainerapps.io/graphql' \
+-H 'Content-Type: application/json' \
+-d '{
+  "query": "{ arrivals(first: 5) { items { portcallid vesselname ata } endCursor hasNextPage } }"
+}'
+```
+- OpenAPI document available at endpoint `/openapi`
 ---
 
 ## **Running Azure functions locally**  
@@ -392,15 +419,4 @@ graph TD;
     function -->|Sends Logs| insights
 ```
 
----
-
-## Contributors
-- Timo Lehtonen (Siili Solutions Oyj)
-- Tommi Herranen (Siili Solutions Oyj)
-- Ivo Kinnunen (Siili Solutions Oyj) 
-- [insert name here] (TAMK)
-- [insert name here] (TAMK)
-- [insert name here] (TAMK)
-- [insert name here] (TAMK)
-
----
+John Doe was here.
