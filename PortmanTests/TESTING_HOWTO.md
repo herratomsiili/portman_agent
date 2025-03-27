@@ -79,32 +79,72 @@ py -0
 ```
 
 
-## Initialize the virtual environment with a different value (optional, if python version is lower than 3.13 and higher than 3.9)
+# New (26.3.2025) version of Portman Agent testing package
+
+### Run the following command to install the new version of the package:
+
+#### Check which Python version is activated (need to be Python version 3.12):
 ```bash
-`py -3.12 -m venv myenv`
+# List installed python versions
+py -0
+```
+#### Select the Python version 3.12 & initialize the virtual environment:
+```bash
+py -3.12 -m venv myenv
 ```
 
-## Activate the initialized virtual environment
-Unix:
+#### Activate the virtual environment:
 ```bash
-.myenv\Scripts\activate
+myenv/Scripts/activate
 ```
-Windows:
+or if you have Windows:
 ```powershell
 .\myenv\Scripts\activate
 ```
 
-
-### 1. Install required packages/libraries needed for testing:
+#### Install the new version of the package:
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
+if you encounter any issues, try to install the package directly from the repository:
+```bash
+pip install -e ".[dev]"
+```
+or
+#### Install the required/missing packages by hand:
+```bash
+# for example:
+pip install pyscopg2
+```
+#### some times it is necessary to update `pip` with the following command(s):
+```bash
+pip install --upgrade pip
+```
+or
+```bash
+python3.exe -m pip install --upgrade pip
+```
+
+---  
+
+## Running the tests:
+
+#### Run all tests:
+```bash
+pytest PortmanTests/tests/ -v
+```
+Windows:
+```powershell
+pytest .\PortmanTests\tests\ -v
+```
+
 
 ### 2. After installing the required packages, run the following command to execute ONE (1) test case for example testing database connection:
 #### (Note: You can replace the test case name with any other test case name)
 #### (Note: You need to have a local PostgreSQL database running on your machine to run this test case)
 ```bash
-pytest PortmanTests/test_portman_mock_db.py::TestPortman::test_get_db_connection -v
+#pytest PortmanTests/test_portman_mock_db.py::TestPortman::test_get_db_connection -v
+pytest .
 ```
 
 ## 3. For running all the test cases, run the following command:
@@ -119,5 +159,5 @@ pytest --collect-only -v
 
 ## 5. For running all the test cases and generating a report, run the following command:
 ```bash
-pytest PortmanTests/test_portman_mock_db.py -v --html=report.html
+#pytest PortmanTests/test_portman_mock_db.py -v --html=report.html
 ```
