@@ -70,7 +70,7 @@ class EMSWeConverter:
         Returns:
             Tuple containing (success, output_path_or_error)
         """
-        print("ASDASDASDASDDSDADASD\n##################\n###################")
+
         try:
             # Transform data to EMSWe XML
             xml_root = self.transformer.portman_to_emswe(portman_data, self.formality_type)

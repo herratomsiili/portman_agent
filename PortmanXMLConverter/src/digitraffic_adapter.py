@@ -21,31 +21,20 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
         Dictionary in Portman format suitable for EMSWe conversion
     """
     try:
-        # Extract basic port call information
+        # Basic port call information
         port_call_id = digitraffic_data.get("portCallId", "unknown")
         vessel_name = digitraffic_data.get("vesselName", "unknown")
         imo_lloyds = digitraffic_data.get("imoLloyds", "unknown")
 
-        # Extract port area details
-        port_area_details = digitraffic_data.get("portAreaDetails", [{}])
-        first_area = port_area_details[0] if port_area_details else {}
+        # Arrival information
+        eta = digitraffic_data.get("eta")
+        ata = digitraffic_data.get("ata")
+        port_area_name = digitraffic_data.get("portAreaName", "unknown")
+        berth_name = digitraffic_data.get("berthName", "unknown")
 
-        # Extract arrival information
-        eta = first_area.get("eta")
-        ata = first_area.get("ata")
-        port_area_name = first_area.get("portAreaName", "unknown")
-        berth_name = first_area.get("berthName", "unknown")
-
-        # Extract agent information
-        agent_info = digitraffic_data.get("agentInfo", [])
-        agent_name = None
-        shipping_company = None
-
-        for agent in agent_info:
-            if agent.get("role") == 1:
-                agent_name = agent.get("name")
-            elif agent.get("role") == 2:
-                shipping_company = agent.get("name")
+        # Agent information
+        agent_name = digitraffic_data.get("agentName", "unknown")
+        shipping_company = digitraffic_data.get("shippingCompany", "unknown")
 
         # Create portman data structure with required fields for EMSWe conversion
         portman_data = {

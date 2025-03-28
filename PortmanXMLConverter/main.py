@@ -10,18 +10,21 @@ import sys
 import json
 import argparse
 import logging
+import datetime
 from typing import Dict, Any
 
-from src.converter import EMSWeConverter
-from digitraffic_adapter import adapt_digitraffic_to_portman
+from PortmanXMLConverter.src.converter import EMSWeConverter
+from PortmanXMLConverter.src.digitraffic_adapter import adapt_digitraffic_to_portman
+import azure.functions as func
+from azure.storage.blob import BlobServiceClient
+from config import AZURE_STORAGE_CONFIG
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger(__name__)
-
+logger = logging.getLogger('PortmanXMLConverter')
 
 def parse_arguments():
     """Parse command-line arguments."""
@@ -257,25 +260,99 @@ def convert_from_digitraffic(args):
             print(result)
 
         return 0
+    
+def convert_from_portcall_data(portcall_data, xml_type=None):
+    """Convert Digitraffic port call data to EMSWe XML."""
+    # Read JSON file
+    converter = EMSWeConverter(formality_type=xml_type)
 
-
-def main():
-    """Main entry point."""
-    args = parse_arguments()
-
-    if args.command == "validate":
-        return validate_xml(args)
-    elif args.command == "from-emswe":
-        return convert_from_emswe(args)
-    elif args.command == "to-emswe":
-        return convert_to_emswe(args)
-    elif args.command == "from-digitraffic":
-        return convert_from_digitraffic(args)
+    # Process single port call (either the whole file or the first port call)
+    if isinstance(portcall_data, dict) and "portCalls" in portcall_data and portcall_data["portCalls"]:
+        port_call = portcall_data["portCalls"][0]
+        logger.info(f"Processing first port call from a list of {len(portcall_data['portCalls'])} port calls")
+        print(f"Processing first port call from a list of {len(portcall_data['portCalls'])} port calls")
     else:
-        print("No command specified. Use --help for usage information.")
-        return 1
+        port_call = portcall_data
 
+    # Adapt Digitraffic data to Portman format
+    portman_data = adapt_digitraffic_to_portman(port_call)
 
-if __name__ == "__main__":
-    sys.exit(main())
+    # Generate a unique filename
+    port_call_id = portcall_data.get('portCallId')
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    filename = f"arrival_{port_call_id}_{timestamp}.xml"
 
+    # Convert to EMSWe XML
+    success, result = converter.convert_to_emswe(portman_data)
+
+    if not success:
+        logger.error(f"Conversion failed: {result}")
+        print(f"Conversion failed: {result}")
+        return None
+
+    # Get storage connection string from app settings
+    connection_string = AZURE_STORAGE_CONFIG["connection_string"]
+    container_name = AZURE_STORAGE_CONFIG["container_name"]
+    
+    if (not connection_string or not container_name):
+        logger.info("Storage connection string or container name not found")
+        #logger.info(f"Generated XML file:\n{result}")
+        #print("Storage connection string or container name not found")
+        logger.info(result)
+        #print(f"Generated XML file:\n{result}")
+        return None
+
+    # Connect to blob storage
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    container_client = blob_service_client.get_container_client(container_name)
+    
+    # Create container if it doesn't exist
+    if not container_client.exists():
+        container_client.create_container()
+    
+    # Upload XML to Blob Storage
+    blob_client = container_client.get_blob_client(filename)
+    blob_client.upload_blob(result, overwrite=True)
+    
+    # Return success response with the blob URL
+    blob_url = blob_client.url
+
+    return blob_url
+
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Portman XML converter function processing a request')
+    try:
+        req_body = req.get_json()
+            
+        if not req_body or 'portcall_data' not in req_body:
+            return func.HttpResponse(
+                "Please pass portcall_data in the request body",
+                status_code=400
+            )
+        
+        portcall_data = req_body.get('portcall_data')
+        formality_type = req_body.get('formality_type')
+        blob_url = convert_from_portcall_data(portcall_data, formality_type)
+
+        # The condition is reversed - when blob_url is None, (not blob_url) is True
+        # So we're correctly entering this block when blob_url is None
+        if blob_url is None:
+            return func.HttpResponse(
+                json.dumps({"status": "success", "message": "XML generated but not stored"}),
+                mimetype="application/json",
+                status_code=200
+            )
+        # This else block only executes when blob_url is not None
+        else:
+            return func.HttpResponse(
+                json.dumps({"status": "success", "message": "XML generated and stored successfully", "url": blob_url}),
+                mimetype="application/json",
+                status_code=200
+            )
+    except Exception as e:
+        logging.error(f"Error processing arrival data: {str(e)}")
+        return func.HttpResponse(
+            json.dumps({"status": "error", "message": str(e)}),
+            mimetype="application/json", 
+            status_code=500
+        )
