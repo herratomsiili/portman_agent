@@ -3,6 +3,7 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
+azure-storage-blob
 asn1crypto==1.5.1
 certifi==2025.1.31
 charset-normalizer==3.4.1

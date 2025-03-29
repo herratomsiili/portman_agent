@@ -8,3 +8,14 @@ DATABASE_CONFIG = {
     "host": os.getenv("DB_HOST", "127.0.0.1"),
     "port": int(os.getenv("DB_PORT", 5432))
 }
+
+# Default Azure Storage settings
+AZURE_STORAGE_CONFIG = {
+    "connection_string": os.getenv("AzureWebJobsStorage"),
+    "container_name": os.getenv("AZURE_STORAGE_CONTAINER_NAME", "emswe-xml-messages"),
+}
+
+XML_CONVERTER_CONFIG = {
+    "function_url": os.getenv("XML_CONVERTER_FUNCTION_URL", "http://localhost:7071/api/emswe-xml-converter"),
+    "function_key": os.getenv("XML_CONVERTER_FUNCTION_KEY", "")
+}
