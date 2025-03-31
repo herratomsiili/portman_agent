@@ -65,7 +65,8 @@ jobs:
             DB_HOST=${{ secrets.DB_HOST }} \
             DB_NAME=${{ env.DB_NAME }} \
             DB_USER=${{ env.DB_USER }} \
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            XML_CONVERTER_FUNCTION_URL=https://${{ vars.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net/api/emswe-xml-converter?code=${{ secrets.XML_CONVERTER_FUNCTION_KEY }}
 
       # Deploy to Azure
       - name: Run Azure Functions Action

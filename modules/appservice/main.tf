@@ -28,7 +28,7 @@ resource "azurerm_linux_function_app" "function_app" {
     application_insights_key = var.ai_instrumentation_key
 
     application_stack {
-      python_version = "3.11"
+      python_version = "3.12"
     }
 
     cors {

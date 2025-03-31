@@ -37,7 +37,7 @@ class EMSWeConverter:
         self.transformer = XMLTransformer()
 
         # Ensure output directory exists
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        #os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     def validate_xml(self, xml_file_path: str) -> Tuple[bool, str]:
         """

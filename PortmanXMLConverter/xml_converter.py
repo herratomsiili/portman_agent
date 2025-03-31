@@ -319,7 +319,7 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
 
     return blob_url
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
+def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Portman XML converter function processing a request')
     try:
         req_body = req.get_json()

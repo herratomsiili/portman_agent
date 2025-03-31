@@ -26,7 +26,7 @@ class XMLTransformer:
         self.parser = XMLParser()
 
         # Ensure output directory exists
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        #os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     def portman_to_emswe(self, portman_data: Dict[str, Any], formality_type: str = "ATA") -> Optional[etree._Element]:
         """

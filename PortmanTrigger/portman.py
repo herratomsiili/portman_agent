@@ -471,6 +471,8 @@ def createArrivalXml(arrival_data):
             else:
                 xml_converterfunction_url += f"?code={xml_converter_function_key}"
         
+        log(f"Calling xml-converter: {xml_converterfunction_url}")
+
         # Send the arrival data to the function
         response = requests.post(
             xml_converterfunction_url,
@@ -481,7 +483,7 @@ def createArrivalXml(arrival_data):
         if response.status_code == 200:
             log(f"XML for portCallId {arrival_data['portCallId']} successfully generated and stored. URL: {response.json().get('url')}")
         else:
-            log(f"Error with XML generation/storage for portCallId {arrival_data['portCallId']}: {response.text}")
+            log(f"Error with XML generation/storage for portCallId {arrival_data['portCallId']}: {response}")
             
     except Exception as e:
         log(f"Error triggering XML function for portCallId {arrival_data['portCallId']}: {str(e)}")
