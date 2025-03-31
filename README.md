@@ -419,5 +419,15 @@ graph TD;
     function -->|Sends Logs| insights
 ```
 
-John Doe was here.
-Kasperi "kukkis" kukkamäki
+---
+
+## Contributors
+- Timo Lehtonen (Siili Solutions Oyj)
+- Tommi Herranen (Siili Solutions Oyj)
+- Ivo Kinnunen (Siili Solutions Oyj)
+- [insert name here] (TAMK)
+- [insert name here] (TAMK)
+- [insert name here] (TAMK)
+- [insert name here] (TAMK)
+
+---
