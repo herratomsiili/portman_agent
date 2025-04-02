@@ -280,7 +280,7 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     # Generate a unique filename
     port_call_id = portcall_data.get('portCallId')
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    filename = f"arrival_{port_call_id}_{timestamp}.xml"
+    filename = f"ATA_{port_call_id}_{timestamp}.xml"
 
     # Convert to EMSWe XML
     success, result = converter.convert_to_emswe(portman_data)
