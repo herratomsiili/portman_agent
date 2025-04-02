@@ -22,7 +22,7 @@ permissions:
 
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION: "3.12"
   DB_NAME: "portman"
   DB_USER: "adminuser"
 
