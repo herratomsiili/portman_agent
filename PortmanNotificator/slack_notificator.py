@@ -8,6 +8,11 @@ import xml.etree.ElementTree as ET
 def blob_trigger(blob: func.InputStream):
     logging.info(f"Python blob trigger function processed blob: {blob.name}")
     
+    if not os.environ.get("SLACK_WEBHOOK_ENABLED"):
+        logging.info("Slack webhook is disabled, skipping notification")
+        return
+
+    channel = os.environ.get("SLACK_CHANNEL")
     try:
         # Read the blob content
         blob_content = blob.read().decode('utf-8')
@@ -16,14 +21,14 @@ def blob_trigger(blob: func.InputStream):
         port_call_id, ata = extract_info_from_xml(blob_content)
         
         # Send notification to Slack with XML content
-        send_slack_notification(blob.name, port_call_id, ata, blob_content)
+        send_slack_notification(blob.name, port_call_id, ata, blob_content, channel)
         
         logging.info(f"Successfully processed and notified about arrival {port_call_id}")
     
     except Exception as e:
         logging.error(f"Error processing blob {blob.name}: {str(e)}")
         # Send error notification to Slack
-        send_slack_error(blob.name, str(e))
+        send_slack_error(blob.name, str(e), channel)
 
 def extract_info_from_xml(xml_content):
     """Extract portCallId and ATA from the XML."""
@@ -52,7 +57,7 @@ def extract_info_from_xml(xml_content):
         logging.error(f"Error parsing XML: {str(e)}")
         return "Unknown", "Unknown"
 
-def send_slack_notification(blob_name, port_call_id, ata, xml_content):
+def send_slack_notification(blob_name, port_call_id, ata, xml_content, channel):
     """Send a notification to Slack about the new arrival XML."""
     webhook_url = os.environ["SLACK_WEBHOOK_URL"]
     
@@ -60,7 +65,6 @@ def send_slack_notification(blob_name, port_call_id, ata, xml_content):
     formatted_xml = format_xml_for_display(xml_content, max_length=2500)
     
     logging.info(f"Sending Slack notification with webhook url {webhook_url} for {blob_name} with port_call_id {port_call_id} and ata {ata}")
-    channel = os.environ.get("SLACK_CHANNEL", "@tommi.herranen")
 
     # Create a message for Slack with XML content
     message = {
@@ -92,6 +96,10 @@ def send_slack_notification(blob_name, port_call_id, ata, xml_content):
             }
         ]
     }
+
+    # Only add channel if it was provided
+    if channel:
+        message["channel"] = channel
     
     # Send the message to Slack
     response = requests.post(
@@ -125,11 +133,12 @@ def format_xml_for_display(xml_content, max_length=2500):
             return xml_content[:max_length] + "\n... (truncated)"
         return xml_content
 
-def send_slack_error(blob_name, error_message):
+def send_slack_error(blob_name, error_message, channel):
     """Send an error notification to Slack."""
     webhook_url = os.environ["SLACK_WEBHOOK_URL"]
     
     message = {
+        "channel": channel,
         "blocks": [
             {
                 "type": "section",
