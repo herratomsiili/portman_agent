@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:qdt="urn:un:unece:uncefact:data:Standard:QualifiedDataType:30"
+    xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
+    targetNamespace="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30"
+    elementFormDefault="qualified"
+    version="30.0">
+  <xs:import namespace="urn:un:unece:uncefact:data:Standard:QualifiedDataType:30" schemaLocation="ATA_Envelope_QualifiedDataType_30p0.xsd"/>
+  <xs:import namespace="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100" schemaLocation="ATA_Envelope_UnqualifiedDataType_100pD22B.xsd"/>
+  <xs:complexType name="DocumentAuthenticationType">
+    <xs:annotation>
+      <xs:documentation>Document Authentication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Document_ Authentication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ActualDateTime" type="udt:DateTimeType">
+        <xs:annotation>
+          <xs:documentation>Actual Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Document_ Authentication. Actual. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DocumentAuthenticationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Document Authentication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Document_ Authentication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ActualDateTime" type="udt:DateTimeType">
+        <xs:annotation>
+          <xs:documentation>DE-002-02 Authentication date time</xs:documentation>
+          <xs:documentation>RE-002-02 Authentication date time</xs:documentation>
+          <xs:documentation>Actual Date Time</xs:documentation>
+          <xs:documentation>DE-002-02 Authentication date time</xs:documentation>
+          <xs:documentation>RE-002-02 Authentication date time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDeclarationType">
+    <xs:annotation>
+      <xs:documentation>Exchanged Declaration</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Declaration. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Declaration. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CustomsAssignedID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Customs Assigned Identifier</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Declaration. Customs Assigned_ Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DeclarantTradeParty" type="ram:TradePartyType">
+        <xs:annotation>
+          <xs:documentation>Declarant</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Declaration. Declarant. Trade_ Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDeclarationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Exchanged Declaration</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Declaration. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-002-09 LRN</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-002-09 LRN</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CustomsAssignedID" type="udt:IDTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-002-13 MRN</xs:documentation>
+          <xs:documentation>Customs Assigned Identifier</xs:documentation>
+          <xs:documentation>DE-002-13 MRN</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DeclarantTradeParty" type="ram:TradePartyTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>Declarant</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDocumentType">
+    <xs:annotation>
+      <xs:documentation>Exchanged Document</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Document. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TypeCode" type="qdt:FormalityTypesCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Remarks" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Remark</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Remarks. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PurposeCode" type="qdt:MessageFunctionCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Purpose Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Purpose. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="VersionID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Version ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Version_ Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FirstSignatoryDocumentAuthentication" type="ram:DocumentAuthenticationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>First Signatory Authentication</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. First_ Signatory. Document_ Authentication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDocumentTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Exchanged Document</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Document. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-002-07 Message identifier</xs:documentation>
+          <xs:documentation>RE-002-06 Message identifier</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-002-07 Message identifier</xs:documentation>
+          <xs:documentation>RE-002-06 Message identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TypeCode" type="qdt:FormalityTypesCodeTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-002-03 Formality type, coded</xs:documentation>
+          <xs:documentation>DE-002-03 Formality type, coded</xs:documentation>
+          <xs:documentation>Type Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PurposeCode" type="qdt:MessageFunctionCodeTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-002-08 Message function, coded</xs:documentation>
+          <xs:documentation>RE-002-07 Message function, coded</xs:documentation>
+          <xs:documentation>Purpose Code</xs:documentation>
+          <xs:documentation>DE-002-08 Message function, coded</xs:documentation>
+          <xs:documentation>RE-002-07 Message function, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="VersionID" type="udt:IDTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>DE-002-10 Version</xs:documentation>
+          <xs:documentation>RE-002-08 Version</xs:documentation>
+          <xs:documentation>Version ID</xs:documentation>
+          <xs:documentation>DE-002-10 Version</xs:documentation>
+          <xs:documentation>RE-002-08 Version</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FirstSignatoryDocumentAuthentication" type="ram:DocumentAuthenticationTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>First Signatory Authentication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDocumentTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Exchanged Document</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Document. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Remarks" type="udt:TextTypeValidationVersion_4">
+        <xs:annotation>
+          <xs:documentation>DE-003-01 Remarks</xs:documentation>
+          <xs:documentation>RE-003-01 Remarks</xs:documentation>
+          <xs:documentation>DE-014-08 Security, other matters to report</xs:documentation>
+          <xs:documentation>Remark</xs:documentation>
+          <xs:documentation>DE-003-01 Remarks</xs:documentation>
+          <xs:documentation>RE-003-01 Remarks</xs:documentation>
+          <xs:documentation>DE-014-08 Security, other matters to report</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationType">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Location. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-015-06 Actual first location</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-015-06 Actual first location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsTransportMovementType">
+    <xs:annotation>
+      <xs:documentation>Logistics Transport Movement</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Transport Movement. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ArrivalTransportEvent" type="ram:TransportEventType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Arrival Event</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Arrival. Transport_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CallTransportEvent" type="ram:TransportEventType">
+        <xs:annotation>
+          <xs:documentation>Call Event</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Call. Transport_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsTransportMovementTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Logistics Transport Movement</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Transport Movement. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CallTransportEvent" type="ram:TransportEventTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>Call Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsTransportMovementTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Logistics Transport Movement</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Transport Movement. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ArrivalTransportEvent" type="ram:TransportEventTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Arrival Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CallTransportEvent" type="ram:TransportEventTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>Call Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeAddressType">
+    <xs:annotation>
+      <xs:documentation>Trade Address</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Address. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PostcodeCode" type="udt:CodeType">
+        <xs:annotation>
+          <xs:documentation>Postcode</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Postcode. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostOfficeBox" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Post Office Box</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Post Office Box. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="StreetName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Street Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Street Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CityName" type="udt:TextType">
+        <xs:annotation>
+          <xs:documentation>City Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. City Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountryID" type="qdt:CountryIDType">
+        <xs:annotation>
+          <xs:documentation>Country Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Country. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountrySubDivisionName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Country Sub-Division Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Country Sub-Division Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BuildingNumber" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Building Number</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Building Number. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AdditionalStreetName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Additional Street Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Additional_ Street Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeAddressTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Trade Address</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Address. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PostcodeCode" type="udt:CodeTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-004-12 Declarant address postal code</xs:documentation>
+          <xs:documentation>Postcode</xs:documentation>
+          <xs:documentation>DE-004-12 Declarant address postal code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostOfficeBox" type="udt:TextTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-09 Declarant address P.O. box</xs:documentation>
+          <xs:documentation>Post Office Box</xs:documentation>
+          <xs:documentation>DE-004-09 Declarant address P.O. box</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="StreetName" type="udt:TextTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-06 Declarant address street</xs:documentation>
+          <xs:documentation>Street Name</xs:documentation>
+          <xs:documentation>DE-004-06 Declarant address street</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CityName" type="udt:TextTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>DE-004-13 Declarant address city</xs:documentation>
+          <xs:documentation>City Name</xs:documentation>
+          <xs:documentation>DE-004-13 Declarant address city</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountryID" type="qdt:CountryIDTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-004-11 Declarant address country</xs:documentation>
+          <xs:documentation>Country Code</xs:documentation>
+          <xs:documentation>DE-004-11 Declarant address country</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountrySubDivisionName" type="udt:TextTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-10 Declarant address sub-division</xs:documentation>
+          <xs:documentation>Country Sub-Division Name</xs:documentation>
+          <xs:documentation>DE-004-10 Declarant address sub-division</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BuildingNumber" type="udt:TextTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-08 Declarant address number</xs:documentation>
+          <xs:documentation>Building Number</xs:documentation>
+          <xs:documentation>DE-004-08 Declarant address number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AdditionalStreetName" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-07 Declarant address street additional line</xs:documentation>
+          <xs:documentation>Additional Street Name</xs:documentation>
+          <xs:documentation>DE-004-07 Declarant address street additional line</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeContactType">
+    <xs:annotation>
+      <xs:documentation>Trade Contact</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Contact. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PersonName" type="udt:TextType">
+        <xs:annotation>
+          <xs:documentation>Person Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Person Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationType">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Telephone. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationType">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Email_ URI. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeContactTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Trade Contact</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Contact. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PersonName" type="udt:TextTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-004-14 Declarant, Contact person: Name</xs:documentation>
+          <xs:documentation>Person Name</xs:documentation>
+          <xs:documentation>DE-004-14 Declarant, Contact person: Name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradePartyType">
+    <xs:annotation>
+      <xs:documentation>Trade Party</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Party. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RoleCode" type="qdt:PartyRoleCodeType">
+        <xs:annotation>
+          <xs:documentation>Role Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Role. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DefinedTradeContact" type="ram:TradeContactType" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Defined Contact Details</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Defined. Trade_ Contact</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostalTradeAddress" type="ram:TradeAddressType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Postal Address</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Postal. Trade_ Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationType" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Telephone. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationType" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Email_ URI. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradePartyTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Trade Party</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Party. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>DE-004-01 Declarant identification number</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-004-01 Declarant identification number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-02 Declarant name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-004-02 Declarant name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RoleCode" type="qdt:PartyRoleCodeTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-004-03 Declarant role, coded</xs:documentation>
+          <xs:documentation>Role Code</xs:documentation>
+          <xs:documentation>DE-004-03 Declarant role, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DefinedTradeContact" type="ram:TradeContactTypeValidationVersion" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Defined Contact Details</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostalTradeAddress" type="ram:TradeAddressTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Postal Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_3" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_4" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventType">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ActualArrivalRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Actual Arrival Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Actual Arrival_ Related. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MaritimeAnchorageIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Maritime Anchorage Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Maritime Anchorage. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccurrenceLogisticsLocation" type="ram:LogisticsLocationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Occurrence Location</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Occurrence. Logistics_ Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_6">
+        <xs:annotation>
+          <xs:documentation>Stay ID</xs:documentation>
+          <xs:documentation>DE-014-01 Visit ID</xs:documentation>
+          <xs:documentation>RE-004-01 Visit ID</xs:documentation>
+          <xs:documentation>DE-014-01 Visit ID</xs:documentation>
+          <xs:documentation>RE-004-01 Visit ID</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ActualArrivalRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-015-07 ATA at first port call location</xs:documentation>
+          <xs:documentation>Actual Arrival Date Time</xs:documentation>
+          <xs:documentation>DE-015-07 ATA at first port call location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccurrenceLogisticsLocation" type="ram:LogisticsLocationTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Occurrence Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ActualArrivalRelatedDateTime" type="qdt:FormattedDateTimeType">
+        <xs:annotation>
+          <xs:documentation>DE-022-01 Date and time of arrival - actual</xs:documentation>
+          <xs:documentation>Actual Arrival Date Time</xs:documentation>
+          <xs:documentation>DE-022-01 Date and time of arrival - actual</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MaritimeAnchorageIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-15 Call at anchorage indicator</xs:documentation>
+          <xs:documentation>DE-014-15 Call at anchorage indicator</xs:documentation>
+          <xs:documentation>Maritime Anchorage Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationType">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="URIID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>URI</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Universal_ Communication. URI. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CompleteNumber" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Universal_ Communication. Complete Number. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CompleteNumber" type="udt:TextTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>DE-004-15 Declarant, Contact person: Phone number</xs:documentation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>DE-004-15 Declarant, Contact person: Phone number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="URIID" type="udt:IDTypeValidationVersion_5">
+        <xs:annotation>
+          <xs:documentation>DE-004-16 Declarant, Contact person: E-mail address</xs:documentation>
+          <xs:documentation>URI</xs:documentation>
+          <xs:documentation>DE-004-16 Declarant, Contact person: E-mail address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CompleteNumber" type="udt:TextTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>DE-004-04 Declarant phone number</xs:documentation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>DE-004-04 Declarant phone number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_4">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="URIID" type="udt:IDTypeValidationVersion_5">
+        <xs:annotation>
+          <xs:documentation>DE-004-05 Declarant e-mail address</xs:documentation>
+          <xs:documentation>URI</xs:documentation>
+          <xs:documentation>DE-004-05 Declarant e-mail address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

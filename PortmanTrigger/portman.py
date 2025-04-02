@@ -9,10 +9,17 @@ import glob
 import natsort
 import logging
 
-from config import DATABASE_CONFIG
+from config import DATABASE_CONFIG, XML_CONVERTER_CONFIG
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger('PortmanTrigger')
 
 def log(message):
-    logging.info(message)
+    logger.info(message)
 
 def get_db_connection(dbName):
     """Establish and return a database connection to a specified database."""
@@ -421,6 +428,24 @@ def save_results_to_db(results, conn=None):
                     f"Matkustajien lukumäärä: {entry['passengersOnDeparture']}\n"
                 )
                 #log(f"Trigger executed: New arrival detected for portCallId {port_call_id} (old_ata: {old_ata}, new_ata: {new_ata})")
+                createArrivalXml({
+                    "portCallId": port_call_id,
+                    "imoLloyds": imo_number,
+                    "vesselName": entry["vesselName"],
+                    "eta": entry["eta"],
+                    "ata": new_ata,
+                    "portAreaCode": entry["portAreaCode"],
+                    "portAreaName": entry["portAreaName"],
+                    "berthCode": entry["berthCode"],
+                    "berthName": entry["berthName"],
+                    "passengersOnArrival": entry["passengersOnArrival"],
+                    "crewOnArrival": entry["crewOnArrival"],
+                    "portToVisit": entry["portToVisit"],
+                    "prevPort": entry["prevPort"],
+                    "agentName": entry["agentName"],
+                    "shippingCompany": entry["shippingCompany"],
+                    # Add any other fields needed for the XML
+                })
 
         conn.commit()
         cursor.close()
@@ -431,6 +456,37 @@ def save_results_to_db(results, conn=None):
 
     except Exception as e:
         log(f"Error saving results to the database: {e}")
+
+def createArrivalXml(arrival_data):
+     # After detecting a new arrival, trigger XML generation and storage
+    try:
+        # Call the XML Storage Function
+        xml_converterfunction_url = XML_CONVERTER_CONFIG["function_url"]
+        xml_converter_function_key = XML_CONVERTER_CONFIG["function_key"]
+        
+        # Add the function key to the URL if it exists
+        if xml_converter_function_key:
+            if "?" in xml_converterfunction_url:
+                xml_converterfunction_url += f"&code={xml_converter_function_key}"
+            else:
+                xml_converterfunction_url += f"?code={xml_converter_function_key}"
+        
+        log(f"Calling xml-converter: {xml_converterfunction_url}")
+
+        # Send the arrival data to the function
+        response = requests.post(
+            xml_converterfunction_url,
+            json={"portcall_data": arrival_data, "formality_type": "ATA"},
+            headers={"Content-Type": "application/json"}
+        )
+        
+        if response.status_code == 200:
+            log(f"XML for portCallId {arrival_data['portCallId']} successfully generated and stored. URL: {response.json().get('url')}")
+        else:
+            log(f"Error with XML generation/storage for portCallId {arrival_data['portCallId']}: {response}")
+            
+    except Exception as e:
+        log(f"Error triggering XML function for portCallId {arrival_data['portCallId']}: {str(e)}")
 
 def main(req=None):
     log("Program started.")
@@ -445,8 +501,6 @@ def main(req=None):
             "input_dir": req.params.get("input-dir"),
             "tracked_vessels": set(map(int, req.params.get("imo").split(","))) if req.params.get("imo") else None
         }
-    #else:
-    #    args = parse_arguments()
 
     # Process JSON from input file or directory
     data = None

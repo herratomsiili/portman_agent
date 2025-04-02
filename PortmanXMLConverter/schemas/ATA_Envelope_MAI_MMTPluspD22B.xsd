@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:mai="urn:un:unece:uncefact:data:standard:MAI:MMTPlus"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:qdt="urn:un:unece:uncefact:data:Standard:QualifiedDataType:30"
+    xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30"
+    xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
+    targetNamespace="urn:un:unece:uncefact:data:standard:MAI:MMTPlus"
+    elementFormDefault="qualified">
+  <xs:import namespace="urn:un:unece:uncefact:data:Standard:QualifiedDataType:30" schemaLocation="ATA_Envelope_QualifiedDataType_30p0.xsd"/>
+  <xs:import namespace="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30" schemaLocation="ATA_Envelope_ReusableAggregateBusinessInformationEntity_30p0.xsd"/>
+  <xs:import namespace="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100" schemaLocation="ATA_Envelope_UnqualifiedDataType_100pD22B.xsd"/>
+  <xs:element name="MAI" type="mai:MAITypeValidationVersion"/>
+  <xs:complexType name="MAIType">
+    <xs:annotation>
+      <xs:documentation>MAI - Main Message Header</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ExchangedDocument" type="ram:ExchangedDocumentType">
+        <xs:annotation>
+          <xs:documentation>ASMA</xs:documentation>
+          <xs:documentation>BSP Master. Exchanged_ Document</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExchangedDeclaration" type="ram:ExchangedDeclarationType">
+        <xs:annotation>
+          <xs:documentation>ASMA</xs:documentation>
+          <xs:documentation>BSP Master. Exchanged_ Declaration. Exchanged_ Declaration</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecifiedLogisticsTransportMovement" type="ram:LogisticsTransportMovementType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ASMA</xs:documentation>
+          <xs:documentation>BSP Master. Specified. Logistics_ Transport Movement</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MAITypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>MAI - Main Message Header</xs:documentation>
+      <xs:documentation>MA</xs:documentation>
+      <xs:documentation>BSP Master. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ExchangedDocument" type="ram:ExchangedDocumentTypeValidationVersion"/>
+      <xs:element name="ExchangedDeclaration" type="ram:ExchangedDeclarationTypeValidationVersion"/>
+      <xs:element name="SpecifiedLogisticsTransportMovement" type="ram:LogisticsTransportMovementTypeValidationVersion" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

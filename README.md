@@ -242,6 +242,7 @@ az functionapp config appsettings set \
     "DB_NAME=portman" \
     "DB_USER=adminuser" \
     "DB_PASSWORD=<your_postgres_db_password>"
+    "XML_CONVERTER_FUNCTION_URL=<your_azure_xml_converter_function_url_with_function_key>"
 ```
 **Deploy Python App to Azure Function App via Azure Functions Core Tools:**  
 ```
