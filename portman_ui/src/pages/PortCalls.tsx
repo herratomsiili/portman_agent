@@ -20,7 +20,8 @@ import {
 import { Search as SearchIcon } from '@mui/icons-material';
 import { api } from '../services/api';
 import { mockPortCalls } from '../data/mockData';
-import { PortCall } from '../types';
+import { PortCall2 } from '../types';
+import axios from 'axios';
 
 const PortCalls: React.FC = () => {
   const [page, setPage] = useState(0);
@@ -28,7 +29,8 @@ const PortCalls: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [portCalls, setPortCalls] = useState<PortCall[]>([]);
+  const [portCalls, setPortCalls] = useState<PortCall2[]>([]);
+  const [data, setData] = useState<any[]>([]);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -36,19 +38,22 @@ const PortCalls: React.FC = () => {
       setLoading(true);
       setError(null);
 
+      // TODO: Fetch data from API
+      // TODO: Parse api data if necessary
+      // TODO: set fetched data to portCalls state
       try {
         // In a production environment, this would be an actual API call
         // For now, we'll use our mock data with a simulated delay
 
         // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Use mock data
-        setPortCalls(mockPortCalls);
+        // setPortCalls(mockPortCalls);
 
         // In a real implementation, we would use:
-        // const response = await api.getPortCalls();
-        // setPortCalls(response);
+        const response = await api.getPortCalls();
+        setPortCalls(response);
       } catch (err) {
         console.error('Error fetching port calls:', err);
         setError('Failed to load port calls. Please try again later.');
@@ -62,9 +67,9 @@ const PortCalls: React.FC = () => {
 
   // Filter port calls based on search term
   const filteredPortCalls = portCalls.filter(call =>
-      call.vessel.vesselName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      call.vessel.imoLloyds.toString().includes(searchTerm) ||
-      call.port.name.toLowerCase().includes(searchTerm.toLowerCase())
+      call.vesselname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      call.imolloyds.toString().includes(searchTerm) ||
+      call.portareacode.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -158,12 +163,12 @@ const PortCalls: React.FC = () => {
               <TableBody>
                 {filteredPortCalls
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((call: PortCall) => (
-                        <TableRow hover key={call.portCallId}>
-                          <TableCell>{call.vessel.vesselName}</TableCell>
-                          <TableCell>{call.vessel.imoLloyds}</TableCell>
-                          <TableCell>{call.port.name}</TableCell>
-                          <TableCell>{call.berth.berthName}</TableCell>
+                    .map((call: PortCall2) => (
+                        <TableRow hover key={call.portcallid}>
+                          <TableCell>{call.vesselname}</TableCell>
+                          <TableCell>{call.imolloyds}</TableCell>
+                          <TableCell>{call.portareacode}</TableCell>
+                          <TableCell>{call.berthname}</TableCell>
                           <TableCell>{formatDateTime(call.eta)}</TableCell>
                           <TableCell>{formatDateTime(call.ata)}</TableCell>
                           <TableCell>{formatDateTime(call.etd)}</TableCell>
