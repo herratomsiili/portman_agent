@@ -20,6 +20,33 @@ export interface Berth {
   portAreaName?: string;
 }
 
+export interface PortCall2 {
+  agentname: string
+  ata: string
+  atd: string
+  berthcode: string
+  berthname: string
+  created: string
+  crewonarrival: string
+  crewondeparture: number
+  eta: string
+  etd: string
+  imolloyds: number
+  modified: string
+  nextport: string
+  passengersonarrival: number
+  passengersondeparture: number
+  portareacode: string
+  portareaname: string
+  portcallid: number
+  porttovisit: string
+  prevport: number
+  shippingcompany: string
+  vesselname: string
+  vesseltypecode: string
+}
+
+// TODO: refactor port call interface to match Azure API
 export interface PortCall {
   portCallId: number;
   vessel: Vessel;
