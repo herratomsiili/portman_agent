@@ -309,6 +309,12 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     # Create container if it doesn't exist
     if not container_client.exists():
         container_client.create_container()
+
+    #if not container_client.exists():
+    #    # Use PublicAccess.Blob to allow anonymous access to blobs but not container listings
+    #    from azure.storage.blob import PublicAccess
+    #    container_client.create_container(public_access=PublicAccess.Blob)
+    #    logger.info(f"Created container '{container_name}' with blob-level public access")
     
     # Upload XML to Blob Storage
     blob_client = container_client.get_blob_client(filename)
