@@ -10,7 +10,8 @@ import xml.etree.ElementTree as ET
 def blob_trigger(blob: func.InputStream):
     logging.info(f"Python blob trigger function processed blob: {blob.name}")
 
-    if not os.environ.get("SLACK_WEBHOOK_ENABLED"):
+    # Check if notifications are enabled
+    if os.environ.get("SLACK_WEBHOOK_ENABLED", "false").lower() == "false":
         logging.info("Slack webhook is disabled, skipping notification")
         return
 
