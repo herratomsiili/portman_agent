@@ -280,7 +280,7 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     # Generate a unique filename
     port_call_id = portcall_data.get('portCallId')
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    filename = f"arrival_{port_call_id}_{timestamp}.xml"
+    filename = f"ATA_{port_call_id}_{timestamp}.xml"
 
     # Convert to EMSWe XML
     success, result = converter.convert_to_emswe(portman_data)
@@ -309,10 +309,16 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     # Create container if it doesn't exist
     if not container_client.exists():
         container_client.create_container()
+
+    #if not container_client.exists():
+    #    # Use PublicAccess.Blob to allow anonymous access to blobs but not container listings
+    #    from azure.storage.blob import PublicAccess
+    #    container_client.create_container(public_access=PublicAccess.Blob)
+    #    logger.info(f"Created container '{container_name}' with blob-level public access")
     
     # Upload XML to Blob Storage
     blob_client = container_client.get_blob_client(filename)
-    blob_client.upload_blob(result, overwrite=True)
+    blob_client.upload_blob(result, overwrite=True, content_type="application/xml")
     
     # Return success response with the blob URL
     blob_url = blob_client.url
