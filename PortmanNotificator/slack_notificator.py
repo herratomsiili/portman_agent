@@ -23,13 +23,13 @@ def blob_trigger(blob: func.InputStream):
         blob_content = blob.read().decode('utf-8')
 
         # Parse the XML to extract port call ID and ATA
-        port_call_id, ata = extract_info_from_xml(blob_content)
+        port_call_id, ata, remarks = extract_info_from_xml(blob_content)
 
         # Generate a URL with SAS token to access the blob directly
         blob_url = generate_blob_storage_link(blob.name)
 
         # Send notification to Slack with XML content
-        send_slack_notification(webhook_url, blob.name, port_call_id, ata, blob_content, channel, username, blob_url)
+        send_slack_notification(webhook_url, blob.name, port_call_id, ata, remarks, blob_content, channel, username, blob_url)
 
         logging.info(f"Successfully processed and notified about arrival {port_call_id}")
 
@@ -58,14 +58,18 @@ def extract_info_from_xml(xml_content):
         # Extract ATA from the ATA part - last timestamp in the file
         ata_elements = root.findall('.//qdt:DateTimeString', namespaces)
         ata = ata_elements[-1].text if ata_elements and len(ata_elements) > 0 else "Unknown"
+
+        # Extract remarks from the ATA part
+        remarks_element = root.find('.//ata:ExchangedDocument/ram:Remarks', namespaces)
+        remarks = remarks_element.text if remarks_element is not None else "Unknown"
         
-        return port_call_id, ata
+        return port_call_id, ata, remarks
     
     except Exception as e:
         logging.error(f"Error parsing XML: {str(e)}")
         return "Unknown", "Unknown"
 
-def send_slack_notification(webhook_url, blob_name, port_call_id, ata, xml_content, channel, username, blob_url):
+def send_slack_notification(webhook_url, blob_name, port_call_id, ata, remarks, xml_content, channel, username, blob_url):
     """Send a notification to Slack about the new arrival XML."""
     # Format the XML content nicely (limit to 2500 characters to avoid message size limits)
     formatted_xml = format_xml_for_display(xml_content, max_length=2500)
@@ -81,7 +85,14 @@ def send_slack_notification(webhook_url, blob_name, port_call_id, ata, xml_conte
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"🚢 *New port arrival detected 🚢*\n*Visit ID:* {port_call_id}\n*ATA:* {ata}"
+                    "text": f"🚢 *New port arrival detected* 🚢"
+                }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"*Visit ID:* {port_call_id}\n*ATA:* {ata}\n\n{remarks}"
                 }
             },
             {
