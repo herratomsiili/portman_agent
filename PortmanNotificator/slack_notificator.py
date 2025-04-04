@@ -80,7 +80,7 @@ def send_slack_notification(webhook_url, blob_name, port_call_id, ata, xml_conte
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"🚢 *New port arrival detected 🚢*\n*VisitID:* {port_call_id}\n*ATA:* {ata}"
+                    "text": f"🚢 *New port arrival detected 🚢*\n*Visit ID:* {port_call_id}\n*ATA:* {ata}"
                 }
             },
             {
@@ -137,7 +137,9 @@ def generate_blob_storage_link(blob_name):
             blob_name=blob_path,
             account_key=account_key,
             permission=BlobSasPermissions(read=True),
-            expiry=datetime.now(UTC) + timedelta(days=7)
+            expiry=datetime.now(UTC) + timedelta(days=7),
+            content_type="application/xml",
+            content_disposition=f"attachment; filename={os.path.basename(blob_path)}"
         )
 
         # Create the URL with SAS token

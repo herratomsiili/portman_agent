@@ -318,7 +318,7 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     
     # Upload XML to Blob Storage
     blob_client = container_client.get_blob_client(filename)
-    blob_client.upload_blob(result, overwrite=True)
+    blob_client.upload_blob(result, overwrite=True, content_type="application/xml")
     
     # Return success response with the blob URL
     blob_url = blob_client.url
