@@ -211,3 +211,63 @@ jobs:
       # Apply Terraform changes
       - name: Terraform Apply
         run: terraform -chdir=environments/${{ env.ENVIRONMENT }} apply -auto-approve tfplan
+
+  deploy-function-app:
+    name: Deploy Functions
+    runs-on: ubuntu-latest
+    needs: tf-apply  # Apply only if terraform plan has been applied
+    environment: ${{ github.event.inputs.environment || 'development' }}
+    
+    env:
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
+      PYTHON_VERSION: "3.12"
+      DB_NAME: "portman"
+      DB_USER: "adminuser"
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Resolve Project Dependencies Using Pip
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+
+      # Log in to Azure
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Set Environment Variables in Azure Function App
+      - name: Set Environment Variables
+        run: |
+          az functionapp config appsettings set --name ${{ vars.AZURE_FUNCTIONAPP_NAME }} \
+          --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+          --settings \
+            DB_HOST=${{ secrets.DB_HOST }} \
+            DB_NAME=${{ env.DB_NAME }} \
+            DB_USER=${{ env.DB_USER }} \
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            XML_CONVERTER_FUNCTION_URL=https://${{ vars.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net/api/emswe-xml-converter?code=${{ secrets.XML_CONVERTER_FUNCTION_KEY }} \
+            SLACK_WEBHOOK_ENABLED=${{ vars.SLACK_WEBHOOK_ENABLED }} \
+            SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }} \
+            SLACK_CHANNEL=${{ vars.SLACK_CHANNEL }}
+
+      # Deploy to Azure
+      - name: Run Azure Functions Action
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true

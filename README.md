@@ -67,23 +67,13 @@ az login
 ```
 ✅ **Backend Storage for Terraform State** (Azure Storage Account with blob container)
 
-### **1️⃣ Select Environment**  
-#### **🔹 Choose Environment (`development`, `testing`, `production`)**  
-```bash
-cd environments/<environment>
-```
+### **1️⃣ Set Up Terraform and define Azure storage for storing Terraform state**  
+Define backend-config variables (`storage_account_name`, `resource_group_name`, `container_name`) for saving Terraform state in Azure storage. Set these according to your Azure storage account. Resource group and storage account used for Terraform state must **BE DIFFERENT** than used in `terraform plan` step.
 
-### **2️⃣ Define Azure storage for storing Terraform state and Set Up Terraform**  
-There are defaults defined (`storage_account_name`, `resource_group_name`, `container_name`) for saving Terraform state in Azure in `backend.tf`. Set these according to your Azure account. Resource group and storage account used for Terraform state better BE DIFFERENT than used in `terraform plan` step.
+Choose the deployment environment (`development`, `testing`, `production`) by setting a `-chdir` command-line option accordingly.
 
-Then initialize Terraform.
 ```bash
-terraform init -upgrade
-```
-
-Or backend variables can also be defined as command-line options:
-```bash
-terraform init -upgrade \
+terraform -chdir=environments/<environment> init -upgrade \
   -backend-config="resource_group_name=<your_resource_group_name>" \
   -backend-config="storage_account_name=<your_storage_account_name>" \
   -backend-config="container_name=<your_container_name>"
@@ -91,41 +81,61 @@ terraform init -upgrade \
 
 🚨 **If you are using Windows, you should also add subscription-id as a command-line variable:**  
 ```bash
-terraform init -upgrade \
+terraform -chdir=environments/<environment> init -upgrade \
   -backend-config="subscription_id=<your_azure_subscription_id>" \
   -backend-config="resource_group_name=<your_resource_group_name>" \
   -backend-config="storage_account_name=<your_storage_account_name>" \
   -backend-config="container_name=<your_container_name>"
 ```
 
-### **3️⃣ Create Terraform Deployment Plan for Infrastructure**  
-The name of the storage account must to be defined separately because of the different Azure naming validations (no dashes allowed in storage account names). 
+### **2️⃣ Create Terraform Deployment Plan for Infrastructure**  
+- The name of the storage account must be defined separately because of the different Azure naming validations (no dashes allowed in storage account names). 
+- allowed_ip_local: Additional ip-address for PostgreSQL access. This is optional.
+- resource_group_owner_tag_value: Email address of the resource group owner (xx.xx@siili.com). Required at least when using Siili Azure Playground account.
 
 ```bash
-terraform plan -var-file=terraform.tfvars \
+terraform -chdir=environments/<environment> plan -var-file=terraform.tfvars \
   -var="naming_prefix=<your_naming_prefix>" \
   -var="storage_account_name=<your_storage_account_name>" \
   -var="resource_group_owner_tag_value=<your_azure_account_email>" \
-  -var="admin_password=<your_postgres_admin_password>" -out=main.tfplan
+  -var="admin_password=<your_postgres_admin_password>" \
+  -var="allowed_ip_local=xx.xx.xxx.xxx" -out=main.tfplan
 ```
 🚨 **Use DIFFERENT storage account name than in `terraform init` in previous step**  
 
-### **4️⃣ Deploy Infrastructure**  
+### **3️⃣ Deploy Infrastructure**  
 ```bash
-terraform apply main.tfplan
+terraform -chdir=environments/<environment> apply main.tfplan
 ```
 ✅ **Terraform provisions resources for the selected environment.**  
 
 ---
 
 ### **📌 Destroy Infrastructure Locally**  
-**To safely destroy all resources:**  
+**Follow the same Terraform `init/plan/apply` command chain to safely destroy all resources:**  
+
+Setup Terraform:
 ```bash
-terraform destroy -var-file=terraform.tfvars \
+terraform -chdir=environments/<environment> init -upgrade \
+  -backend-config="subscription_id=<your_azure_subscription_id>" \
+  -backend-config="resource_group_name=<your_resource_group_name>" \
+  -backend-config="storage_account_name=<your_storage_account_name>" \
+  -backend-config="container_name=<your_container_name>"
+```
+
+Create the destroy plan:
+```bash
+terraform -chdir=environments/<environment> destroy -var-file=terraform.tfvars \
   -var="naming_prefix=<your_naming_prefix>" \
   -var="storage_account_name=<your_storage_account_name>" \
   -var="resource_group_owner_tag_value=<your_azure_account_email>" \
-  -var="admin_password=<your_postgres_admin_password>" -auto-approve
+  -var="admin_password=<your_postgres_admin_password>" \
+  -var="allowed_ip_local=xx.xx.xxx.xxx" -out=destroy.tfplan
+```
+
+Apply the destroy plan:
+```bash
+terraform -chdir=environments/<environment> apply destroy.tfplan
 ```
 ✅ **Destroys all resources for the selected environment.**  
 
@@ -135,12 +145,20 @@ terraform destroy -var-file=terraform.tfvars \
 
 ### **📌 Prerequisites**
 Before deploying via **GitHub Actions**, ensure you have:  
-✅ **Azure User-assigned Managed Identity with Federated GitHub Credentials**  
+✅ Azure User-assigned Managed Identity with Federated GitHub Credentials  
 - Detailed instructions in [SiiliHub](https://siilihub.atlassian.net/wiki/spaces/SW/pages/4166254596/Azure+CI+CD+authentication#Usage-with-Github-environment)
 
-✅ **GitHub Actions Secrets/Variables Configured** (For automated deployment)  
-✅ **Backend Storage for Terraform State** (Azure Storage Account with blob container)  
-- 🚨 **USE DIFFERENT resource group and storage account for storing Terraform state and for deploying your infrastructure!**
+✅ Create role assignment with `Contributor` role and subcription-level permission for created User-assigned Managed Identity  
+```bash
+az role assignment create \
+  --assignee <managed-identity-object-id> \
+  --role Contributor \
+  --scope /subscriptions/<subscription-id>
+```
+✅ GitHub Actions Secrets/Variables Configured (For automated deployment)  
+✅ Backend Storage for Terraform State (Azure Storage Account with blob container)  
+
+🚨 **USE DIFFERENT resource group and storage account for storing Terraform state and for deploying your infrastructure!**
 
 ### **1️⃣ Set Up GitHub Environment Secrets**  
 Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and add/set these for desired environment (`development`, `testing`, `production`):  
@@ -161,6 +179,10 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 | **`NAMING_PREFIX`** | Naming prefix for Azure resources |
 | **`OWNER_TAG`** | The value of the mandatory 'Owner' tag for created Azure resource group |
 | **`STORAGE_ACCOUNT_NAME`** | Name of Azure Storage Account to be created (`NAMING_PREFIX` *can not be used here because there are stricter naming validation rules for Azure storage accounts)* |
+| **`AZURE_FUNCTIONAPP_NAME`** | Name of the Azure Function App service <sup>1.</sup> |
+| **`AZURE_RESOURCE_GROUP`** | Resource Group of the Azure resources <sup>1.</sup> |
+
+<sub>1. Needed for deploying Python functions to Azure Function App</sub>  
 
 ✅ **GitHub Actions will securely use these secrets/vars during deployment.**  
 
@@ -168,9 +190,10 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 
 ### **2️⃣ Deploy Infrastructure via GitHub Actions**  
 #### **🔹 Automatic Deployment (Pull Request to `main`)**
-- **Terraform Deployment workflow is launched**
-- **Changes made in Azure infrastructure can be verified from `Terraform Plan` job**
-- **Once the Pull Request is merged, the `Terraform Apply` job is automatically launched and changes deployed to Azure**
+- Terraform Deployment workflow is launched
+- Changes made in Azure infrastructure can be verified from `Terraform Plan` job
+- Once the Pull Request is merged, the `Terraform Apply` job is automatically launched and changes deployed to Azure
+- Once the changes are deployed into Azure, the `Deploy Functions` job is automatically launched and Portman functions are deployed to Azure Function App as Azure functions
 
 ✅ **GitHub Actions automatically deploys the infrastructure.**  
 
@@ -178,11 +201,11 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 
 ### **3️⃣ Manually Deploy Specific Environments**
 #### **🔹 Run Workflow from GitHub Actions UI**  
-- **Go to GitHub Actions → Terraform Deployment**  
-- **Click "Run Workflow"**  
-- **Select Branch (`develop`, `test`, `main`)**  
-- **Select Deployment Environment (`development`, `testing`, `production`)**  
-- **Click "Run workflow"**  
+- Go to GitHub Actions → Terraform Deployment
+- Click "Run Workflow"
+- Select Branch (`develop`, `test`, `main`)
+- Select Deployment Environment (`development`, `testing`, `production`)
+- Click "Run workflow"
 
 ✅ **Terraform will now deploy the selected environment.**  
 
@@ -191,48 +214,23 @@ Go to **GitHub Repository → Settings → Secrets & Variables → Actions** and
 Destroying infrastructure needs manual approval on created GitHub Issue.  
 
 **To destroy resources manually from GitHub Actions:**  
-- **Go to GitHub Actions → Terraform Destroy**  
-- **Click "Run Workflow"**  
-- **Select Branch (`develop`, `test`, `main`)**  
-- **Select Deployment Environment (`development`, `testing`, `production`)**  
-- **Click "Run workflow"**  
-- **Review the plan in GitHub Actions logs** 
-- **Go to GitHub issues and select the issue regarding this destroy deployment**  
-- **Follow the instructions on issue and either approve or decline the destroyment**  
-- **If approved, the "Terraform Apply Destroy" job will be launched automatically**  
+- Go to GitHub Actions → Terraform Destroy
+- Click "Run Workflow"
+- Select Branch (`develop`, `test`, `main`)
+- Select Deployment Environment (`development`, `testing`, `production`)
+- Click "Run workflow"
+- Review the plan in GitHub Actions logs
+- Go to GitHub issues and select the issue regarding this destroy deployment
+- Follow the instructions on issue and either approve or decline the destroyment
+- If approved, the "Terraform Apply Destroy" job will be launched automatically
 
 ✅ **Prevents accidental resource deletion.**  
 
 ---
 
-## **📌 Deploy Portman function to Azure Function App via GitHub Actions**  
-
-### **1️⃣ Set Up GitHub Environment Secret/Variables**  
-
-| Secret Name | Description |
-|------------|-------------|
-| **`DB_HOST`** | PostgreSQL Server Host created in infrastructure deployment |
-
-| Variable Name | Description |
-|------------|-------------|
-| **`AZURE_FUNCTIONAPP_NAME`** | Name of the Azure Function App service created in infrastructure deployment |
-| **`AZURE_RESOURCE_GROUP`** | Resource Group of the Azure resources created in infrastructure deployment |
-
----
-
-### **2️⃣ Manually Deploy to Specific Environment**  
-#### **🔹 Run Workflow from GitHub Actions UI**  
-- **Go to GitHub Actions → Deploy Python App to Azure Function App**  
-- **Click "Run Workflow"**  
-- **Select Branch (`develop`, `test`, `main`)**  
-- **Select Deployment Environment (`development`, `testing`, `production`)**  
-- **Click "Run workflow"**  
-
-✅ **Terraform will now deploy Portman function to the selected environment.**  
-
 ## **📌 Deploy Portman function to Azure Function App locally via Azure Cli**  
 
-**Set the db-credentials as environment variables (if not set yet) for Azure Function App:**  
+**Set the db-credentials along with XML-converter function and Slack Webhook urls as environment variables (if not set yet) for Azure Function App:**  
 ```
 az functionapp config appsettings set \
   --name <your_function_app_name> \
@@ -242,8 +240,14 @@ az functionapp config appsettings set \
     "DB_NAME=portman" \
     "DB_USER=adminuser" \
     "DB_PASSWORD=<your_postgres_db_password>"
-    "XML_CONVERTER_FUNCTION_URL=<your_azure_xml_converter_function_url_with_function_key>"
+    "XML_CONVERTER_FUNCTION_URL=<your_azure_xml_converter_function_url_with_function_key>" \
+    "SLACK_WEBHOOK_ENABLED=<true/false>" \
+    "SLACK_WEBHOOK_URL=<web_hook_url_of_your_slack_incoming_webhook_app>" \
+    "SLACK_CHANNEL=<target_channel_for_your_slack_web_hook>"
 ```
+
+- The Slack Webhook variables are optional  
+
 **Deploy Python App to Azure Function App via Azure Functions Core Tools:**  
 ```
 func azure functionapp publish <your_function_app_name> --python
@@ -251,20 +255,34 @@ func azure functionapp publish <your_function_app_name> --python
 
 ---
 
-## **📌 Usage**
+## **📌 Usage and functionality**
 
-### **Portman Agent function**
+### **Portman Functions**
+- http_trigger
+- timer_trigger
+- blob_trigger
+- xml_converter
+
+**The Portman functions can be explored from:**  
+- Azure Portal -> Function App -> Functions
+
 **There are 2 triggers for Portman Agent function:**  
 - http_trigger: REST API for function  
 - timer_trigger: Scheduled trigger, runs every 15mins  
 
-**The Portman Agent http-function URL can be found from:**  
-- Azure Portal -> Function App -> Functions -> http_trigger  
-- GitHub Actions Deployment log  
-
-**Invoke the Portman Agent function:**  
+**Invoke the http-trigger of the Portman Agent function:**  
 - Use the function URL with `code` parameter
 - Define trackable vessels (IMO-numbers separated with comma) with `imo` parameter (optional)  
+
+**Portman XML-converter (xml_converter)**
+- Portman XML-converter is automatically triggered by Portman Agent function when there is a port arrival detected  
+- Converts portcall json-data to EMSWe ATA-xml (Notification of actual arrival) and stores the generated xml into Azure blob-storage  
+
+**Portman Notificator (blob_trigger)**  
+- Portman notificator is automatically triggered when a new ATA-xml is pushed into Azure blob-storage
+- Sends a Slack notification based on the ATA-xml message to the defined Slack channel  
+
+![slack_ata_notification.jpg](assets/slack_ata_notification.jpg)
 ---
 ### **PostgreSQL Database**
 **Query `voayges` and `arrivals` from Azure PortgreSQL Server:**  
@@ -398,9 +416,11 @@ graph TD;
     subgraph Azure
         storage[Storage Account]
         db[PostgreSQL Database]
-        function[Azure Function App]
+        portman_function[Portman Agent Function]
         insights[Application Insights]
         dab[DAB - Azure Container App]
+        xml_converter[XML Converter Function]
+        slack_notificator[Slack Notificator Function]
     end
 
     subgraph External
@@ -408,16 +428,25 @@ graph TD;
     end
 
     subgraph FunctionTriggers
-        http[HTTP Trigger] --> function
-        timer[Timer Trigger] --> function
+        http[HTTP Trigger] --> portman_function
+        timer[Timer Trigger] --> portman_function
+    end
+
+    subgraph Slack
+      slack_notificator -->|Sends ATA notifications| slack_channel
     end
 
     user -->|Calls REST/GraphQL| dab
     dab -->|Reads Data| db
     dab -->|Sends Logs| insights
-    function -->|Uses| storage
-    function -->|Reads/Writes Data| db
-    function -->|Sends Logs| insights
+    portman_function -->|Uses| storage
+    portman_function -->|Reads/Writes Data| db
+    portman_function -->|Sends Logs| insights
+    portman_function -->|On arrival| xml_converter
+    xml_converter -->|Sends ATA-xml| storage
+    xml_converter -->|Sends Logs| insights
+    storage -->|Polls ATA-xml| slack_notificator
+    slack_notificator -->|Sends Logs| insights
 ```
 
 ---
