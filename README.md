@@ -413,23 +413,28 @@ func start
 ## **📌 Architecture Diagram**
 ```mermaid
 graph TD;
+    subgraph External API
+      portcall_api[Open Portcall API]
+    end
+
     subgraph Azure
-        storage[Storage Account]
+        storage[Blob Storage]
         db[PostgreSQL Database]
         portman_function[Portman Agent Function]
         insights[Application Insights]
         dab[DAB - Azure Container App]
         xml_converter[XML Converter Function]
         slack_notificator[Slack Notificator Function]
+        portman_ui[Portman Web UI]
+        subgraph FunctionTriggers
+          http[HTTP Trigger]
+          timer[Timer Trigger]
+          blob[Blob Trigger]
+        end
     end
 
     subgraph External
-      user[Browser / Client App]
-    end
-
-    subgraph FunctionTriggers
-        http[HTTP Trigger] --> portman_function
-        timer[Timer Trigger] --> portman_function
+      user[Browser / Client App] --> portman_ui
     end
 
     subgraph Slack
@@ -437,16 +442,21 @@ graph TD;
     end
 
     user -->|Calls REST/GraphQL| dab
+    user -->|Calls| http
     dab -->|Reads Data| db
     dab -->|Sends Logs| insights
-    portman_function -->|Uses| storage
     portman_function -->|Reads/Writes Data| db
     portman_function -->|Sends Logs| insights
     portman_function -->|On arrival| xml_converter
+    portman_function -->|Retrives data| portcall_api
+    timer --> |Triggers| portman_function
+    http --> |Triggers| portman_function
+    blob --> |Triggers| slack_notificator
     xml_converter -->|Sends ATA-xml| storage
     xml_converter -->|Sends Logs| insights
-    storage -->|Polls ATA-xml| slack_notificator
+    blob -->|Polls ATA-xmls| storage
     slack_notificator -->|Sends Logs| insights
+    portman_ui -->|Calls REST/GraphQL| dab
 ```
 
 ---
