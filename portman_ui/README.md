@@ -61,7 +61,7 @@ npm test
 npm run lint
 ```
 
-### Project Structure
+### UI Structure
 
 ```plaintext
 portman-ui/
