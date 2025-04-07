@@ -116,39 +116,6 @@ Example:
 </Envelope>
 ```
 
-## Testing
-
-### Running Unit Tests
-
-```bash
-python3 -m pytest -v
-```
-
-### Running Validation Tests
-
-```bash
-python3 validation_tests.py
-```
-
-You can also run specific validation tests:
-
-```bash
-python3 validation_tests.py --test validate
-python3 validation_tests.py --test from-emswe
-python3 validation_tests.py --test to-emswe
-python3 validation_tests.py --test round-trip
-python3 validation_tests.py --test edge-cases
-```
-
-## Integration with Portman Agent
-
-This converter is designed to integrate with the Portman Agent project, which tracks vessel port calls. The converter enables the Portman Agent to communicate with Maritime National Single Window (MNSW) systems using EMSWe-compliant XML messages.
-
-To integrate with the Portman Agent:
-
-1. Import the converter module in your Portman Agent code
-2. Use the converter to transform between Portman data format and EMSWe XML
-3. Send the EMSWe-compliant XML to the MNSW system
 
 ## License
 
