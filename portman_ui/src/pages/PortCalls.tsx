@@ -163,11 +163,6 @@ const PortCalls: React.FC = () => {
     };
   }
 
-  /**
-   *
-   * @param props
-   * @returns
-   */
   function Row(props: { row: ReturnType<typeof createPortCallData> }) {
     const { row } = props;
     const [open, setOpen] = useState(false);
@@ -204,8 +199,6 @@ const PortCalls: React.FC = () => {
               <Box sx={{ margin: 1 }}>
                 <Grid2 container spacing={1} sx={{
                   '--Grid-borderWidth': '1px',
-                  //borderTop: 'var(--Grid-borderWidth) solid',
-                  //borderLeft: 'var(--Grid-borderWidth) solid',
                   borderColor: 'divider',
                   '& > div': {
                     borderLeft: 'var(--Grid-borderWidth) solid',
@@ -256,11 +249,6 @@ const PortCalls: React.FC = () => {
     value: string | number;
   }
 
-  /**
-   *
-   * @param
-   * @returns
-   */
   const GridItem: React.FC<GridItemProps> = ({ title, value }) => {
     return (
       <Box sx={{ width: "23%", paddingLeft: "3px" }}>
@@ -268,7 +256,6 @@ const PortCalls: React.FC = () => {
           textDecoration: "underline",
           textDecorationColor: '9e9e9e',
           textDecorationStyle: 'dotted',
-
         }}>
           {title}
         </Typography>
