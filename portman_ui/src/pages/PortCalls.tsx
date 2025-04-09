@@ -355,10 +355,4 @@ const PortCalls: React.FC = () => {
   );
 };
 
-
 export default PortCalls;
-
-// const formatDateTime = (dateString: string | undefined) => {
-//   if (!dateString) return 'N/A';
-//   return new Date(dateString).toLocaleString();
-// };
