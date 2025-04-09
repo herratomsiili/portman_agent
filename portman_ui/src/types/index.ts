@@ -1,5 +1,3 @@
-// Define types based on the portman_agent database schema
-
 export interface Vessel {
   imoLloyds: number;
   vesselName: string;
@@ -16,52 +14,43 @@ export interface Port {
 export interface Berth {
   berthCode: string;
   berthName: string;
-  portAreaCode?: string;
-  portAreaName?: string;
+  portAreaCode: string;
+  portAreaName: string;
 }
 
-export interface PortCall2 {
-  agentname: string
-  ata: string
-  atd: string
-  berthcode: string
-  berthname: string
-  created: string
-  crewonarrival: string
-  crewondeparture: number
-  eta: string
-  etd: string
-  imolloyds: number
-  modified: string
-  nextport: string
-  passengersonarrival: number
-  passengersondeparture: number
-  portareacode: string
-  portareaname: string
-  portcallid: number
-  porttovisit: string
-  prevport: number
-  shippingcompany: string
-  vesselname: string
-  vesseltypecode: string
-}
-
-// TODO: refactor port call interface to match Azure API
 export interface PortCall {
-  portCallId: number;
-  vessel: Vessel;
-  port: Port;
-  berth: Berth;
-  eta: string; // ISO date string
-  etd: string; // ISO date string
-  ata?: string; // ISO date string
-  atd?: string; // ISO date string
-  passengerCount?: number;
-  crewCount?: number;
-  prevPort?: Port;
-  nextPort?: Port;
-  portCallStatus: string;
-  cargoDescription?: string;
+  // Basic information
+  portcallid: number;
+  imolloyds: number;
+  vesselname: string;
+  vesseltypecode: string;
+  
+  // Port information
+  porttovisit: string;
+  portareacode: string;
+  portareaname: string;
+  berthcode: string;
+  berthname: string;
+  prevport: string;
+  nextport: string;
+  
+  // Timestamps
+  eta: string;
+  etd: string;
+  ata?: string;
+  atd?: string;
+  
+  // Passenger and crew counts
+  passengersonarrival?: number;
+  passengersondeparture?: number;
+  crewonarrival?: number;
+  crewondeparture?: number;
+  
+  // Company information
+  agentname?: string;
+  shippingcompany?: string;
+  
+  // Metadata
   created: string;
   modified: string;
 }

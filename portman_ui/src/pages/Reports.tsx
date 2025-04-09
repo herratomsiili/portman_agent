@@ -1,292 +1,206 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Typography,
   Box,
+  Paper,
+  Typography,
+  Grid,
   Card,
   CardContent,
-  Grid,
-  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  CircularProgress,
+  Alert,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   SelectChangeEvent
 } from '@mui/material';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  PointElement,
-  LineElement
-} from 'chart.js';
-import { Bar, Pie, Line } from 'react-chartjs-2';
+import { api } from '../services/api';
 import { mockPortCalls } from '../data/mockData';
-
-// Register ChartJS components
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement,
-    PointElement,
-    LineElement
-);
+import { PortCall } from '../types';
 
 const Reports: React.FC = () => {
-  const [timeRange, setTimeRange] = React.useState('week');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [portCalls, setPortCalls] = useState<PortCall[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterPort, setFilterPort] = useState('all');
 
-  const handleTimeRangeChange = (event: SelectChangeEvent) => {
-    setTimeRange(event.target.value);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
 
-  // Calculate port statistics
-  const portStats = mockPortCalls.reduce((acc, call) => {
-    const portName = call.port.name;
-    if (!acc[portName]) {
-      acc[portName] = 0;
-    }
-    acc[portName]++;
-    return acc;
-  }, {} as Record<string, number>);
+      try {
+        // In a production environment, this would be an actual API call
+        // For now, we'll use our mock data with a simulated delay
 
-  // Calculate vessel type statistics
-  const vesselTypeStats = mockPortCalls.reduce((acc, call) => {
-    const vesselType = call.vessel.vesselTypeCode;
-    if (!acc[vesselType]) {
-      acc[vesselType] = 0;
-    }
-    acc[vesselType]++;
-    return acc;
-  }, {} as Record<string, number>);
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-  // Calculate passenger statistics
-  const passengerStats = mockPortCalls.reduce((acc, call) => {
-    if (call.passengerCount && call.passengerCount > 0) {
-      const portName = call.port.name;
-      if (!acc[portName]) {
-        acc[portName] = 0;
+        // Use mock data
+        setPortCalls(mockPortCalls);
+
+        // In a real implementation, we would use:
+        // const response = await api.getPortCalls();
+        // setPortCalls(response);
+      } catch (err) {
+        console.error('Error fetching port calls:', err);
+        setError('Failed to load port calls. Please try again later.');
+      } finally {
+        setLoading(false);
       }
-      acc[portName] += call.passengerCount;
+    };
+
+    fetchData();
+  }, []);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleStatusChange = (event: SelectChangeEvent) => {
+    setFilterStatus(event.target.value);
+    setPage(0);
+  };
+
+  const handlePortChange = (event: SelectChangeEvent) => {
+    setFilterPort(event.target.value);
+    setPage(0);
+  };
+
+  // Get unique ports for filter
+  const uniquePorts = Array.from(new Set(portCalls.map(call => call.portareaname)));
+
+  // Filter port calls based on selected filters
+  const filteredPortCalls = portCalls.filter(call => {
+    if (filterStatus !== 'all') {
+      const isActive = call.ata !== undefined;
+      if (filterStatus === 'ACTIVE' && !isActive) return false;
+      if (filterStatus === 'SCHEDULED' && isActive) return false;
     }
-    return acc;
-  }, {} as Record<string, number>);
+    if (filterPort !== 'all' && call.portareaname !== filterPort) {
+      return false;
+    }
+    return true;
+  });
 
-  // Prepare data for port calls by port chart
-  const portCallsData = {
-    labels: Object.keys(portStats),
-    datasets: [
-      {
-        label: 'Number of Port Calls',
-        data: Object.values(portStats),
-        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  // Prepare data for vessel types chart
-  const vesselTypesData = {
-    labels: Object.keys(vesselTypeStats),
-    datasets: [
-      {
-        label: 'Vessel Types',
-        data: Object.values(vesselTypeStats),
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.5)',
-          'rgba(54, 162, 235, 0.5)',
-          'rgba(255, 206, 86, 0.5)',
-          'rgba(75, 192, 192, 0.5)',
-          'rgba(153, 102, 255, 0.5)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  // Prepare data for passenger statistics chart
-  const passengerData = {
-    labels: Object.keys(passengerStats),
-    datasets: [
-      {
-        label: 'Number of Passengers',
-        data: Object.values(passengerStats),
-        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
-        tension: 0.1
-      },
-    ],
-  };
-
-  // Chart options
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Port Call Statistics',
-      },
-    },
-  };
+  if (loading) {
+    return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <CircularProgress />
+        </Box>
+    );
+  }
 
   return (
       <Box sx={{ flexGrow: 1 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" component="div">
-            Reports & Analytics
-          </Typography>
+        <Typography variant="h4" gutterBottom component="div">
+          Port Call Reports
+        </Typography>
 
-          <FormControl sx={{ minWidth: 150 }}>
-            <InputLabel id="time-range-label">Time Range</InputLabel>
-            <Select
-                labelId="time-range-label"
-                id="time-range-select"
-                value={timeRange}
-                label="Time Range"
-                onChange={handleTimeRangeChange}
-            >
-              <MenuItem value="day">Last 24 Hours</MenuItem>
-              <MenuItem value="week">Last Week</MenuItem>
-              <MenuItem value="month">Last Month</MenuItem>
-              <MenuItem value="year">Last Year</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
+        {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+        )}
 
-        <Grid container spacing={3}>
-          {/* Port Calls by Port */}
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 2, height: 400 }}>
-              <Typography variant="h6" gutterBottom>
-                Port Calls by Port
-              </Typography>
-              <Box sx={{ height: 320 }}>
-                <Bar options={chartOptions} data={portCallsData} />
-              </Box>
-            </Paper>
+        {/* Filters */}
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel id="status-filter-label">Status</InputLabel>
+              <Select
+                  labelId="status-filter-label"
+                  id="status-filter"
+                  value={filterStatus}
+                  label="Status"
+                  onChange={handleStatusChange}
+              >
+                <MenuItem value="all">All Statuses</MenuItem>
+                <MenuItem value="ACTIVE">Active</MenuItem>
+                <MenuItem value="SCHEDULED">Scheduled</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
-
-          {/* Vessel Types Distribution */}
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 2, height: 400 }}>
-              <Typography variant="h6" gutterBottom>
-                Vessel Types Distribution
-              </Typography>
-              <Box sx={{ height: 320, display: 'flex', justifyContent: 'center' }}>
-                <Pie
-                    data={vesselTypesData}
-                    options={{
-                      ...chartOptions,
-                      plugins: {
-                        ...chartOptions.plugins,
-                        title: {
-                          ...chartOptions.plugins.title,
-                          text: 'Vessel Types Distribution',
-                        },
-                      },
-                    }}
-                />
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Passenger Statistics */}
-          <Grid item xs={12}>
-            <Paper sx={{ p: 2, height: 400 }}>
-              <Typography variant="h6" gutterBottom>
-                Passenger Statistics by Port
-              </Typography>
-              <Box sx={{ height: 320 }}>
-                <Line
-                    options={{
-                      ...chartOptions,
-                      plugins: {
-                        ...chartOptions.plugins,
-                        title: {
-                          ...chartOptions.plugins.title,
-                          text: 'Passenger Statistics by Port',
-                        },
-                      },
-                    }}
-                    data={passengerData}
-                />
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Summary Cards */}
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Summary Statistics
-                </Typography>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={2} sx={{ p: 2, textAlign: 'center' }}>
-                      <Typography variant="subtitle1" color="text.secondary">
-                        Total Port Calls
-                      </Typography>
-                      <Typography variant="h4">
-                        {mockPortCalls.length}
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={2} sx={{ p: 2, textAlign: 'center' }}>
-                      <Typography variant="subtitle1" color="text.secondary">
-                        Total Passengers
-                      </Typography>
-                      <Typography variant="h4">
-                        {mockPortCalls.reduce((sum, call) => sum + (call.passengerCount || 0), 0)}
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={2} sx={{ p: 2, textAlign: 'center' }}>
-                      <Typography variant="subtitle1" color="text.secondary">
-                        Total Crew
-                      </Typography>
-                      <Typography variant="h4">
-                        {mockPortCalls.reduce((sum, call) => sum + (call.crewCount || 0), 0)}
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={2} sx={{ p: 2, textAlign: 'center' }}>
-                      <Typography variant="subtitle1" color="text.secondary">
-                        Unique Vessels
-                      </Typography>
-                      <Typography variant="h4">
-                        {new Set(mockPortCalls.map(call => call.vessel.imoLloyds)).size}
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel id="port-filter-label">Port</InputLabel>
+              <Select
+                  labelId="port-filter-label"
+                  id="port-filter"
+                  value={filterPort}
+                  label="Port"
+                  onChange={handlePortChange}
+              >
+                <MenuItem value="all">All Ports</MenuItem>
+                {uniquePorts.map(port => (
+                    <MenuItem key={port} value={port}>{port}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
         </Grid>
+
+        {/* Port Calls Table */}
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Vessel Name</TableCell>
+                <TableCell>IMO</TableCell>
+                <TableCell>Port</TableCell>
+                <TableCell>Berth</TableCell>
+                <TableCell>ETA</TableCell>
+                <TableCell>ETD</TableCell>
+                <TableCell>ATA</TableCell>
+                <TableCell>ATD</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredPortCalls
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((call) => (
+                      <TableRow key={call.portcallid}>
+                        <TableCell>{call.vesselname}</TableCell>
+                        <TableCell>{call.imolloyds}</TableCell>
+                        <TableCell>{call.portareaname}</TableCell>
+                        <TableCell>{call.berthname}</TableCell>
+                        <TableCell>{call.eta ? new Date(call.eta).toLocaleString() : 'N/A'}</TableCell>
+                        <TableCell>{call.etd ? new Date(call.etd).toLocaleString() : 'N/A'}</TableCell>
+                        <TableCell>{call.ata ? new Date(call.ata).toLocaleString() : 'N/A'}</TableCell>
+                        <TableCell>{call.atd ? new Date(call.atd).toLocaleString() : 'N/A'}</TableCell>
+                        <TableCell>
+                          {call.ata !== undefined ? 'Active' : 'Scheduled'}
+                        </TableCell>
+                      </TableRow>
+                  ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredPortCalls.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </TableContainer>
       </Box>
   );
 };

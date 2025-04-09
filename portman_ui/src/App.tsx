@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Dashboard from './pages/Dashboard';
@@ -9,7 +9,9 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import VesselTracking from './pages/VesselTracking';
 import PortCallManagement from './pages/PortCallManagement';
+import Authentication from './pages/Authentication';
 import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 
 // Create a theme instance
@@ -41,41 +43,59 @@ const theme = createTheme({
 function AppRoutes() {
     return (
         <Routes>
+            {/* Public routes */}
             <Route path="/" element={
                 <Layout>
-                    <Dashboard />
+                    <PortCalls />
                 </Layout>
             } />
+            <Route path="/login" element={<Authentication />} />
             <Route path="/port-calls" element={
                 <Layout>
                     <PortCalls />
                 </Layout>
             } />
-            <Route path="/vessel/:imoNumber" element={
-                <Layout>
-                    <VesselDetails />
-                </Layout>
-            } />
-            <Route path="/vessel-tracking" element={
-                <Layout>
-                    <VesselTracking />
-                </Layout>
-            } />
-            <Route path="/port-call-management" element={
-                <Layout>
-                    <PortCallManagement />
-                </Layout>
-            } />
-            <Route path="/reports" element={
-                <Layout>
-                    <Reports />
-                </Layout>
-            } />
-            <Route path="/settings" element={
-                <Layout>
-                    <Settings />
-                </Layout>
-            } />
+            
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={
+                    <Layout>
+                        <Dashboard />
+                    </Layout>
+                } />
+                <Route path="/vessel/:imo" element={
+                    <Layout>
+                        <VesselDetails />
+                    </Layout>
+                } />
+                <Route path="/vessel-tracking" element={
+                    <Layout>
+                        <VesselTracking />
+                    </Layout>
+                } />
+                <Route path="/reports" element={
+                    <Layout>
+                        <Reports />
+                    </Layout>
+                } />
+            </Route>
+            
+            {/* Admin routes */}
+            <Route element={<ProtectedRoute requiredRole="admin" />}>
+                <Route path="/port-call-management" element={
+                    <Layout>
+                        <PortCallManagement />
+                    </Layout>
+                } />
+                <Route path="/settings" element={
+                    <Layout>
+                        <Settings />
+                    </Layout>
+                } />
+            </Route>
+            
+            {/* Catch all route */}
+            <Route path="*" element={<Navigate to="/port-calls" replace />} />
         </Routes>
     );
 }
