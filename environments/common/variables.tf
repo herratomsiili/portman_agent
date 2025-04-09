@@ -39,3 +39,8 @@ variable "allowed_ip_local" {
   description = "Allowed local ip for firewall rule."
   type        = string
 }
+
+variable "environment" {
+  description = "Selected environment."
+  type        = string
+}
