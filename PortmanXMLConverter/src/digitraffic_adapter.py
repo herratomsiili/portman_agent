@@ -51,7 +51,7 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             "declaration_id": f"DECL-PT-{port_call_id}",
             "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "call_id": str(port_call_id),
-            "remarks": f"{vessel_name} (IMO: {imo_lloyds}) port arrival to {port_to_visit}/{port_area_name}/{berth_name}",
+            "remarks": f"{vessel_name} (IMO: {imo_lloyds}) port arrival to {destination}",
 
             # Required fields for ArrivalTransportEvent
             "arrival_datetime": ata or eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
