@@ -23,7 +23,7 @@ import {
   TableRow,
   TablePagination,
   CircularProgress,
-  Alert
+  Alert, Chip
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -59,14 +59,14 @@ const PortCallManagement: React.FC = () => {
         // For now, we'll use our mock data with a simulated delay
 
         // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Use mock data
-        setPortCalls(mockPortCalls);
+        // setPortCalls(mockPortCalls);
 
         // In a real implementation, we would use:
-        // const response = await api.getPortCalls();
-        // setPortCalls(response);
+        const response = await api.getPortCalls();
+        setPortCalls(response);
       } catch (err) {
         console.error('Error fetching port calls:', err);
         setError('Failed to load port calls. Please try again later.');
@@ -80,9 +80,9 @@ const PortCallManagement: React.FC = () => {
 
   // Filter port calls based on search term
   const filteredPortCalls = portCalls.filter(call =>
-      call.vessel.vesselName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      call.vessel.imoLloyds.toString().includes(searchTerm) ||
-      call.port.name.toLowerCase().includes(searchTerm.toLowerCase())
+      call.vesselname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      call.imolloyds.toString().includes(searchTerm) ||
+      call.portareaname.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -149,7 +149,7 @@ const PortCallManagement: React.FC = () => {
     }
   };
 
-  const formatDateTime = (dateString: string | null) => {
+  const formatDateTime = (dateString: string | null | undefined) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleString();
   };
@@ -207,6 +207,7 @@ const PortCallManagement: React.FC = () => {
                   <TableCell>Port</TableCell>
                   <TableCell>Berth</TableCell>
                   <TableCell>ETA</TableCell>
+                  <TableCell>ATA</TableCell>
                   <TableCell>ETD</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Actions</TableCell>
@@ -216,23 +217,32 @@ const PortCallManagement: React.FC = () => {
                 {filteredPortCalls
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((call: PortCall) => (
-                        <TableRow hover key={call.portCallId}>
-                          <TableCell>{call.vessel.vesselName}</TableCell>
-                          <TableCell>{call.vessel.imoLloyds}</TableCell>
-                          <TableCell>{call.port.name}</TableCell>
-                          <TableCell>{call.berth.berthName}</TableCell>
+                        <TableRow hover key={call.portcallid}>
+                          <TableCell>{call.vesselname}</TableCell>
+                          <TableCell>{call.imolloyds}</TableCell>
+                          <TableCell>{call.portareaname}</TableCell>
+                          <TableCell>{call.berthname}</TableCell>
                           <TableCell>{formatDateTime(call.eta)}</TableCell>
+                          <TableCell>{formatDateTime(call.ata)}</TableCell>
                           <TableCell>{formatDateTime(call.etd)}</TableCell>
-                          <TableCell>{call.portCallStatus}</TableCell>
+                          <TableCell>
+                            <Chip
+                                label={call.ata ? 'Arrived' : 'Expected'}
+                                color={call.ata ? 'success' : 'primary'}
+                                size="small"
+                            />
+                          </TableCell>
                           <TableCell>
                             <IconButton
-                                size="small"
                                 color="primary"
                                 onClick={() => handleOpenEditDialog(call)}
                             >
                               <EditIcon />
                             </IconButton>
-                            <IconButton size="small" color="error">
+                            <IconButton
+                                color="error"
+                                onClick={() => {/* TODO: Implement delete */}}
+                            >
                               <DeleteIcon />
                             </IconButton>
                           </TableCell>
@@ -290,23 +300,24 @@ const PortCallManagement: React.FC = () => {
 
                     <Box sx={{ mb: 3 }}>
                       <TextField
-                          fullWidth
                           label="Vessel Name"
-                          defaultValue={currentPortCall?.vessel.vesselName || ''}
-                          sx={{ mb: 2 }}
+                          fullWidth
+                          margin="normal"
+                          defaultValue={currentPortCall?.vesselname || ''}
                       />
 
                       <TextField
-                          fullWidth
                           label="IMO Number"
-                          defaultValue={currentPortCall?.vessel.imoLloyds || ''}
-                          sx={{ mb: 2 }}
+                          fullWidth
+                          margin="normal"
+                          defaultValue={currentPortCall?.imolloyds || ''}
                       />
 
                       <TextField
-                          fullWidth
                           label="Vessel Type"
-                          defaultValue={currentPortCall?.vessel.vesselTypeCode || ''}
+                          fullWidth
+                          margin="normal"
+                          defaultValue={currentPortCall?.vesseltypecode || ''}
                       />
                     </Box>
 
@@ -316,30 +327,31 @@ const PortCallManagement: React.FC = () => {
 
                     <Box sx={{ mb: 3 }}>
                       <TextField
-                          fullWidth
                           label="Port Name"
-                          defaultValue={currentPortCall?.port.name || ''}
-                          sx={{ mb: 2 }}
+                          fullWidth
+                          margin="normal"
+                          defaultValue={currentPortCall?.portareaname || ''}
                       />
 
                       <TextField
+                          label="Port Code"
                           fullWidth
-                          label="Port LOCODE"
-                          defaultValue={currentPortCall?.port.locode || ''}
-                          sx={{ mb: 2 }}
+                          margin="normal"
+                          defaultValue={currentPortCall?.porttovisit || ''}
                       />
 
                       <TextField
-                          fullWidth
                           label="Berth Name"
-                          defaultValue={currentPortCall?.berth.berthName || ''}
-                          sx={{ mb: 2 }}
+                          fullWidth
+                          margin="normal"
+                          defaultValue={currentPortCall?.berthname || ''}
                       />
 
                       <TextField
-                          fullWidth
                           label="Berth Code"
-                          defaultValue={currentPortCall?.berth.berthCode || ''}
+                          fullWidth
+                          margin="normal"
+                          defaultValue={currentPortCall?.berthcode || ''}
                       />
                     </Box>
 
@@ -393,7 +405,7 @@ const PortCallManagement: React.FC = () => {
                           fullWidth
                           label="Passenger Count"
                           type="number"
-                          defaultValue={currentPortCall?.passengerCount || ''}
+                          defaultValue={currentPortCall?.passengersonarrival || ''}
                           sx={{ mb: 2 }}
                       />
 
@@ -401,7 +413,7 @@ const PortCallManagement: React.FC = () => {
                           fullWidth
                           label="Crew Count"
                           type="number"
-                          defaultValue={currentPortCall?.crewCount || ''}
+                          defaultValue={currentPortCall?.crewonarrival || ''}
                           sx={{ mb: 2 }}
                       />
 
@@ -410,7 +422,7 @@ const PortCallManagement: React.FC = () => {
                         <Select
                             labelId="status-label"
                             label="Status"
-                            defaultValue={currentPortCall?.portCallStatus || 'SCHEDULED'}
+                            defaultValue={currentPortCall?.ata === undefined ? 'SCHEDULED' : 'ACTIVE'}
                         >
                           <MenuItem value="SCHEDULED">Scheduled</MenuItem>
                           <MenuItem value="ACTIVE">Active</MenuItem>
@@ -423,7 +435,8 @@ const PortCallManagement: React.FC = () => {
                           label="Cargo Description"
                           multiline
                           rows={2}
-                          defaultValue={currentPortCall?.cargoDescription || ''}
+                          // defaultValue={currentPortCall?.cargoDescription || ''}
+                          defaultValue={'Default value'}
                       />
                     </Box>
                   </Box>

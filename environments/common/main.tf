@@ -56,3 +56,16 @@ module "dab_service" {
   ai_instrumentation_key     = module.monitoring.ai_instrumentation_key
   database_connection_string = "Host=${module.postgres.postgresql_fqdn};Port=5432;Database=portman;Username=${module.postgres.admin_username};Password=${module.postgres.admin_password}"
 }
+
+module "openai" {
+  source              = "../../modules/openai"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = var.location
+  naming_prefix       = var.naming_prefix
+  deployment_capacity = 5
+
+  tags = {
+    environment = var.environment
+    application = "portman-cargo-generator"
+  }
+} 

@@ -42,45 +42,89 @@ const mockUsers = [
   },
 ];
 
-// Default user for auto-login
-const defaultUser = mockUsers[0];
-
 // Provider component that wraps the app and makes auth available
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(defaultUser); // Set default user immediately
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Auto-login on initial load
+  // Check if user is already logged in on initial load
   useEffect(() => {
-    // Set the default user in localStorage for persistence
-    if (!localStorage.getItem('portmanUser')) {
-      localStorage.setItem('portmanUser', JSON.stringify(defaultUser));
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        localStorage.removeItem('user');
+      }
     }
   }, []);
 
-  // Login function (kept for future use)
+  // Login function
   const login = async (email: string, password: string): Promise<boolean> => {
-    // In a real app, this would call an API
-    // For demo purposes, we'll just check against our mock users
-    const foundUser = mockUsers.find(u => u.email === email);
+    try {
+      // TODO: Implement real authentication
+      // For development, use these test accounts:
+      // admin@portman.com / admin123
+      // user@portman.com / user123
+      // viewer@portman.com / viewer123
+      
+      if (email === 'admin@portman.com' && password === 'admin123') {
+        const user = {
+          id: '1',
+          username: 'Admin User',
+          email: 'admin@portman.com',
+          role: 'admin' as const
+        };
+        setUser(user);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(user));
+        return true;
+      }
+      
+      if (email === 'user@portman.com' && password === 'user123') {
+        const user = {
+          id: '2',
+          username: 'Regular User',
+          email: 'user@portman.com',
+          role: 'user' as const
+        };
+        setUser(user);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(user));
+        return true;
+      }
+      
+      if (email === 'viewer@portman.com' && password === 'viewer123') {
+        const user = {
+          id: '3',
+          username: 'Viewer User',
+          email: 'viewer@portman.com',
+          role: 'viewer' as const
+        };
+        setUser(user);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(user));
+        return true;
+      }
 
-    if (foundUser) {
-      // In a real app, we would verify the password here
-      setUser(foundUser);
-      localStorage.setItem('portmanUser', JSON.stringify(foundUser));
-      return true;
+      throw new Error('Invalid credentials');
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
-
-    return false;
   };
 
-  // Logout function (kept for future use)
+  // Logout function
   const logout = () => {
-    // Instead of logging out completely, we'll just switch back to the default user
-    setUser(defaultUser);
-    localStorage.setItem('portmanUser', JSON.stringify(defaultUser));
+    setUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem('user');
   };
 
-  // Register function (kept for future use)
+  // Register function
   const register = async (name: string, email: string, password: string, role: string): Promise<boolean> => {
     // In a real app, this would call an API to create a new user
     // For demo purposes, we'll just pretend it worked
@@ -99,7 +143,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Value object that will be passed to consumers
   const value = {
     user,
-    isAuthenticated: true, // Always authenticated
+    isAuthenticated,
     login,
     logout,
     register,

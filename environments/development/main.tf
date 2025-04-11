@@ -9,6 +9,7 @@ module "common" {
   allowed_ip_local               = var.allowed_ip_local
   admin_password                 = var.admin_password
   storage_account_name           = var.storage_account_name
+  environment                    = var.environment
 }
 
 output "admin_username" {

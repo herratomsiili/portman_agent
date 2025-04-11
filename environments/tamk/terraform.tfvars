@@ -1,4 +1,4 @@
-location                       = "North Europe"
+location                       = "Sweden Central"
 naming_prefix                  = "tamk-portman-dev"
 storage_account_name           = "tamkportmandevsa"
 allowed_ip_start               = "88.148.163.0"

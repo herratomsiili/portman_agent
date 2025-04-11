@@ -2,208 +2,129 @@ import React from 'react';
 import { PortCall } from '../types';
 
 // Mock data for port calls
-// @ts-ignore
-// @ts-ignore
 export const mockPortCalls: PortCall[] = [
   {
-    portCallId: 1001,
-    vessel: {
-      imoLloyds: 9123456,
-      vesselName: "Nordic Princess",
-      vesselTypeCode: "PAX"
-    },
-    port: {
-      locode: "FIHLK",
-      name: "Helsinki",
-      country: "Finland"
-    },
-    berth: {
-      berthCode: "EK7",
-      berthName: "Eteläsatama K7",
-      portAreaCode: "ES",
-      portAreaName: "Eteläsatama"
-    },
-    eta: "2025-03-20T08:30:00Z",
-    etd: "2025-03-20T16:00:00Z",
-    ata: "2025-03-20T08:45:00Z",
-    // @ts-ignore
-    atd: null,
-    passengerCount: 1250,
-    crewCount: 85,
-    prevPort: {
-      locode: "EESTL",
-      name: "Tallinn",
-      country: "Estonia"
-    },
-    nextPort: {
-      locode: "SESTO",
-      name: "Stockholm",
-      country: "Sweden"
-    },
-    portCallStatus: "ACTIVE",
-    cargoDescription: "Passengers and vehicles",
-    created: "2025-03-15T10:00:00Z",
-    modified: "2025-03-20T08:45:00Z"
+    portcallid: 1,
+    imolloyds: 9902419,
+    vesselname: "Finnsirius",
+    vesseltypecode: "20",
+    porttovisit: "FIHEL",
+    portareacode: "VUOS",
+    portareaname: "Vuosaaren satama",
+    berthcode: "VC2",
+    berthname: "VC2",
+    prevport: "FILAN",
+    nextport: "FILAN",
+    eta: "2025-05-02T07:00:00",
+    etd: "2025-04-07T07:45:00",
+    ata: "2015-01-03T07:25:00",
+    atd: "2015-01-03T15:15:00",
+    passengersonarrival: 65,
+    passengersondeparture: 0,
+    crewonarrival: 38,
+    crewondeparture: 0,
+    agentname: "Finnlines Oyj",
+    shippingcompany: "Finnlines Oyj.",
+    created: "2025-03-21T08:43:38.377304",
+    modified: "2025-04-08T07:00:02.795974"
   },
   {
-    portCallId: 1002,
-    vessel: {
-      imoLloyds: 9234567,
-      vesselName: "Baltic Carrier",
-      vesselTypeCode: "CONT"
-    },
-    port: {
-      locode: "FIHLK",
-      name: "Helsinki",
-      country: "Finland"
-    },
-    berth: {
-      berthCode: "VL1",
-      berthName: "Vuosaari L1",
-      portAreaCode: "VS",
-      portAreaName: "Vuosaari"
-    },
+    portcallid: 2,
+    imolloyds: 9902420,
+    vesselname: "Finncanopus",
+    vesseltypecode: "20",
+    porttovisit: "FIHEL",
+    portareacode: "VUOS",
+    portareaname: "Vuosaaren satama",
+    berthcode: "VC3",
+    berthname: "VC3",
+    prevport: "FILAN",
+    nextport: "FILAN",
+    eta: "2025-05-03T08:00:00",
+    etd: "2025-04-08T08:45:00",
+    ata: undefined,
+    atd: undefined,
+    passengersonarrival: 0,
+    passengersondeparture: 0,
+    crewonarrival: 0,
+    crewondeparture: 0,
+    agentname: "Finnlines Oyj",
+    shippingcompany: "Finnlines Oyj.",
+    created: "2025-03-21T08:43:38.377304",
+    modified: "2025-04-08T07:00:02.795974"
+  },
+  {
+    portcallid: 3,
+    imolloyds: 9234567,
+    vesselname: "Baltic Carrier",
+    vesseltypecode: "CONT",
+    porttovisit: "FIHLK",
+    portareacode: "VS",
+    portareaname: "Vuosaari",
+    berthcode: "VL1",
+    berthname: "Vuosaari L1",
+    prevport: "DEHAM",
+    nextport: "FIRAU",
     eta: "2025-03-21T06:00:00Z",
     etd: "2025-03-21T18:00:00Z",
-    // @ts-ignore
-    ata: null,
-    // @ts-ignore
-    atd: null,
-    passengerCount: 0,
-    crewCount: 22,
-    prevPort: {
-      locode: "DEHAM",
-      name: "Hamburg",
-      country: "Germany"
-    },
-    nextPort: {
-      locode: "FIRAU",
-      name: "Rauma",
-      country: "Finland"
-    },
-    portCallStatus: "SCHEDULED",
-    cargoDescription: "Containers",
+    ata: undefined,
+    atd: undefined,
+    passengersonarrival: 0,
+    passengersondeparture: 0,
+    crewonarrival: 22,
+    crewondeparture: 22,
+    agentname: "Port Agent Oy",
+    shippingcompany: "Baltic Line",
     created: "2025-03-16T14:30:00Z",
     modified: "2025-03-16T14:30:00Z"
   },
   {
-    portCallId: 1003,
-    vessel: {
-      imoLloyds: 9345678,
-      vesselName: "Arctic Explorer",
-      vesselTypeCode: "TANK"
-    },
-    port: {
-      locode: "FIKOK",
-      name: "Kokkola",
-      country: "Finland"
-    },
-    berth: {
-      berthCode: "D12",
-      berthName: "Deep Port D12",
-      portAreaCode: "DP",
-      portAreaName: "Deep Port"
-    },
-    eta: "2025-03-19T22:00:00Z",
-    etd: "2025-03-20T14:00:00Z",
-    ata: "2025-03-19T21:45:00Z",
-    atd: "2025-03-20T13:30:00Z",
-    passengerCount: 0,
-    crewCount: 18,
-    prevPort: {
-      locode: "SESKN",
-      name: "Skellefteå",
-      country: "Sweden"
-    },
-    nextPort: {
-      locode: "RULUG",
-      name: "Luga",
-      country: "Russia"
-    },
-    portCallStatus: "COMPLETED",
-    cargoDescription: "Crude oil",
-    created: "2025-03-15T09:15:00Z",
-    modified: "2025-03-20T13:30:00Z"
-  },
-  {
-    portCallId: 1004,
-    vessel: {
-      imoLloyds: 9456789,
-      vesselName: "Silja Serenade",
-      vesselTypeCode: "PAX"
-    },
-    port: {
-      locode: "FITRK",
-      name: "Turku",
-      country: "Finland"
-    },
-    berth: {
-      berthCode: "T3",
-      berthName: "Terminal 3",
-      portAreaCode: "PT",
-      portAreaName: "Passenger Terminal"
-    },
+    portcallid: 4,
+    imolloyds: 9456789,
+    vesselname: "Silja Serenade",
+    vesseltypecode: "PAX",
+    porttovisit: "FITRK",
+    portareacode: "PT",
+    portareaname: "Passenger Terminal",
+    berthcode: "T3",
+    berthname: "Terminal 3",
+    prevport: "SESTO",
+    nextport: "SESTO",
     eta: "2025-03-20T19:30:00Z",
     etd: "2025-03-21T08:00:00Z",
-    // @ts-ignore
-    ata: null,
-    // @ts-ignore
-    atd: null,
-    passengerCount: 2800,
-    crewCount: 200,
-    prevPort: {
-      locode: "SESTO",
-      name: "Stockholm",
-      country: "Sweden"
-    },
-    nextPort: {
-      locode: "SESTO",
-      name: "Stockholm",
-      country: "Sweden"
-    },
-    portCallStatus: "SCHEDULED",
-    cargoDescription: "Passengers and vehicles",
+    ata: undefined,
+    atd: undefined,
+    passengersonarrival: 2800,
+    passengersondeparture: 2800,
+    crewonarrival: 200,
+    crewondeparture: 200,
+    agentname: "Silja Line",
+    shippingcompany: "Silja Line",
     created: "2025-03-14T12:00:00Z",
     modified: "2025-03-14T12:00:00Z"
   },
   {
-    portCallId: 1005,
-    vessel: {
-      imoLloyds: 9567890,
-      vesselName: "Finnstar",
-      vesselTypeCode: "RORO"
-    },
-    port: {
-      locode: "FIHLK",
-      name: "Helsinki",
-      country: "Finland"
-    },
-    berth: {
-      berthCode: "VL3",
-      berthName: "Vuosaari L3",
-      portAreaCode: "VS",
-      portAreaName: "Vuosaari"
-    },
+    portcallid: 5,
+    imolloyds: 9567890,
+    vesselname: "Finnstar",
+    vesseltypecode: "RORO",
+    porttovisit: "FIHLK",
+    portareacode: "VS",
+    portareaname: "Vuosaari",
+    berthcode: "VL3",
+    berthname: "Vuosaari L3",
+    prevport: "DETRA",
+    nextport: "DETRA",
     eta: "2025-03-22T10:00:00Z",
     etd: "2025-03-22T20:00:00Z",
-    // @ts-ignore
-    ata: null,
-    // @ts-ignore
-    atd: null,
-    passengerCount: 0,
-    crewCount: 30,
-    prevPort: {
-      locode: "DETRA",
-      name: "Travemünde",
-      country: "Germany"
-    },
-    nextPort: {
-      locode: "DETRA",
-      name: "Travemünde",
-      country: "Germany"
-    },
-    portCallStatus: "SCHEDULED",
-    cargoDescription: "Ro-ro cargo",
+    ata: undefined,
+    atd: undefined,
+    passengersonarrival: 0,
+    passengersondeparture: 0,
+    crewonarrival: 30,
+    crewondeparture: 30,
+    agentname: "Finnlines Oyj",
+    shippingcompany: "Finnlines Oyj",
     created: "2025-03-18T08:45:00Z",
     modified: "2025-03-18T08:45:00Z"
   }
@@ -247,4 +168,4 @@ export const mockArrivalUpdates = [
 ];
 
 // Mock tracked vessels (IMO numbers)
-export const mockTrackedVessels = [9123456, 9234567, 9345678, 9456789, 9567890];
+export const mockTrackedVessels = [9902419, 9902420, 9234567, 9456789, 9567890];

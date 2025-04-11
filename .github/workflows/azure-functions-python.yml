@@ -69,7 +69,13 @@ jobs:
             XML_CONVERTER_FUNCTION_URL=https://${{ vars.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net/api/emswe-xml-converter?code=${{ secrets.XML_CONVERTER_FUNCTION_KEY }} \
             SLACK_WEBHOOK_ENABLED=${{ vars.SLACK_WEBHOOK_ENABLED }} \
             SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }} \
-            SLACK_CHANNEL=${{ vars.SLACK_CHANNEL }}
+            SLACK_CHANNEL=${{ vars.SLACK_CHANNEL }} \
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+            OPENAI_ENDPOINT=https://${{ vars.NAMING_PREFIX }}-openai.openai.azure.com/ \
+            OPENAI_DEPLOYMENT_NAME="cargo-generator" \
+            OPENAI_API_VERSION="2025-02-01-preview" \
+            FUNCTION_APP_URL=https://${{ vars.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net \
+            VESSEL_DETAILS_FUNCTION_KEY=${{ secrets.VESSEL_DETAILS_FUNCTION_KEY }}
 
       # Deploy to Azure
       - name: Run Azure Functions Action

@@ -36,15 +36,17 @@ const Dashboard: React.FC = () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Use mock data
-        setPortCalls(mockPortCalls);
-        setTrackedVessels(mockTrackedVessels);
+        // setPortCalls(mockPortCalls);
+        // setTrackedVessels(mockTrackedVessels);
 
         // In a real implementation, we would use:
-        // const portCallsResponse = await api.getPortCalls();
-        // setPortCalls(portCallsResponse);
-        // 
+        const portCallsResponse = await api.getPortCalls();
+        setPortCalls(portCallsResponse);
+        const mockTrackedVessels = [9902419, 9902420, 9234567, 9456789, 9567890];
+
+
         // const vesselsResponse = await api.getTrackedVessels();
-        // setTrackedVessels(vesselsResponse);
+        setTrackedVessels(mockTrackedVessels);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
         setError('Failed to load dashboard data. Please try again later.');
@@ -57,13 +59,13 @@ const Dashboard: React.FC = () => {
   }, []);
 
   // Calculate statistics
-  const activeVessels = portCalls.filter(call => call.portCallStatus === 'ACTIVE').length;
-  const scheduledVessels = portCalls.filter(call => call.portCallStatus === 'SCHEDULED').length;
-  const totalPassengers = portCalls.reduce((sum, call) => sum + (call.passengerCount || 0), 0);
+  const activeVessels = portCalls.filter(call => call.ata !== undefined).length;
+  const scheduledVessels = portCalls.filter(call => call.ata === undefined).length;
+  const totalPassengers = portCalls.reduce((sum, call) => sum + (call.passengersonarrival || 0), 0);
 
   // Get upcoming arrivals (sorted by ETA)
   const upcomingArrivals = [...portCalls]
-      .filter(call => call.portCallStatus === 'SCHEDULED')
+      .filter(call => call.ata === undefined)
       .sort((a, b) => new Date(a.eta).getTime() - new Date(b.eta).getTime())
       .slice(0, 5);
 
@@ -135,14 +137,14 @@ const Dashboard: React.FC = () => {
                 <Divider sx={{ mb: 2 }} />
                 <List>
                   {upcomingArrivals.map((call) => (
-                      <React.Fragment key={call.portCallId}>
+                      <React.Fragment key={call.portcallid}>
                         <ListItem>
                           <ListItemText
-                              primary={call.vessel.vesselName}
+                              primary={call.vesselname}
                               secondary={
                                 <>
                                   <Typography component="span" variant="body2" color="text.primary">
-                                    {call.port.name} - {call.berth.berthName}
+                                    {call.portareaname} - {call.berthname}
                                   </Typography>
                                   {` — ETA: ${new Date(call.eta).toLocaleString()}`}
                                 </>
@@ -172,16 +174,16 @@ const Dashboard: React.FC = () => {
                 <Divider sx={{ mb: 2 }} />
                 <List>
                   {portCalls
-                      .filter(call => call.portCallStatus === 'ACTIVE')
+                      .filter(call => call.ata !== undefined)
                       .map((call) => (
-                          <React.Fragment key={call.portCallId}>
+                          <React.Fragment key={call.portcallid}>
                             <ListItem>
                               <ListItemText
-                                  primary={call.vessel.vesselName}
+                                  primary={call.vesselname}
                                   secondary={
                                     <>
                                       <Typography component="span" variant="body2" color="text.primary">
-                                        {call.port.name} - {call.berth.berthName}
+                                        {call.portareaname} - {call.berthname}
                                       </Typography>
                                       {` — ATA: ${call.ata ? new Date(call.ata).toLocaleString() : 'N/A'}`}
                                     </>
@@ -191,7 +193,7 @@ const Dashboard: React.FC = () => {
                             <Divider />
                           </React.Fragment>
                       ))}
-                  {portCalls.filter(call => call.portCallStatus === 'ACTIVE').length === 0 && (
+                  {portCalls.filter(call => call.ata !== undefined).length === 0 && (
                       <ListItem>
                         <ListItemText primary="No active vessels" />
                       </ListItem>

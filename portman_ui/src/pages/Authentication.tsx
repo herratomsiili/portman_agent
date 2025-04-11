@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -17,8 +18,13 @@ import {
   Alert
 } from '@mui/material';
 import { LockOutlined as LockOutlinedIcon } from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
 
 const Authentication: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login, register, isAuthenticated } = useAuth();
+  
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,9 +33,20 @@ const Authentication: React.FC = () => {
   const [role, setRole] = useState('user');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  // Tarkista onko käyttäjä jo kirjautunut
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Ohjaa käyttäjä takaisin sivulle, jolta hän tuli, tai etusivulle
+      const from = (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true);
 
     // Reset messages
     setError('');
@@ -38,28 +55,50 @@ const Authentication: React.FC = () => {
     // Validate form
     if (!email || !password) {
       setError('Email and password are required');
+      setIsLoading(false);
       return;
     }
 
     if (!isLogin && password !== confirmPassword) {
       setError('Passwords do not match');
+      setIsLoading(false);
       return;
     }
 
-    // In a real application, this would call an authentication API
-    // For now, we'll just show a success message
-    if (isLogin) {
-      setSuccess('Login successful! Redirecting...');
-    } else {
-      setSuccess('Account created successfully! You can now log in.');
-      // Reset form after registration
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
-      setName('');
-      setRole('user');
-      // Switch to login view
-      setTimeout(() => setIsLogin(true), 2000);
+    try {
+      if (isLogin) {
+        // Kirjaudu sisään
+        const success = await login(email, password);
+        if (success) {
+          setSuccess('Login successful! Redirecting...');
+          // Ohjaa käyttäjä takaisin sivulle, jolta hän tuli, tai etusivulle
+          const from = (location.state as any)?.from?.pathname || '/';
+          setTimeout(() => navigate(from, { replace: true }), 1000);
+        } else {
+          setError('Invalid email or password');
+        }
+      } else {
+        // Rekisteröidy
+        const success = await register(name, email, password, role);
+        if (success) {
+          setSuccess('Account created successfully! You can now log in.');
+          // Reset form after registration
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
+          setName('');
+          setRole('user');
+          // Switch to login view
+          setTimeout(() => setIsLogin(true), 2000);
+        } else {
+          setError('Registration failed. Please try again.');
+        }
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,6 +140,7 @@ const Authentication: React.FC = () => {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       autoFocus={!isLogin}
+                      disabled={isLoading}
                   />
               )}
 
@@ -115,6 +155,7 @@ const Authentication: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoFocus={isLogin}
+                  disabled={isLoading}
               />
 
               <TextField
@@ -128,6 +169,7 @@ const Authentication: React.FC = () => {
                   autoComplete={isLogin ? 'current-password' : 'new-password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
               />
 
               {!isLogin && (
@@ -142,6 +184,7 @@ const Authentication: React.FC = () => {
                         id="confirmPassword"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
+                        disabled={isLoading}
                     />
 
                     <FormControl fullWidth margin="normal">
@@ -152,6 +195,7 @@ const Authentication: React.FC = () => {
                           value={role}
                           label="Role"
                           onChange={(e) => setRole(e.target.value)}
+                          disabled={isLoading}
                       >
                         <MenuItem value="admin">Administrator</MenuItem>
                         <MenuItem value="user">Standard User</MenuItem>
@@ -166,8 +210,9 @@ const Authentication: React.FC = () => {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
+                  disabled={isLoading}
               >
-                {isLogin ? 'Sign In' : 'Create Account'}
+                {isLoading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}
               </Button>
 
               <Divider sx={{ my: 2 }} />
@@ -176,6 +221,7 @@ const Authentication: React.FC = () => {
                 <Button
                     onClick={() => setIsLogin(!isLogin)}
                     variant="text"
+                    disabled={isLoading}
                 >
                   {isLogin ? 'Need an account? Sign Up' : 'Already have an account? Sign In'}
                 </Button>
