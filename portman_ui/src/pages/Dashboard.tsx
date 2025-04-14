@@ -10,7 +10,8 @@ import {
   ListItemText,
   Divider,
   CircularProgress,
-  Alert
+  Alert,
+  TablePagination
 } from '@mui/material';
 import { api } from '../services/api';
 import { PortCall } from '../types';
@@ -20,6 +21,8 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [portCalls, setPortCalls] = useState<PortCall[]>([]);
   const [trackedVessels, setTrackedVessels] = useState<number[]>([]);
+  const [activeVesselsPage, setActiveVesselsPage] = useState(0);
+  const [activeVesselsRowsPerPage, setActiveVesselsRowsPerPage] = useState(5);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -67,6 +70,30 @@ const Dashboard: React.FC = () => {
       .filter(call => call.ata === undefined)
       .sort((a, b) => new Date(a.eta).getTime() - new Date(b.eta).getTime())
       .slice(0, 5);
+
+  const handleActiveVesselsPageChange = (event: unknown, newPage: number) => {
+    setActiveVesselsPage(newPage);
+  };
+
+  const handleActiveVesselsRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setActiveVesselsRowsPerPage(parseInt(event.target.value, 10));
+    setActiveVesselsPage(0);
+  };
+
+  // Get active vessels (sorted by ATA)
+  const activeVesselsList = [...portCalls]
+    .filter((call: PortCall) => call.ata !== undefined)
+    .sort((a, b) => {
+      const dateA = a.ata ? new Date(a.ata).getTime() : 0;
+      const dateB = b.ata ? new Date(b.ata).getTime() : 0;
+      return dateB - dateA;
+    });
+
+  // Paginate active vessels
+  const paginatedActiveVessels = activeVesselsList.slice(
+    activeVesselsPage * activeVesselsRowsPerPage,
+    activeVesselsPage * activeVesselsRowsPerPage + activeVesselsRowsPerPage
+  );
 
   if (loading) {
     return (
@@ -172,32 +199,40 @@ const Dashboard: React.FC = () => {
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
                 <List data-cy="active-vessels-list">
-                  {portCalls
-                      .filter(call => call.ata !== undefined)
-                      .map((call) => (
-                          <React.Fragment key={call.portcallid}>
-                            <ListItem data-cy={`vessel-item-${call.portcallid}`}>
-                              <ListItemText
-                                  primary={call.vesselname}
-                                  secondary={
-                                    <>
-                                      <Typography component="span" variant="body2" color="text.primary">
-                                        {call.portareaname} - {call.berthname}
-                                      </Typography>
-                                      {` — ATA: ${call.ata ? new Date(call.ata).toLocaleString() : 'N/A'}`}
-                                    </>
-                                  }
-                              />
-                            </ListItem>
-                            <Divider />
-                          </React.Fragment>
-                      ))}
-                  {portCalls.filter(call => call.ata !== undefined).length === 0 && (
-                      <ListItem data-cy="no-active-vessels">
-                        <ListItemText primary="No active vessels" />
+                  {paginatedActiveVessels.map((call) => (
+                    <React.Fragment key={call.portcallid}>
+                      <ListItem data-cy={`vessel-item-${call.portcallid}`}>
+                        <ListItemText
+                          primary={call.vesselname}
+                          secondary={
+                            <>
+                              <Typography component="span" variant="body2" color="text.primary">
+                                {call.portareaname} - {call.berthname}
+                              </Typography>
+                              {` — ATA: ${call.ata ? new Date(call.ata).toLocaleString() : 'N/A'}`}
+                            </>
+                          }
+                        />
                       </ListItem>
+                      <Divider />
+                    </React.Fragment>
+                  ))}
+                  {activeVesselsList.length === 0 && (
+                    <ListItem data-cy="no-active-vessels">
+                      <ListItemText primary="No active vessels" />
+                    </ListItem>
                   )}
                 </List>
+                <TablePagination
+                  component="div"
+                  count={activeVesselsList.length}
+                  page={activeVesselsPage}
+                  onPageChange={handleActiveVesselsPageChange}
+                  rowsPerPage={activeVesselsRowsPerPage}
+                  onRowsPerPageChange={handleActiveVesselsRowsPerPageChange}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  data-cy="active-vessels-pagination"
+                />
               </CardContent>
             </Card>
           </Grid>
