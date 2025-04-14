@@ -3,10 +3,10 @@ import { PortCall, ArrivalUpdate } from '../types';
 import { mockPortCalls, mockArrivalUpdates, mockTrackedVessels } from '../data/mockData';
 
 // Base URL for the API - default to localhost for local development
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:7071/api';
+const API_BASE_URL = 'https://portman-dev-dab-cont.blackpebble-a771c2a7.northeurope.azurecontainerapps.io/api';
 
 // Flag to use mock data instead of real API calls
-const USE_MOCK_DATA = process.env.REACT_APP_USE_MOCK_DATA === 'true';
+const USE_MOCK_DATA = false;
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -48,14 +48,15 @@ export const api = {
       let filteredCalls = [...mockPortCalls];
       if (params?.imo) {
         const imoNumber = parseInt(params.imo);
-        filteredCalls = filteredCalls.filter(call => call.vessel.imoLloyds === imoNumber);
+        filteredCalls = filteredCalls.filter(call => call.imolloyds === imoNumber);
       }
       return { portCalls: filteredCalls };
     }
 
     try {
-      const response = await apiClient.get('/port-calls', { params });
-      return response.data;
+      const response = await apiClient.get('/voyages', { params });
+      console.log("response", response);
+      return response.data.value;
     } catch (error) {
       console.error('Error fetching port calls:', error);
       throw error;
@@ -64,7 +65,7 @@ export const api = {
 
   getPortCallById: async (id: number) => {
     if (USE_MOCK_DATA) {
-      const portCall = mockPortCalls.find(call => call.portCallId === id);
+      const portCall = mockPortCalls.find(call => call.portcallid === id);
       return portCall || null;
     }
 
@@ -80,10 +81,10 @@ export const api = {
   createPortCall: async (portCall: Partial<PortCall>) => {
     if (USE_MOCK_DATA) {
       // Create a new port call with a unique ID
-      const newId = Math.max(...mockPortCalls.map(call => call.portCallId)) + 1;
+      const newId = Math.max(...mockPortCalls.map(call => call.portcallid)) + 1;
       const newPortCall = {
         ...portCall,
-        portCallId: newId,
+        portcallid: newId,
         created: new Date().toISOString(),
         modified: new Date().toISOString()
       };
@@ -103,7 +104,7 @@ export const api = {
   updatePortCall: async (id: number, portCall: Partial<PortCall>) => {
     if (USE_MOCK_DATA) {
       // Find and update the port call
-      const index = mockPortCalls.findIndex(call => call.portCallId === id);
+      const index = mockPortCalls.findIndex(call => call.portcallid === id);
       if (index >= 0) {
         const updatedCall = {
           ...mockPortCalls[index],
@@ -128,7 +129,7 @@ export const api = {
   deletePortCall: async (id: number) => {
     if (USE_MOCK_DATA) {
       // Find and "delete" the port call
-      const index = mockPortCalls.findIndex(call => call.portCallId === id);
+      const index = mockPortCalls.findIndex(call => call.portcallid === id);
       if (index >= 0) {
         // In a real implementation, we would remove from the mock data
         return { success: true, message: `Port call ${id} deleted` };
@@ -194,8 +195,9 @@ export const api = {
     }
 
     try {
-      const response = await apiClient.get('/vessels/tracked');
-      return response.data;
+      // const response = await apiClient.get('/vessels/tracked');
+      // return response.data;
+      return { vessels: mockTrackedVessels }; // TODO: fix
     } catch (error) {
       console.error('Error fetching tracked vessels:', error);
       throw error;

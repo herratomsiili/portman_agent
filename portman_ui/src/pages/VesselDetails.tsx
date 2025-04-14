@@ -1,67 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {
-  Typography,
   Box,
+  Paper,
+  Typography,
+  Grid,
   Card,
   CardContent,
-  Grid,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
   Chip,
   CircularProgress,
-  Alert
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination
 } from '@mui/material';
 import { api } from '../services/api';
-import { mockPortCalls, mockArrivalUpdates } from '../data/mockData';
+import { mockPortCalls } from '../data/mockData';
 import { PortCall } from '../types';
 
 const VesselDetails: React.FC = () => {
-  const { imoNumber } = useParams<{ imoNumber: string }>();
+  const { imo } = useParams<{ imo: string }>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [vesselPortCalls, setVesselPortCalls] = useState<PortCall[]>([]);
-  const [vesselArrivalUpdates, setVesselArrivalUpdates] = useState<any[]>([]);
+  const [vesselData, setVesselData] = useState<PortCall | null>(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Fetch data on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      if (!imoNumber) return;
-
+    const fetchVesselData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        // In a production environment, these would be actual API calls
+        // In a production environment, this would be an actual API call
         // For now, we'll use our mock data with a simulated delay
 
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Filter mock data for this vessel
-        const filteredPortCalls = mockPortCalls.filter(
-            call => call.vessel.imoLloyds.toString() === imoNumber
-        );
+        // Find vessel in mock data
+        const vessel = mockPortCalls.find(call => call.imolloyds.toString() === imo);
+        if (!vessel) {
+          throw new Error('Vessel not found');
+        }
 
-        const filteredArrivalUpdates = mockArrivalUpdates.filter(
-            update => {
-              const portCall = mockPortCalls.find(call => call.portCallId === update.portCallId);
-              return portCall?.vessel.imoLloyds.toString() === imoNumber;
-            }
-        );
-
-        setVesselPortCalls(filteredPortCalls);
-        setVesselArrivalUpdates(filteredArrivalUpdates);
+        setVesselData(vessel);
 
         // In a real implementation, we would use:
-        // const portCallsResponse = await api.getPortCalls({ imo: imoNumber });
-        // setVesselPortCalls(portCallsResponse);
-        // 
-        // const updatesResponse = await api.getArrivalUpdates({ imo: imoNumber });
-        // setVesselArrivalUpdates(updatesResponse);
+        // const response = await api.getVesselDetails(imo);
+        // setVesselData(response);
       } catch (err) {
         console.error('Error fetching vessel details:', err);
         setError('Failed to load vessel details. Please try again later.');
@@ -70,15 +61,18 @@ const VesselDetails: React.FC = () => {
       }
     };
 
-    fetchData();
-  }, [imoNumber]);
+    if (imo) {
+      fetchVesselData();
+    }
+  }, [imo]);
 
-  // Get the vessel details from the first port call
-  const vessel = vesselPortCalls.length > 0 ? vesselPortCalls[0].vessel : null;
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
 
-  const formatDateTime = (dateString: string | null) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleString();
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   if (loading) {
@@ -89,15 +83,12 @@ const VesselDetails: React.FC = () => {
     );
   }
 
-  if (!vessel) {
+  if (error || !vesselData) {
     return (
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h4" gutterBottom component="div">
-            Vessel Not Found
-          </Typography>
-          <Typography variant="body1">
-            No vessel found with IMO number {imoNumber}.
-          </Typography>
+        <Box sx={{ p: 3 }}>
+          <Alert severity="error">
+            {error || 'Vessel not found'}
+          </Alert>
         </Box>
     );
   }
@@ -105,203 +96,106 @@ const VesselDetails: React.FC = () => {
   return (
       <Box sx={{ flexGrow: 1 }}>
         <Typography variant="h4" gutterBottom component="div">
-          Vessel Details: {vessel.vesselName}
+          Vessel Details
         </Typography>
 
-        {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {error}
-            </Alert>
-        )}
-
-        {/* Vessel Information */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Vessel Information
+        {/* Vessel Information Card */}
+        <Card sx={{ mb: 4 }}>
+          <CardContent>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h5" gutterBottom>
+                  {vesselData.vesselname}
                 </Typography>
-                <Divider sx={{ mb: 2 }} />
+                <Typography color="text.secondary" gutterBottom>
+                  IMO: {vesselData.imolloyds}
+                </Typography>
+                <Box sx={{ mt: 2 }}>
+                  <Chip
+                      label={vesselData.ata !== undefined ? 'Active' : 'Scheduled'}
+                      color={vesselData.ata !== undefined ? 'success' : 'primary'}
+                      sx={{ mr: 1 }}
+                  />
+                  <Chip
+                      label={`Port: ${vesselData.portareaname}`}
+                      variant="outlined"
+                      sx={{ mr: 1 }}
+                  />
+                  <Chip
+                      label={`Berth: ${vesselData.berthname}`}
+                      variant="outlined"
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom>
+                  Schedule
+                </Typography>
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Typography variant="subtitle2">Vessel Name</Typography>
+                  <Grid item xs={6}>
+                    <Typography variant="body2" color="text.secondary">
+                      ETA
+                    </Typography>
+                    <Typography variant="body1">
+                      {vesselData.eta ? new Date(vesselData.eta).toLocaleString() : 'N/A'}
+                    </Typography>
                   </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">{vessel.vesselName}</Typography>
+                  <Grid item xs={6}>
+                    <Typography variant="body2" color="text.secondary">
+                      ETD
+                    </Typography>
+                    <Typography variant="body1">
+                      {vesselData.etd ? new Date(vesselData.etd).toLocaleString() : 'N/A'}
+                    </Typography>
                   </Grid>
-
-                  <Grid item xs={4}>
-                    <Typography variant="subtitle2">IMO Number</Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">{vessel.imoLloyds}</Typography>
-                  </Grid>
-
-                  <Grid item xs={4}>
-                    <Typography variant="subtitle2">Vessel Type</Typography>
-                  </Grid>
-                  <Grid item xs={8}>
-                    <Typography variant="body1">{vessel.vesselTypeCode}</Typography>
-                  </Grid>
-
-                  {vessel.mmsi && (
-                      <>
-                        <Grid item xs={4}>
-                          <Typography variant="subtitle2">MMSI</Typography>
-                        </Grid>
-                        <Grid item xs={8}>
-                          <Typography variant="body1">{vessel.mmsi}</Typography>
-                        </Grid>
-                      </>
+                  {vesselData.ata && (
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          ATA
+                        </Typography>
+                        <Typography variant="body1">
+                          {new Date(vesselData.ata).toLocaleString()}
+                        </Typography>
+                      </Grid>
+                  )}
+                  {vesselData.atd && (
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          ATD
+                        </Typography>
+                        <Typography variant="body1">
+                          {new Date(vesselData.atd).toLocaleString()}
+                        </Typography>
+                      </Grid>
                   )}
                 </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
 
+        {/* Additional Information */}
+        <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
-                  Current Status
+                  Additional Information
                 </Typography>
-                <Divider sx={{ mb: 2 }} />
-                {vesselPortCalls.filter(call => call.portCallStatus === 'ACTIVE').length > 0 ? (
-                    vesselPortCalls
-                        .filter(call => call.portCallStatus === 'ACTIVE')
-                        .map((call: PortCall) => (
-                            <Grid container spacing={2} key={call.portCallId}>
-                              <Grid item xs={4}>
-                                <Typography variant="subtitle2">Current Port</Typography>
-                              </Grid>
-                              <Grid item xs={8}>
-                                <Typography variant="body1">{call.port.name}</Typography>
-                              </Grid>
-
-                              <Grid item xs={4}>
-                                <Typography variant="subtitle2">Berth</Typography>
-                              </Grid>
-                              <Grid item xs={8}>
-                                <Typography variant="body1">{call.berth.berthName}</Typography>
-                              </Grid>
-
-                              <Grid item xs={4}>
-                                <Typography variant="subtitle2">Arrival Time</Typography>
-                              </Grid>
-                              <Grid item xs={8}>
-                                {/*<Typography variant="body1">{formatDateTime(call.ata)}</Typography>*/}
-                              </Grid>
-
-                              <Grid item xs={4}>
-                                <Typography variant="subtitle2">Expected Departure</Typography>
-                              </Grid>
-                              <Grid item xs={8}>
-                                <Typography variant="body1">{formatDateTime(call.etd)}</Typography>
-                              </Grid>
-
-                              <Grid item xs={4}>
-                                <Typography variant="subtitle2">Status</Typography>
-                              </Grid>
-                              <Grid item xs={8}>
-                                <Chip label={call.portCallStatus} color="success" size="small" />
-                              </Grid>
-                            </Grid>
-                        ))
-                ) : (
-                    <Typography variant="body1">
-                      No active port calls for this vessel.
-                    </Typography>
-                )}
+                <Typography variant="body2" color="text.secondary">
+                  Agent Name
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  {vesselData.agentname || 'N/A'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Shipping Company
+                </Typography>
+                <Typography variant="body1">
+                  {vesselData.shippingcompany || 'N/A'}
+                </Typography>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
-
-        {/* Port Call History */}
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Port Call History
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <List>
-                {vesselPortCalls.map((call: PortCall) => (
-                    <React.Fragment key={call.portCallId}>
-                      <ListItem>
-                        <ListItemText
-                            primary={`${call.port.name} - ${call.berth.berthName}`}
-                            secondary={
-                              <>
-                                <Typography component="span" variant="body2" color="text.primary">
-                                  {formatDateTime(call.eta)} - {formatDateTime(call.etd)}
-                                </Typography>
-                                <br />
-                                <Chip
-                                    label={call.portCallStatus}
-                                    color={
-                                      call.portCallStatus === 'ACTIVE'
-                                          ? 'success'
-                                          : call.portCallStatus === 'SCHEDULED'
-                                              ? 'primary'
-                                              : 'default'
-                                    }
-                                    size="small"
-                                    sx={{ mt: 1 }}
-                                />
-                              </>
-                            }
-                        />
-                      </ListItem>
-                      <Divider />
-                    </React.Fragment>
-                ))}
-                {vesselPortCalls.length === 0 && (
-                    <ListItem>
-                      <ListItemText primary="No port call history available" />
-                    </ListItem>
-                )}
-              </List>
-            </Paper>
-          </Grid>
-
-          {/* Arrival Updates */}
-          <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Arrival Time Updates
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <List>
-                {vesselArrivalUpdates.map((update) => (
-                    <React.Fragment key={update.id}>
-                      <ListItem>
-                        <ListItemText
-                            primary={`${update.portAreaName} - ${update.berthName}`}
-                            secondary={
-                              <>
-                                <Typography component="span" variant="body2" color="text.primary">
-                                  ETA changed from {formatDateTime(update.oldEta)} to {formatDateTime(update.eta)}
-                                </Typography>
-                                <br />
-                                <Typography variant="caption">
-                                  Updated on {formatDateTime(update.created)}
-                                </Typography>
-                              </>
-                            }
-                        />
-                      </ListItem>
-                      <Divider />
-                    </React.Fragment>
-                ))}
-                {vesselArrivalUpdates.length === 0 && (
-                    <ListItem>
-                      <ListItemText primary="No arrival updates available" />
-                    </ListItem>
-                )}
-              </List>
-            </Paper>
           </Grid>
         </Grid>
       </Box>

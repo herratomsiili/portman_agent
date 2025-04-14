@@ -1,77 +1,55 @@
-import React from 'react';
-import { styled } from '@mui/material/styles';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  IconButton,
-  Box,
-  Menu,
-  MenuItem,
-  Button
+    AppBar,
+    Box,
+    Button,
+    CssBaseline,
+    Divider,
+    Drawer,
+    IconButton,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Toolbar,
+    Typography
 } from '@mui/material';
 import {
-  Dashboard as DashboardIcon,
-  DirectionsBoat as VesselIcon,
-  Assessment as ReportIcon,
-  Settings as SettingsIcon,
-  Menu as MenuIcon,
-  Map as MapIcon,
-  EventNote as PortCallIcon,
-  ExitToApp as LogoutIcon,
-  AccountCircle
+    DirectionsBoat as VesselIcon,
+    Assessment as ReportIcon,
+    // Settings as SettingsIcon,
+    // Menu as MenuIcon,
+    Dashboard as DashboardIcon,
+    Assessment as AssessmentIcon,
+    DirectionsBoat as DirectionsBoatIcon,
+    DirectionsBoatFilledOutlined as PortCallManagementIcon,
+    LocationOn as LocationOnIcon,
+    Login as LoginIcon,
+    Menu as MenuIcon,
+    Settings as SettingsIcon,
+    Map as MapIcon,
+    EventNote as PortCallIcon,
+    ExitToApp as LogoutIcon,
+    AccountCircle,
 } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Dashboard from "../pages/Dashboard";
 
 const drawerWidth = 240;
-
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
-  open?: boolean;
-}>(({ theme, open }) => ({
-  flexGrow: 1,
-  padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  marginLeft: `-${drawerWidth}px`,
-  ...(open && {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
-  }),
-}));
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [open, setOpen] = React.useState(true);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
 
   const handleDrawerToggle = () => {
-    setOpen(!open);
-  };
-
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
+    setMobileOpen(!mobileOpen);
   };
 
   const handleLogout = () => {
@@ -80,113 +58,152 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Port Calls', icon: <PortCallIcon />, path: '/port-calls' },
-    { text: 'Vessel Tracking', icon: <MapIcon />, path: '/vessel-tracking' },
-    { text: 'Port Call Management', icon: <VesselIcon />, path: '/port-call-management' },
-    { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
-    { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+    { text: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
+    { text: 'Port Calls', path: '/port-calls', icon: <DirectionsBoatIcon /> },
+    { text: 'Vessel Tracking', path: '/vessel-tracking', icon: <LocationOnIcon /> },
+    { text: 'Reports', path: '/reports', icon: <AssessmentIcon /> },
   ];
 
+  const adminMenuItems = [
+    { text: 'Port Call Management', path: '/port-call-management', icon: <PortCallManagementIcon /> },
+    { text: 'Settings', path: '/settings', icon: <SettingsIcon /> },
+  ];
+
+  const drawer = (
+    <div>
+      <Toolbar>
+        <Typography variant="h6" noWrap component="div">
+          Portman
+        </Typography>
+      </Toolbar>
+      <Divider />
+      <List>
+        {menuItems.map((item) => (
+          <ListItem
+            key={item.text}
+            onClick={() => navigate(item.path)}
+            sx={{ 
+              cursor: 'pointer',
+              bgcolor: location.pathname === item.path ? 'action.selected' : 'inherit'
+            }}
+          >
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.text} />
+          </ListItem>
+        ))}
+      </List>
+      {isAuthenticated && user?.role === 'admin' && (
+        <>
+          <Divider />
+          <List>
+            <ListItem>
+              <ListItemText primary="Admin Tools" />
+            </ListItem>
+            {adminMenuItems.map((item) => (
+              <ListItem
+                key={item.text}
+                onClick={() => navigate(item.path)}
+                sx={{ 
+                  cursor: 'pointer',
+                  bgcolor: location.pathname === item.path ? 'action.selected' : 'inherit'
+                }}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItem>
+            ))}
+          </List>
+        </>
+      )}
+    </div>
+  );
+
   return (
-      <Box sx={{ display: 'flex' }}>
-        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-          <Toolbar>
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        sx={{
+          width: { sm: isAuthenticated ? `calc(100% - ${drawerWidth}px)` : '100%' },
+          ml: { sm: isAuthenticated ? `${drawerWidth}px` : 0 },
+        }}
+      >
+        <Toolbar>
+          {isAuthenticated && (
             <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-                sx={{ mr: 2 }}
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { sm: 'none' } }}
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-              Portman Agent Dashboard
-            </Typography>
-
-            {user && (
-                <div>
-                  <Button
-                      onClick={handleMenu}
-                      color="inherit"
-                      startIcon={<AccountCircle />}
-                  >
-                    {user.username}
-                  </Button>
-                  <Menu
-                      id="menu-appbar"
-                      anchorEl={anchorEl}
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'right',
-                      }}
-                      keepMounted
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}
-                  >
-                    <MenuItem onClick={() => { handleClose(); navigate('/settings'); }}>
-                      <ListItemIcon>
-                        <SettingsIcon fontSize="small" />
-                      </ListItemIcon>
-                      Settings
-                    </MenuItem>
-                    <MenuItem onClick={handleLogout}>
-                      <ListItemIcon>
-                        <LogoutIcon fontSize="small" />
-                      </ListItemIcon>
-                      Logout
-                    </MenuItem>
-                  </Menu>
-                </div>
-            )}
-          </Toolbar>
-        </AppBar>
-        <Drawer
-            variant="persistent"
-            anchor="left"
-            open={open}
-            sx={{
-              width: drawerWidth,
-              flexShrink: 0,
-              '& .MuiDrawer-paper': {
-                width: drawerWidth,
-                boxSizing: 'border-box',
-              },
-            }}
+          )}
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+            {menuItems.find(item => item.path === location.pathname)?.text || 'Portman'}
+          </Typography>
+          {!isAuthenticated ? (
+            <Button
+              color="inherit"
+              startIcon={<LoginIcon />}
+              onClick={() => navigate('/login')}
+            >
+              Login
+            </Button>
+          ) : (
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+      {isAuthenticated && (
+        <Box
+          component="nav"
+          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         >
-          <Toolbar />
-          <Box sx={{ overflow: 'auto' }}>
-            <List>
-              {menuItems.map((item) => (
-                  <ListItem key={item.text} onClick={() => navigate(item.path)}>
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText primary={item.text} />
-                  </ListItem>
-              ))}
-            </List>
-            <Divider />
-            {user && (
-                <Box sx={{ p: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Logged in as:
-                  </Typography>
-                  <Typography variant="body2">
-                    {user.username} ({user.role})
-                  </Typography>
-                </Box>
-            )}
-          </Box>
-        </Drawer>
-        <Main open={open}>
-          <Toolbar />
-          {children}
-        </Main>
+          <Drawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true,
+            }}
+            sx={{
+              display: { xs: 'block', sm: 'none' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            }}
+          >
+            {drawer}
+          </Drawer>
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+      )}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: { xs: 1, sm: 1 },
+          width: isAuthenticated ? `calc(100% - ${drawerWidth}px)` : '100%',
+          marginLeft: isAuthenticated ? 0 : 0,
+          maxWidth: '100%',
+          overflow: 'hidden'
+        }}
+      >
+        <Toolbar sx={{ minHeight: { xs: 56, sm: 64 } }} />
+        {children}
       </Box>
+    </Box>
   );
 };
 

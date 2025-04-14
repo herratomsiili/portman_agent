@@ -17,13 +17,14 @@ import {
 } from '@mui/material';
 import { api } from '../services/api';
 import { mockPortCalls, mockTrackedVessels } from '../data/mockData';
+import { PortCall } from '../types';
 
 const VesselTracking: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPort, setFilterPort] = useState('all');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [portCalls, setPortCalls] = useState<any[]>([]);
+  const [portCalls, setPortCalls] = useState<PortCall[]>([]);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -64,14 +65,16 @@ const VesselTracking: React.FC = () => {
   };
 
   // Get unique ports for filter
-  const uniquePorts = Array.from(new Set(portCalls.map(call => call.port.name)));
+  const uniquePorts = Array.from(new Set(portCalls.map(call => call.portareaname)));
 
   // Filter vessels based on selected filters
   const filteredVessels = portCalls.filter(call => {
-    if (filterStatus !== 'all' && call.portCallStatus !== filterStatus) {
-      return false;
+    if (filterStatus !== 'all') {
+      const isActive = call.ata !== undefined;
+      if (filterStatus === 'ACTIVE' && !isActive) return false;
+      if (filterStatus === 'SCHEDULED' && isActive) return false;
     }
-    if (filterPort !== 'all' && call.port.name !== filterPort) {
+    if (filterPort !== 'all' && call.portareaname !== filterPort) {
       return false;
     }
     return true;
@@ -112,7 +115,6 @@ const VesselTracking: React.FC = () => {
                 <MenuItem value="all">All Statuses</MenuItem>
                 <MenuItem value="ACTIVE">Active</MenuItem>
                 <MenuItem value="SCHEDULED">Scheduled</MenuItem>
-                <MenuItem value="COMPLETED">Completed</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -165,7 +167,7 @@ const VesselTracking: React.FC = () => {
 
             return (
                 <Box
-                    key={call.portCallId}
+                    key={call.portcallid}
                     sx={{
                       position: 'absolute',
                       left: `${left}%`,
@@ -182,7 +184,7 @@ const VesselTracking: React.FC = () => {
                         width: 20,
                         height: 20,
                         borderRadius: '50%',
-                        backgroundColor: call.portCallStatus === 'ACTIVE' ? 'green' : 'blue',
+                        backgroundColor: call.ata !== undefined ? 'green' : 'blue',
                         border: '2px solid white',
                         boxShadow: '0 0 5px rgba(0,0,0,0.3)',
                         cursor: 'pointer',
@@ -202,14 +204,14 @@ const VesselTracking: React.FC = () => {
                         fontWeight: 'bold'
                       }}
                   >
-                    {call.vessel.vesselName}
+                    {call.vesselname}
                   </Typography>
                 </Box>
             );
           })}
 
           {/* Simulate port locations */}
-          {Array.from(new Set(portCalls.map(call => call.port.name))).map((portName, index) => {
+          {Array.from(new Set(portCalls.map(call => call.portareaname))).map((portName, index) => {
             // Generate random positions for demo purposes
             const left = 15 + (index * 25) % 70;
             const top = 30 + (index * 15) % 50;
@@ -248,7 +250,8 @@ const VesselTracking: React.FC = () => {
                         mt: 0.5,
                         backgroundColor: 'rgba(255,255,255,0.7)',
                         px: 1,
-                        borderRadius: 1
+                        borderRadius: 1,
+                        fontWeight: 'bold'
                       }}
                   >
                     {portName}
@@ -265,30 +268,28 @@ const VesselTracking: React.FC = () => {
 
         <Grid container spacing={2}>
           {filteredVessels.map(call => (
-              <Grid item xs={12} sm={6} md={4} key={call.portCallId}>
+              <Grid item xs={12} sm={6} md={4} key={call.portcallid}>
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <Typography variant="h6" component="div">
-                        {call.vessel.vesselName}
+                        {call.vesselname}
                       </Typography>
                       <Chip
-                          label={call.portCallStatus}
+                          label={call.ata !== undefined ? 'Active' : 'Scheduled'}
                           color={
-                            call.portCallStatus === 'ACTIVE'
+                            call.ata !== undefined
                                 ? 'success'
-                                : call.portCallStatus === 'SCHEDULED'
-                                    ? 'primary'
-                                    : 'default'
+                                : 'primary'
                           }
                           size="small"
                       />
                     </Box>
                     <Typography color="text.secondary" gutterBottom>
-                      IMO: {call.vessel.imoLloyds}
+                      IMO: {call.imolloyds}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 1.5 }}>
-                      {call.port.name} - {call.berth.berthName}
+                      {call.portareaname} - {call.berthname}
                     </Typography>
                     <Grid container spacing={1}>
                       <Grid item xs={6}>
