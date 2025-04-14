@@ -16,9 +16,9 @@ permissions:
 
 env:
   PYTHON_VERSION: "3.12"
-  DB_NAME: "portman"
-  DB_USER: "postgres"
-  DB_PASSWORD: "postgres"
+  DB_NAME: ${{ env.DB_NAME }}
+  DB_USER: ${{ env.DB_USER }}
+  DB_PASSWORD: ${{ env.DB_PASSWORD }}
 
 jobs:
   test:
