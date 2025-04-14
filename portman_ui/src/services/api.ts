@@ -3,7 +3,7 @@ import { PortCall, ArrivalUpdate } from '../types';
 import { mockPortCalls, mockArrivalUpdates, mockTrackedVessels } from '../data/mockData';
 
 // Base URL for the API - default to localhost for local development
-const API_BASE_URL = 'https://portman-dev-dab-cont.blackpebble-a771c2a7.northeurope.azurecontainerapps.io/api';
+const API_BASE_URL = 'https://portman-dev-dab-cont.icyocean-53bae37c.swedencentral.azurecontainerapps.io/api';
 
 // Flag to use mock data instead of real API calls
 const USE_MOCK_DATA = false;

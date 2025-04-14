@@ -13,7 +13,6 @@ import {
   Alert
 } from '@mui/material';
 import { api } from '../services/api';
-import { mockPortCalls, mockTrackedVessels } from '../data/mockData';
 import { PortCall } from '../types';
 
 const Dashboard: React.FC = () => {
@@ -72,73 +71,73 @@ const Dashboard: React.FC = () => {
   if (loading) {
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-          <CircularProgress />
+          <CircularProgress data-cy="dashboard-loading" />
         </Box>
     );
   }
 
   return (
-      <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h4" gutterBottom component="div">
+      <Box sx={{ flexGrow: 1 }} data-cy="dashboard-container">
+        <Typography variant="h4" gutterBottom component="div" data-cy="dashboard-title">
           Vessel Tracking Dashboard
         </Typography>
 
         {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
+            <Alert severity="error" sx={{ mb: 3 }} data-cy="dashboard-error">
               {error}
             </Alert>
         )}
 
         {/* Summary Cards */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid container spacing={3} sx={{ mb: 4 }} data-cy="summary-cards">
           <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={3} sx={{ height: '100%' }}>
+            <Card elevation={3} sx={{ height: '100%' }} data-cy="card-tracked-vessels">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h6" color="primary">Tracked Vessels</Typography>
-                <Typography variant="h3">{trackedVessels.length}</Typography>
+                <Typography variant="h3" data-cy="tracked-vessels-count">{trackedVessels.length}</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={3} sx={{ height: '100%' }}>
+            <Card elevation={3} sx={{ height: '100%' }} data-cy="card-active-calls">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h6" color="primary">Active Port Calls</Typography>
-                <Typography variant="h3">{activeVessels}</Typography>
+                <Typography variant="h3" data-cy="active-calls-count">{activeVessels}</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={3} sx={{ height: '100%' }}>
+            <Card elevation={3} sx={{ height: '100%' }} data-cy="card-scheduled-arrivals">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h6" color="primary">Scheduled Arrivals</Typography>
-                <Typography variant="h3">{scheduledVessels}</Typography>
+                <Typography variant="h3" data-cy="scheduled-arrivals-count">{scheduledVessels}</Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={3} sx={{ height: '100%' }}>
+            <Card elevation={3} sx={{ height: '100%' }} data-cy="card-passengers">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h6" color="primary">Total Passengers</Typography>
-                <Typography variant="h3">{totalPassengers}</Typography>
+                <Typography variant="h3" data-cy="passengers-count">{totalPassengers}</Typography>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
 
         {/* Main Content */}
-        <Grid container spacing={3}>
+        <Grid container spacing={3} data-cy="dashboard-content">
           {/* Upcoming Arrivals */}
           <Grid item xs={12} md={6}>
-            <Card>
+            <Card data-cy="upcoming-arrivals-card">
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom data-cy="upcoming-arrivals-title">
                   Upcoming Arrivals
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
-                <List>
+                <List data-cy="upcoming-arrivals-list">
                   {upcomingArrivals.map((call) => (
                       <React.Fragment key={call.portcallid}>
-                        <ListItem>
+                        <ListItem data-cy={`arrival-item-${call.portcallid}`}>
                           <ListItemText
                               primary={call.vesselname}
                               secondary={
@@ -155,7 +154,7 @@ const Dashboard: React.FC = () => {
                       </React.Fragment>
                   ))}
                   {upcomingArrivals.length === 0 && (
-                      <ListItem>
+                      <ListItem data-cy="no-upcoming-arrivals">
                         <ListItemText primary="No upcoming arrivals" />
                       </ListItem>
                   )}
@@ -166,18 +165,18 @@ const Dashboard: React.FC = () => {
 
           {/* Active Vessels */}
           <Grid item xs={12} md={6}>
-            <Card>
+            <Card data-cy="active-vessels-card">
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom data-cy="active-vessels-title">
                   Active Vessels
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
-                <List>
+                <List data-cy="active-vessels-list">
                   {portCalls
                       .filter(call => call.ata !== undefined)
                       .map((call) => (
                           <React.Fragment key={call.portcallid}>
-                            <ListItem>
+                            <ListItem data-cy={`vessel-item-${call.portcallid}`}>
                               <ListItemText
                                   primary={call.vesselname}
                                   secondary={
@@ -194,7 +193,7 @@ const Dashboard: React.FC = () => {
                           </React.Fragment>
                       ))}
                   {portCalls.filter(call => call.ata !== undefined).length === 0 && (
-                      <ListItem>
+                      <ListItem data-cy="no-active-vessels">
                         <ListItemText primary="No active vessels" />
                       </ListItem>
                   )}

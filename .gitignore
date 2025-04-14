@@ -143,3 +143,12 @@ __azurite_db*__.json
 # Local Terraform directory and files
 .terraform*
 *.tfplan
+
+# UI code & files
+/portman_ui/node_modules
+/portman_ui/dist
+/portman_ui/build
+/portman_ui/coverage
+/portman_ui/cypress/screenshots
+/portman_ui/cypress/videos
+/portman_ui/cypress/downloads

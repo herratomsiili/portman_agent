@@ -86,13 +86,13 @@ const PortCalls: React.FC = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
+        <CircularProgress data-cy="portcalls-loading" />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3 }} data-cy="portcalls-container">
       <Box sx={{ 
         display: 'flex', 
         flexDirection: { xs: 'column', md: 'row' },
@@ -101,7 +101,7 @@ const PortCalls: React.FC = () => {
         mb: 3,
         gap: 2
       }}>
-        <Typography variant="h4" component="h1">
+        <Typography variant="h4" component="h1" data-cy="portcalls-title">
           Port Calls
         </Typography>
         <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
@@ -119,29 +119,36 @@ const PortCalls: React.FC = () => {
               ),
             }}
             size="small"
+            data-cy="portcalls-search"
           />
         </Box>
       </Box>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }} data-cy="portcalls-error">
+          {error}
+        </Alert>
+      )}
 
       <Paper sx={{ 
         width: '100%', 
         overflow: 'hidden',
         borderRadius: 2,
         boxShadow: 2
-      }}>
+      }} data-cy="portcalls-table-container">
         <Box sx={{ overflowX: 'auto' }}>
-          <Table>
+          <Table data-cy="portcalls-table">
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: 'bold' }}>Vessel</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Port</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }}>ETA</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }}>ATA</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }}>ETD</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }} data-cy="table-header-vessel">Vessel</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }} data-cy="table-header-port">Port</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }} data-cy="table-header-eta">ETA</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }} data-cy="table-header-ata">ATA</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', display: { xs: 'none', md: 'table-cell' } }} data-cy="table-header-etd">ETD</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }} data-cy="table-header-status">Status</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody data-cy="portcalls-table-body">
               {filteredPortCalls
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((call: PortCall) => (
@@ -149,34 +156,35 @@ const PortCalls: React.FC = () => {
                     hover 
                     key={call.portcallid}
                     sx={{ '&:hover .action-buttons': { opacity: 1 } }}
+                    data-cy={`portcall-row-${call.portcallid}`}
                   >
                     <TableCell>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }} data-cy="vessel-name">
                           {call.vesselname}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary" data-cy="vessel-imo">
                           IMO: {call.imolloyds}
                         </Typography>
                       </Box>
                     </TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Typography variant="body1">
+                        <Typography variant="body1" data-cy="port-area">
                           {call.portareaname}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary" data-cy="berth-name">
                           {call.berthname}
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="eta-value">
                       {formatDateTime(call.eta)}
                     </TableCell>
-                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="ata-value">
                       {call.ata ? formatDateTime(call.ata) : '-'}
                     </TableCell>
-                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="etd-value">
                       {formatDateTime(call.etd)}
                     </TableCell>
                     <TableCell>
@@ -188,6 +196,13 @@ const PortCalls: React.FC = () => {
                     </TableCell>
                   </TableRow>
                 ))}
+              {filteredPortCalls.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" data-cy="no-portcalls">
+                    No port calls found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </Box>
@@ -200,6 +215,7 @@ const PortCalls: React.FC = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25]}
           sx={{ borderTop: 1, borderColor: 'divider' }}
+          data-cy="portcalls-pagination"
         />
       </Paper>
     </Box>

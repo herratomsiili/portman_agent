@@ -75,6 +75,31 @@ Cypress is used for:
 - Screenshot and video recording
 - Network request stubbing
 
+#### Support Files
+
+The `cypress/support/e2e.ts` file is automatically loaded before each end-to-end test. It serves several important purposes:
+
+- **Custom Commands**: Defines reusable commands like `dataCy()` which makes it easier to select elements using `data-cy` attributes
+- **TypeScript Support**: Provides type definitions for custom commands
+- **Global Setup**: A place to set up global behavior that should apply to all tests
+- **Stable Selectors**: Encourages the use of `data-cy` attributes for selecting elements, which makes tests more resilient to changes in CSS or HTML structure
+
+Example usage in tests:
+```typescript
+// Instead of
+cy.get('[data-cy=submit-button]').click()
+
+// You can use
+cy.dataCy('submit-button').click()
+```
+
+When writing components, add `data-cy` attributes to elements you want to test:
+```jsx
+<button data-cy="submit-button">Submit</button>
+```
+
+This approach helps separate testing concerns from styling or structural concerns, making tests more maintainable.
+
 #### Usage
 
 ```bash
