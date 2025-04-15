@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Typography,
+  Alert,
   Box,
+  Chip,
+  CircularProgress,
+  InputAdornment,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
   TablePagination,
-  Chip,
+  TableRow,
   TextField,
   InputAdornment,
   IconButton,
@@ -36,7 +39,6 @@ const PortCalls: React.FC = () => {
   const [portCalls, setPortCalls] = useState<PortCall2[]>([]);
   const [data, setData] = useState<any[]>([]);
 
-  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -85,6 +87,11 @@ const PortCalls: React.FC = () => {
     setPage(0);
   };
 
+  const formatDateTime = (dateString: string | null | undefined) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleString();
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE':
@@ -98,13 +105,11 @@ const PortCalls: React.FC = () => {
     }
   };
 
-  const formatDateTime = (dateString: string | undefined) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleString();
-  };
-
   if (loading) {
     return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
         <CircularProgress />
       </Box>

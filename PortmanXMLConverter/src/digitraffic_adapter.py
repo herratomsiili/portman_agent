@@ -31,6 +31,15 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
         ata = digitraffic_data.get("ata")
         port_area_name = digitraffic_data.get("portAreaName", "unknown")
         berth_name = digitraffic_data.get("berthName", "unknown")
+        port_to_visit = digitraffic_data.get("portToVisit", "unknown")
+
+        # Build destination string, excluding unknown or "ei tiedossa" values
+        destination_parts = [port_to_visit]
+        if port_area_name.lower() not in ["unknown", "ei tiedossa"]:
+            destination_parts.append(port_area_name)
+        if berth_name.lower() not in ["unknown", "ei tiedossa"]:
+            destination_parts.append(berth_name)
+        destination = "/".join(destination_parts)
 
         # Agent information
         agent_name = digitraffic_data.get("agentName", "unknown")
@@ -42,7 +51,7 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             "declaration_id": f"DECL-PT-{port_call_id}",
             "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "call_id": str(port_call_id),
-            "remarks": f"Vessel {vessel_name} (IMO: {imo_lloyds}) port call information",
+            "remarks": f"{vessel_name} (IMO: {imo_lloyds}) port arrival to {destination}",
 
             # Required fields for ArrivalTransportEvent
             "arrival_datetime": ata or eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),

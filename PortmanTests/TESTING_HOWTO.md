@@ -85,9 +85,15 @@ py -0
 ```
 
 ## Activate the initialized virtual environment
+Unix:
 ```bash
-.venv\Scripts\activate
+.myenv\Scripts\activate
 ```
+Windows:
+```powershell
+.\myenv\Scripts\activate
+```
+
 
 ### 1. Install required packages/libraries needed for testing:
 ```bash
