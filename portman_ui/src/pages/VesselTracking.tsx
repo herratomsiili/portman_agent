@@ -1,23 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
+  Alert,
   Box,
-  Paper,
-  Typography,
-  Grid,
   Card,
   CardContent,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
   Chip,
   CircularProgress,
-  Alert
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Typography
 } from '@mui/material';
-import { api } from '../services/api';
-import { mockPortCalls, mockTrackedVessels } from '../data/mockData';
-import { PortCall } from '../types';
+import api from '../services/api';
+import {AISFeature, PortCall} from '../types';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+
+// Fix Leaflet marker icons
+const icon = L.icon({
+  iconUrl: '/images/marker-icon.png',
+  iconRetinaUrl: '/images/marker-icon-2x.png',
+  shadowUrl: '/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41]
+});
+
+L.Marker.prototype.options.icon = icon;
 
 const VesselTracking: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('all');
@@ -25,6 +40,45 @@ const VesselTracking: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [portCalls, setPortCalls] = useState<PortCall[]>([]);
+  const [vesselLocations, setVesselLocations] = useState<AISFeature[]>([]);
+  const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<{[key: string]: L.Marker}>({});
+
+  // Initialize map
+  useEffect(() => {
+    const initMap = () => {
+      const mapElement = document.getElementById('map');
+      console.log('Map element:', mapElement);
+      
+      if (mapElement && !mapRef.current) {
+        try {
+          mapRef.current = L.map(mapElement).setView([60.1699, 24.9384], 7);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+          }).addTo(mapRef.current);
+          console.log('Map initialized successfully');
+        } catch (err) {
+          console.error('Error initializing map:', err);
+        }
+      }
+    };
+
+    // Try to initialize map immediately
+    initMap();
+
+    // If map element is not found, try again after a short delay
+    if (!document.getElementById('map')) {
+      const timer = setTimeout(initMap, 1000);
+      return () => clearTimeout(timer);
+    }
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -33,27 +87,65 @@ const VesselTracking: React.FC = () => {
       setError(null);
 
       try {
-        // In a production environment, this would be an actual API call
-        // For now, we'll use our mock data with a simulated delay
+        const [portCallsResponse, locationsResponse] = await Promise.all([
+          api.getPortCalls(),
+          api.getVesselLocations()
+        ]);
 
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        setPortCalls(portCallsResponse);
+        setVesselLocations(locationsResponse.features);
 
-        // Use mock data
-        setPortCalls(mockPortCalls);
+        // Update markers on the map
+        if (mapRef.current) {
+          // Clear old markers
+          Object.values(markersRef.current).forEach(marker => marker.remove());
+          markersRef.current = {};
 
-        // In a real implementation, we would use:
-        // const response = await api.getPortCalls();
-        // setPortCalls(response);
+          // Add new markers
+          locationsResponse.features.forEach(feature => {
+            const [lng, lat] = feature.geometry.coordinates;
+            const marker = L.marker([lat, lng], {
+              title: `MMSI: ${feature.mmsi}\nSOG: ${feature.properties.sog} knots\nCOG: ${feature.properties.cog}°`
+            }).addTo(mapRef.current!);
+            
+            markersRef.current[feature.mmsi] = marker;
+          });
+        }
       } catch (err) {
-        console.error('Error fetching vessel tracking data:', err);
-        setError('Failed to load vessel tracking data. Please try again later.');
+        console.error('Error fetching data:', err);
+        setError('Failed to load data. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
+
+    // Set up polling for vessel locations
+    const intervalId = setInterval(async () => {
+      try {
+        const locationsResponse = await api.getVesselLocations();
+        setVesselLocations(locationsResponse.features);
+
+        // Update marker positions
+        if (mapRef.current) {
+          locationsResponse.features.forEach(feature => {
+            const [lng, lat] = feature.geometry.coordinates;
+            if (markersRef.current[feature.mmsi]) {
+              markersRef.current[feature.mmsi].setLatLng([lat, lng]);
+            } else {
+              markersRef.current[feature.mmsi] = L.marker([lat, lng], {
+                title: `MMSI: ${feature.mmsi}\nSOG: ${feature.properties.sog} knots\nCOG: ${feature.properties.cog}°`
+              }).addTo(mapRef.current!);
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Error updating vessel locations:', err);
+      }
+    }, 60000); // Update every minute
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleStatusChange = (event: SelectChangeEvent) => {
@@ -82,254 +174,133 @@ const VesselTracking: React.FC = () => {
 
   if (loading) {
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-          <CircularProgress />
-        </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
     );
   }
 
+  const position: [number, number] = [51.505, -0.09]; // Default position for the map
+
   return (
-      <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h4" gutterBottom component="div">
-          Vessel Tracking
-        </Typography>
+    <Box sx={{ flexGrow: 1 }}>
+      <Typography variant="h4" gutterBottom component="div">
+        Vessel Tracking
+      </Typography>
 
-        {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {error}
-            </Alert>
-        )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
-        {/* Filters */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id="status-filter-label">Status</InputLabel>
-              <Select
-                  labelId="status-filter-label"
-                  id="status-filter"
-                  value={filterStatus}
-                  label="Status"
-                  onChange={handleStatusChange}
-              >
-                <MenuItem value="all">All Statuses</MenuItem>
-                <MenuItem value="ACTIVE">Active</MenuItem>
-                <MenuItem value="SCHEDULED">Scheduled</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id="port-filter-label">Port</InputLabel>
-              <Select
-                  labelId="port-filter-label"
-                  id="port-filter"
-                  value={filterPort}
-                  label="Port"
-                  onChange={handlePortChange}
-              >
-                <MenuItem value="all">All Ports</MenuItem>
-                {uniquePorts.map(port => (
-                    <MenuItem key={port} value={port}>{port}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+      {/* Filters */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth>
+            <InputLabel id="status-filter-label">Status</InputLabel>
+            <Select
+              labelId="status-filter-label"
+              id="status-filter"
+              value={filterStatus}
+              label="Status"
+              onChange={handleStatusChange}
+            >
+              <MenuItem value="all">All Statuses</MenuItem>
+              <MenuItem value="ACTIVE">Active</MenuItem>
+              <MenuItem value="SCHEDULED">Scheduled</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
-
-        {/* Map Visualization */}
-        <Paper
-            sx={{
-              height: 500,
-              width: '100%',
-              backgroundColor: '#e6f2ff',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-        >
-          <Typography variant="h5" color="primary" gutterBottom>
-            Interactive Map Visualization
-          </Typography>
-          <Typography variant="body1" align="center" sx={{ maxWidth: '80%', mb: 2 }}>
-            This would be an interactive map showing vessel locations and port calls.
-            In a production implementation, this would use Leaflet or Google Maps API.
-          </Typography>
-
-          {/* Simulate map markers for vessels */}
-          {filteredVessels.map((call, index) => {
-            // Generate random positions for demo purposes
-            const left = 10 + (index * 15) % 80;
-            const top = 20 + (index * 20) % 60;
-
-            return (
-                <Box
-                    key={call.portcallid}
-                    sx={{
-                      position: 'absolute',
-                      left: `${left}%`,
-                      top: `${top}%`,
-                      transform: 'translate(-50%, -50%)',
-                      zIndex: 10,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center'
-                    }}
-                >
-                  <Box
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        backgroundColor: call.ata !== undefined ? 'green' : 'blue',
-                        border: '2px solid white',
-                        boxShadow: '0 0 5px rgba(0,0,0,0.3)',
-                        cursor: 'pointer',
-                        '&:hover': {
-                          transform: 'scale(1.2)',
-                          boxShadow: '0 0 8px rgba(0,0,0,0.5)',
-                        }
-                      }}
-                  />
-                  <Typography
-                      variant="caption"
-                      sx={{
-                        mt: 0.5,
-                        backgroundColor: 'rgba(255,255,255,0.7)',
-                        px: 1,
-                        borderRadius: 1,
-                        fontWeight: 'bold'
-                      }}
-                  >
-                    {call.vesselname}
-                  </Typography>
-                </Box>
-            );
-          })}
-
-          {/* Simulate port locations */}
-          {Array.from(new Set(portCalls.map(call => call.portareaname))).map((portName, index) => {
-            // Generate random positions for demo purposes
-            const left = 15 + (index * 25) % 70;
-            const top = 30 + (index * 15) % 50;
-
-            return (
-                <Box
-                    key={portName}
-                    sx={{
-                      position: 'absolute',
-                      left: `${left}%`,
-                      top: `${top}%`,
-                      transform: 'translate(-50%, -50%)',
-                      zIndex: 5,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center'
-                    }}
-                >
-                  <Box
-                      sx={{
-                        width: 15,
-                        height: 15,
-                        backgroundColor: 'red',
-                        border: '2px solid white',
-                        boxShadow: '0 0 5px rgba(0,0,0,0.3)',
-                        cursor: 'pointer',
-                        '&:hover': {
-                          transform: 'scale(1.2)',
-                          boxShadow: '0 0 8px rgba(0,0,0,0.5)',
-                        }
-                      }}
-                  />
-                  <Typography
-                      variant="caption"
-                      sx={{
-                        mt: 0.5,
-                        backgroundColor: 'rgba(255,255,255,0.7)',
-                        px: 1,
-                        borderRadius: 1,
-                        fontWeight: 'bold'
-                      }}
-                  >
-                    {portName}
-                  </Typography>
-                </Box>
-            );
-          })}
-        </Paper>
-
-        {/* Vessel List */}
-        <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
-          Tracked Vessels
-        </Typography>
-
-        <Grid container spacing={2}>
-          {filteredVessels.map(call => (
-              <Grid item xs={12} sm={6} md={4} key={call.portcallid}>
-                <Card>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <Typography variant="h6" component="div">
-                        {call.vesselname}
-                      </Typography>
-                      <Chip
-                          label={call.ata !== undefined ? 'Active' : 'Scheduled'}
-                          color={
-                            call.ata !== undefined
-                                ? 'success'
-                                : 'primary'
-                          }
-                          size="small"
-                      />
-                    </Box>
-                    <Typography color="text.secondary" gutterBottom>
-                      IMO: {call.imolloyds}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1.5 }}>
-                      {call.portareaname} - {call.berthname}
-                    </Typography>
-                    <Grid container spacing={1}>
-                      <Grid item xs={6}>
-                        <Typography variant="caption" display="block">
-                          ETA: {call.eta ? new Date(call.eta).toLocaleString() : 'N/A'}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="caption" display="block">
-                          ETD: {call.etd ? new Date(call.etd).toLocaleString() : 'N/A'}
-                        </Typography>
-                      </Grid>
-                      {call.ata && (
-                          <Grid item xs={6}>
-                            <Typography variant="caption" display="block">
-                              ATA: {new Date(call.ata).toLocaleString()}
-                            </Typography>
-                          </Grid>
-                      )}
-                      {call.atd && (
-                          <Grid item xs={6}>
-                            <Typography variant="caption" display="block">
-                              ATD: {new Date(call.atd).toLocaleString()}
-                            </Typography>
-                          </Grid>
-                      )}
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </Grid>
-          ))}
-          {filteredVessels.length === 0 && (
-              <Grid item xs={12}>
-                <Paper sx={{ p: 3, textAlign: 'center' }}>
-                  <Typography>No vessels match the selected filters</Typography>
-                </Paper>
-              </Grid>
-          )}
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth>
+            <InputLabel id="port-filter-label">Port</InputLabel>
+            <Select
+              labelId="port-filter-label"
+              id="port-filter"
+              value={filterPort}
+              label="Port"
+              onChange={handlePortChange}
+            >
+              <MenuItem value="all">All Ports</MenuItem>
+              {uniquePorts.map(port => (
+                <MenuItem key={port} value={port}>{port}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
-      </Box>
+      </Grid>
+
+      {/* Map */}
+      {/*<Paper*/}
+      {/*  id="map"*/}
+      {/*  sx={{*/}
+      {/*    height: 500,*/}
+      {/*    width: '100%',*/}
+      {/*    mb: 3,*/}
+      {/*    '& .leaflet-container': {*/}
+      {/*      height: '100%',*/}
+      {/*      width: '100%'*/}
+      {/*    }*/}
+      {/*  }}*/}
+      {/*/>*/}
+
+      <MapContainer
+          center={position}
+          zoom={13}
+          scrollWheelZoom={true}
+          style={{ minHeight: '100vh', minWidth: '100vw' }}
+      >
+        <TileLayer
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Marker position={position}>
+          <Popup>
+            A pretty CSS3 popup. <br /> Easily customizable.
+          </Popup>
+        </Marker>
+      </MapContainer>
+
+
+      {/* Vessel List */}
+      <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
+        Tracked Vessels ({vesselLocations.length} active)
+      </Typography>
+
+      <Grid container spacing={2}>
+        {vesselLocations.map(vessel => (
+          <Grid item xs={12} sm={6} md={4} key={vessel.mmsi}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <Typography variant="h6" component="div">
+                    MMSI: {vessel.mmsi}
+                  </Typography>
+                  <Chip
+                    label={`SOG: ${vessel.properties.sog} knots`}
+                    color="primary"
+                    size="small"
+                  />
+                </Box>
+                <Typography color="text.secondary" gutterBottom>
+                  Position: {vessel.geometry.coordinates[1].toFixed(6)}, {vessel.geometry.coordinates[0].toFixed(6)}
+                </Typography>
+                <Typography variant="body2">
+                  Course: {vessel.properties.cog}°
+                </Typography>
+                <Typography variant="body2">
+                  Heading: {vessel.properties.heading}°
+                </Typography>
+                <Typography variant="body2">
+                  Last Update: {new Date(vessel.properties.timestampExternal).toLocaleString()}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 };
 

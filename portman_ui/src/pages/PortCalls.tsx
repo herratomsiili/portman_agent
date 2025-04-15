@@ -192,6 +192,7 @@ const PortCalls: React.FC = () => {
                         label={call.ata ? 'Arrived' : 'Expected'}
                         color={call.ata ? 'success' : 'primary'}
                         size="small"
+                        data-cy="status-chip"
                       />
                     </TableCell>
                   </TableRow>

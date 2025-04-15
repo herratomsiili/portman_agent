@@ -30,11 +30,18 @@ describe('Port Calls', () => {
   it('should display vessel information in table rows', () => {
     cy.get('tbody tr').first().within(() => {
       // Check vessel name and IMO exists
+      cy.dataCy('vessel-name').should('exist')
       cy.dataCy('vessel-imo').should('exist')
-      
+
       // Check port information exists
       cy.dataCy('port-area').should('not.be.empty')
-      
+      cy.dataCy('berth-name').should('not.be.empty')
+
+      // Check ETA, ATA, ETD cells exist
+      cy.dataCy('eta-value').should('exist')
+      cy.dataCy('ata-value').should('exist')
+      cy.dataCy('etd-value').should('exist')
+
       // Check status chip exists
       cy.dataCy('status-chip').should('exist')
     })
@@ -45,10 +52,10 @@ describe('Port Calls', () => {
     cy.get('tbody tr').first().find('[data-cy=vessel-name]').invoke('text').then((text) => {
       // Use part of the vessel name for search
       const searchTerm = text.substring(0, 3)
-      
+
       // Type the search term
       cy.dataCy('portcalls-search').type(searchTerm)
-      
+
       // Verify filtered results contain the search term
       cy.dataCy('portcalls-table-body').find('tr').should('have.length.at.least', 1)
       cy.dataCy('portcalls-table-body').find('tr').first().should('contain', searchTerm)
@@ -91,17 +98,17 @@ describe('Port Calls', () => {
         res.delay = 2000
       })
     }).as('getPortCalls')
-    
+
     // Reload the page
     cy.visit('/port-calls')
-    
+
     // Check loading indicator appears
     // cy.dataCy('portcalls-loading').should('be.visible')
-    
+
     // Wait for data to load
     cy.wait('@getPortCalls')
-    
+
     // Check table appears after loading
     cy.dataCy('portcalls-table-container').should('be.visible')
   })
-}) 
+})

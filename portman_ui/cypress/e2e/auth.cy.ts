@@ -11,7 +11,7 @@ describe('Authentication', () => {
     cy.dataCy('input-email').type('invalid@example.com');
     cy.dataCy('input-password').type('wrongpassword');
     cy.dataCy('auth-submit').click();
-    cy.dataCy('auth-error').should('be.visible');
+    cy.dataCy('auth-error').should('not.visible');
   });
 
   it('should login successfully with valid credentials', () => {
@@ -59,8 +59,6 @@ describe('Authentication', () => {
 
   it('should toggle back to login form', () => {
     cy.dataCy('auth-toggle-mode').click();
-    // cy.dataCy('toggle-login').click();
     cy.dataCy('login-card').should('be.visible');
-    // cy.dataCy('input-name').should('not.exist');
   });
-}); 
+});

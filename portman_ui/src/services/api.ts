@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { PortCall, ArrivalUpdate } from '../types';
-import { mockPortCalls, mockArrivalUpdates, mockTrackedVessels } from '../data/mockData';
+import { AISResponse, ArrivalUpdate, PortCall } from '../types';
+import { mockArrivalUpdates, mockPortCalls, mockTrackedVessels } from '../data/mockData';
 
 // Base URL for the API - default to localhost for local development
 const API_BASE_URL = 'https://portman-dev-dab-cont.icyocean-53bae37c.swedencentral.azurecontainerapps.io/api';
@@ -297,6 +297,17 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error('Error updating settings:', error);
+      throw error;
+    }
+  },
+
+  // Digitraffic AIS API (url: https://meri.digitraffic.fi/api/ais/v1/locations)
+  getVesselLocations: async (): Promise<AISResponse> => {
+    try {
+      const response = await axios.get('https://meri.digitraffic.fi/api/ais/v1/locations');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching vessel locations:', error);
       throw error;
     }
   },
