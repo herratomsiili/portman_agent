@@ -14,11 +14,11 @@ on:
 permissions:
   contents: read
 
-env:
-  PYTHON_VERSION: "3.12"
-  DB_NAME: ${{ env.DB_NAME }}
-  DB_USER: ${{ env.DB_USER }}
-  DB_PASSWORD: ${{ env.DB_PASSWORD }}
+#env:
+#  PYTHON_VERSION: "3.12"
+#  DB_NAME: ${{ env.DB_NAME }}
+#  DB_USER: ${{ env.DB_USER }}
+#  DB_PASSWORD: ${{ env.DB_PASSWORD }}
 
 jobs:
   test:
