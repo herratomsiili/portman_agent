@@ -1,47 +1,40 @@
-# UI Testing Guide
+# Portman UI Testing Guide
 
-This document explains the UI testing setup and practices used in the Portman UI project.
+## Overview
+This document outlines the testing strategy and setup for the Portman UI application. We use:
+- **Jest + React Testing Library** for unit and component testing
+- **Cypress** for end-to-end testing
 
-## Testing Libraries
+## Dependencies
 
-The project uses two main testing libraries:
+### Testing Libraries
+- **Jest** (`jest@29.7.0`) - Test runner
+- **React Testing Library** (`@testing-library/react@16.2.0`) - Component testing
+- **Jest DOM** (`@testing-library/jest-dom@6.6.3`) - DOM testing utilities
+- **User Event** (`@testing-library/user-event@13.5.0`) - User interaction testing
+- **Cypress** (`cypress@13.6.4`) - E2E testing
+- **Jest Environment JSDOM** (`jest-environment-jsdom@29.7.0`) - Browser environment for Jest
+- **TS Jest** (`ts-jest@29.3.1`) - TypeScript support for Jest
 
-1. **Jest** - For unit and component testing
-2. **Cypress** - For end-to-end (E2E) testing
+## Test Structure
+- `cypress/e2e/` - End-to-end tests
+- `cypress/support/` - Test support files
+- `src/__tests__/` - Unit and component tests
+- `.github/workflows/tests.yml` - CI/CD test workflow
 
-### Jest
+## Test Types
 
-Jest is used for:
-- Unit testing of individual components
-- Testing component logic and state
-- Testing utility functions
-- Fast feedback during development
+### Unit & Component Tests (Jest + React Testing Library)
+Used for:
+- Testing individual components
+- Testing hooks and utilities
+- Testing component state and props
+- Testing user interactions at component level
 
-#### Key Features
-- Fast test execution
-- Snapshot testing
-- Mocking capabilities
-- Coverage reporting
-- Watch mode for development
-
-#### Usage
-
-```bash
-# Run all Jest tests
-npm test
-
-# Run tests in watch mode (auto-rerun on changes)
-npm run test:watch
-
-# Generate coverage report
-npm run test:coverage
-```
-
-#### Example Test
-
+Example:
 ```typescript
-import { render, screen } from '@testing-library/react';
-import { PortCallCard } from './PortCallCard';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { PortCallCard } from '../components/PortCallCard';
 
 describe('PortCallCard', () => {
   it('renders port call details correctly', () => {
@@ -56,166 +49,147 @@ describe('PortCallCard', () => {
     expect(screen.getByText('Test Vessel')).toBeInTheDocument();
     expect(screen.getByText('ETA: 20.03.2024 10:00')).toBeInTheDocument();
   });
+
+  it('handles click events', () => {
+    const mockOnClick = jest.fn();
+    render(<PortCallCard portCall={mockPortCall} onClick={mockOnClick} />);
+    
+    fireEvent.click(screen.getByRole('button'));
+    expect(mockOnClick).toHaveBeenCalled();
+  });
 });
 ```
 
-### Cypress
+### End-to-End Tests (Cypress)
+Used for:
+- Testing complete user flows
+- Testing integration with backend
+- Testing responsive design
+- Testing error scenarios
 
-Cypress is used for:
-- End-to-end testing
-- User interaction testing
-- Browser automation
-- Visual regression testing
-- Network request testing
+Key endpoints mocked:
+- `/api/voyages` - Port calls list
+- `/api/port-calls/:id` - Individual port call details
+- `/api/arrivals` - Arrival updates
+- `/api/vessels/tracked` - Tracked vessels
+- `/api/auth/*` - Authentication endpoints
+- `/api/settings` - User settings
+- AIS API - Vessel location data
 
-#### Key Features
-- Real browser testing
-- Time-travel debugging
-- Automatic waiting
-- Screenshot and video recording
-- Network request stubbing
+### Test Support (`e2e.ts`)
+- Sets up global test configuration
+- Initializes mock API before each test
+- Adds custom commands (e.g., `dataCy` for data-cy attribute selection)
 
-#### Support Files
+### CI/CD Workflow (`tests.yml`)
+The GitHub Actions workflow:
+1. Sets up test environment
+   - Node.js dependencies
+   - Environment variables
+2. Creates test data
+   - Mock API responses
+3. Runs tests
+   - Jest unit tests
+   - Cypress E2E tests
+4. Uploads test artifacts
+   - Screenshots
+   - Videos
+   - Coverage reports
 
-The `cypress/support/e2e.ts` file is automatically loaded before each end-to-end test. It serves several important purposes:
+## Running Tests
 
-- **Custom Commands**: Defines reusable commands like `dataCy()` which makes it easier to select elements using `data-cy` attributes
-- **TypeScript Support**: Provides type definitions for custom commands
-- **Global Setup**: A place to set up global behavior that should apply to all tests
-- **Stable Selectors**: Encourages the use of `data-cy` attributes for selecting elements, which makes tests more resilient to changes in CSS or HTML structure
-
-Example usage in tests:
-```typescript
-// Instead of
-cy.get('[data-cy=submit-button]').click()
-
-// You can use
-cy.dataCy('submit-button').click()
-```
-
-When writing components, add `data-cy` attributes to elements you want to test:
-```jsx
-<button data-cy="submit-button">Submit</button>
-```
-
-This approach helps separate testing concerns from styling or structural concerns, making tests more maintainable.
-
-#### Usage
-
+### Available Scripts
 ```bash
-# Run all Cypress tests
+# Run Jest tests
+npm test
+
+# Run Jest tests in watch mode
+npm run test:watch
+
+# Run Jest tests with coverage
+npm run test:coverage
+
+# Run Cypress tests
 npm run test:e2e
 
 # Open Cypress Test Runner
 npm run test:e2e:open
-```
 
-#### Example Test
+# Run Cypress tests in dev mode (with dev server)
+npm run test:e2e:dev
 
-```typescript
-describe('Port Calls Page', () => {
-  beforeEach(() => {
-    cy.visit('/portcalls');
-  });
-
-  it('displays port calls table', () => {
-    cy.get('table').should('exist');
-    cy.get('tr').should('have.length.at.least', 1);
-  });
-
-  it('filters port calls', () => {
-    cy.get('input[placeholder="Search..."]').type('Test Vessel');
-    cy.get('tr').should('have.length.at.least', 1);
-  });
-});
-```
-
-## Testing Strategy
-
-### Unit Tests (Jest)
-- Test individual components in isolation
-- Mock external dependencies
-- Focus on component logic and state
-- Use React Testing Library for component testing
-- Aim for high coverage of business logic
-
-### E2E Tests (Cypress)
-- Test complete user flows
-- Test critical paths
-- Test integration with backend
-- Test responsive design
-- Test error handling
-
-## Best Practices
-
-1. **Test Organization**
-   - Keep tests close to the code they test
-   - Use descriptive test names
-   - Group related tests using `describe` blocks
-
-2. **Component Testing**
-   - Test component behavior, not implementation
-   - Use `data-testid` attributes for stable selectors
-   - Mock external dependencies
-   - Test both success and error cases
-
-3. **E2E Testing**
-   - Test complete user journeys
-   - Use realistic data
-   - Test error scenarios
-   - Test responsive behavior
-   - Use fixtures for consistent data
-
-4. **Performance**
-   - Keep tests fast and focused
-   - Use appropriate test types for different needs
-   - Run Jest tests during development
-   - Run Cypress tests before deployment
-
-## Running All Tests
-
-To run both Jest and Cypress tests:
-
-```bash
+# Run all tests (Jest + Cypress)
 npm run test:all
 ```
 
-This will:
-1. Run all Jest tests
-2. Run all Cypress tests
-3. Generate coverage reports
-4. Save test artifacts
+### CI/CD
+Tests run automatically on:
+- Push to main/develop branches
+- Pull requests to main/develop
 
-## CI/CD Integration
+## Test Data
+Test data is managed in:
+- `cypress/support/mock-api.ts` - API mock responses
+- `src/__tests__/mocks/` - Jest mock data
 
-Tests are automatically run in CI/CD pipeline:
-- Jest tests run on every push
-- Cypress tests run on pull requests
-- Coverage reports are generated
-- Test results are published as artifacts
+## Best Practices
+1. Use data-cy attributes for Cypress tests
+2. Use data-testid for Jest tests
+3. Keep mock data consistent with UI expectations
+4. Test both success and error scenarios
+5. Maintain test isolation
+6. Use meaningful test descriptions
+7. Follow the testing pyramid:
+   - More unit tests than component tests
+   - More component tests than E2E tests
+
+## Test Organization
+
+### Unit & Component Tests
+- `src/__tests__/components/` - Component tests
+- `src/__tests__/hooks/` - Custom hooks tests
+- `src/__tests__/utils/` - Utility function tests
+- `src/__tests__/mocks/` - Mock data and functions
+
+### E2E Tests
+- `auth.cy.ts` - Authentication flows
+- `dashboard.cy.ts` - Dashboard functionality
+- `portcalls.cy.ts` - Port calls management
+
+### Test Data Structure
+Each test file should:
+1. Set up required mock data
+2. Test user interactions
+3. Verify expected outcomes
+4. Clean up after tests
 
 ## Troubleshooting
 
 ### Common Issues
+1. **Test Timeouts**
+   - Check mock API responses
+   - Verify network intercepts
+   - Adjust timeouts in `cypress.config.ts`
 
-1. **Tests are slow**
-   - Use appropriate test types
-   - Mock heavy operations
-   - Run tests in parallel when possible
+2. **Failed Assertions**
+   - Verify data-cy attributes
+   - Check mock data structure
+   - Review component state
 
-2. **Flaky tests**
-   - Use proper waiting strategies
-   - Avoid time-dependent tests
-   - Use stable selectors
+3. **CI/CD Failures**
+   - Check environment variables
+   - Verify test setup
+   - Review test artifacts
 
-3. **Coverage issues**
-   - Review uncovered code
-   - Add missing tests
-   - Consider if coverage is needed
+4. **Jest Test Failures**
+   - Check component props
+   - Verify mock implementations
+   - Review test setup and teardown
 
-### Getting Help
-
-- Check Jest documentation: https://jestjs.io/
-- Check Cypress documentation: https://docs.cypress.io/
-- Review test examples in the project
-- Ask for help in team channels 
+## Contributing
+When adding new tests:
+1. Follow existing patterns
+2. Use appropriate test types
+3. Use data-cy/data-testid attributes
+4. Update mock data as needed
+5. Document new test cases 

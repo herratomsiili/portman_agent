@@ -1,5 +1,8 @@
 /// <reference types="cypress" />
 
+import './commands';
+import { mockApi } from './mock-api';
+
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -15,5 +18,9 @@ declare global {
 Cypress.Commands.add('dataCy', (value: string) => {
   return cy.get(`[data-cy=${value}]`)
 })
+
+beforeEach(() => {
+  mockApi.setup();
+});
 
 export {} 

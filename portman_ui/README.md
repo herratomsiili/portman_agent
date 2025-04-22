@@ -96,3 +96,7 @@ portman-ui/
 ├── UI_TESTING.md       # UI testing readme
 ├── vite.config.ts      # Vite config
 ```
+
+## Testing
+
+Refer to `UI_TESTING.md`
