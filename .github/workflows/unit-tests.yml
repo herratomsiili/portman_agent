@@ -14,11 +14,13 @@ on:
 permissions:
   contents: read
 
-#env:
-#  PYTHON_VERSION: "3.12"
-#  DB_NAME: ${{ env.DB_NAME }}
-#  DB_USER: ${{ env.DB_USER }}
-#  DB_PASSWORD: ${{ env.DB_PASSWORD }}
+env:
+  DB_HOST: ${{ secrets.TEST_DB_HOST }}
+  DB_NAME: ${{ secrets.TEST_DB_NAME }}
+  DB_USER: ${{ secrets.TEST_DB_USER }}
+  DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+  DB_PORT: ${{ secrets.TEST_DB_PORT }}
+  PYTHON_VERSION: "3.12"
 
 jobs:
   test:
@@ -32,7 +34,11 @@ jobs:
           POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +54,27 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
+      - name: Populate test database
+        env:
+          DB_HOST: ${{ env.DB_HOST }}
+          DB_NAME: ${{ env.DB_NAME }}
+          DB_USER: ${{ env.DB_USER }}
+          DB_PASSWORD: ${{ env.DB_PASSWORD }}
+          DB_PORT: ${{ env.DB_PORT }}
+        run: |
+          # Create test data
+          python -c "
+          from PortmanTests.test_data import create_test_data
+          create_test_data()
+          "
+
       - name: Run tests
+        env:
+          DB_HOST: ${{ env.DB_HOST }}
+          DB_NAME: ${{ env.DB_NAME }}
+          DB_USER: ${{ env.DB_USER }}
+          DB_PASSWORD: ${{ env.DB_PASSWORD }}
+          DB_PORT: ${{ env.DB_PORT }}
         run: |
           pytest PortmanTests/ --cov=. --cov-report=xml
 

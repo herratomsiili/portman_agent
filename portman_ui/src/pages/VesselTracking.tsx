@@ -12,13 +12,15 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  Typography
+  Typography,
+  TablePagination
 } from '@mui/material';
 import api from '../services/api';
 import {AISFeature, PortCall} from '../types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+// import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+import MapView from "../components/MapView";
 
 // Fix Leaflet marker icons
 const icon = L.icon({
@@ -41,44 +43,10 @@ const VesselTracking: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [portCalls, setPortCalls] = useState<PortCall[]>([]);
   const [vesselLocations, setVesselLocations] = useState<AISFeature[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<{[key: string]: L.Marker}>({});
-
-  // Initialize map
-  useEffect(() => {
-    const initMap = () => {
-      const mapElement = document.getElementById('map');
-      console.log('Map element:', mapElement);
-      
-      if (mapElement && !mapRef.current) {
-        try {
-          mapRef.current = L.map(mapElement).setView([60.1699, 24.9384], 7);
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-          }).addTo(mapRef.current);
-          console.log('Map initialized successfully');
-        } catch (err) {
-          console.error('Error initializing map:', err);
-        }
-      }
-    };
-
-    // Try to initialize map immediately
-    initMap();
-
-    // If map element is not found, try again after a short delay
-    if (!document.getElementById('map')) {
-      const timer = setTimeout(initMap, 1000);
-      return () => clearTimeout(timer);
-    }
-
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
-    };
-  }, []);
 
   // Fetch data on component mount
   useEffect(() => {
@@ -166,11 +134,17 @@ const VesselTracking: React.FC = () => {
       if (filterStatus === 'ACTIVE' && !isActive) return false;
       if (filterStatus === 'SCHEDULED' && isActive) return false;
     }
-    if (filterPort !== 'all' && call.portareaname !== filterPort) {
-      return false;
-    }
-    return true;
+    return !(filterPort !== 'all' && call.portareaname !== filterPort);
   });
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   if (loading) {
     return (
@@ -179,8 +153,6 @@ const VesselTracking: React.FC = () => {
       </Box>
     );
   }
-
-  const position: [number, number] = [51.505, -0.09]; // Default position for the map
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -245,22 +217,32 @@ const VesselTracking: React.FC = () => {
       {/*  }}*/}
       {/*/>*/}
 
-      <MapContainer
-          center={position}
-          zoom={13}
-          scrollWheelZoom={true}
-          style={{ minHeight: '100vh', minWidth: '100vw' }}
-      >
-        <TileLayer
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Marker position={position}>
-          <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
-          </Popup>
-        </Marker>
-      </MapContainer>
+      {/*<MapContainer*/}
+      {/*    center={position}*/}
+      {/*    zoom={13}*/}
+      {/*    scrollWheelZoom={true}*/}
+      {/*    style={{ minHeight: '100vh', minWidth: '100vw' }}*/}
+      {/*>*/}
+      {/*  <TileLayer*/}
+      {/*      attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'*/}
+      {/*      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"*/}
+      {/*  />*/}
+      {/*  <Marker position={position}>*/}
+      {/*    <Popup>*/}
+      {/*      A pretty CSS3 popup. <br /> Easily customizable.*/}
+      {/*    </Popup>*/}
+      {/*  </Marker>*/}
+      {/*</MapContainer>*/}
+
+      <MapView
+        vessels={vesselLocations.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map(vessel => ({
+          mmsi: vessel.mmsi,
+          lat: vessel.geometry.coordinates[1],
+          lon: vessel.geometry.coordinates[0],
+          sog: vessel.properties.sog,
+          cog: vessel.properties.cog,
+        }))}
+      />
 
 
       {/* Vessel List */}
@@ -269,7 +251,7 @@ const VesselTracking: React.FC = () => {
       </Typography>
 
       <Grid container spacing={2}>
-        {vesselLocations.map(vessel => (
+        {vesselLocations.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map(vessel => (
           <Grid item xs={12} sm={6} md={4} key={vessel.mmsi}>
             <Card>
               <CardContent>
@@ -300,6 +282,17 @@ const VesselTracking: React.FC = () => {
           </Grid>
         ))}
       </Grid>
+
+      <TablePagination
+        component="div"
+        count={vesselLocations.length}
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        sx={{ mt: 2 }}
+      />
     </Box>
   );
 };
