@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 from PortmanTrigger.portman import (
     process_query,
     save_results_to_db,
-    fetch_data_from_api
+    fetch_data_from_api,
+    get_db_connection
 )
 
 def test_end_to_end_flow(test_db_connection, sample_port_call_data):
@@ -92,7 +93,7 @@ def test_error_handling(test_db_connection):
     assert len(results) == 0
     
     # Test database connection error
-    with patch('pg8000.connect', side_effect=Exception("Connection failed")):
+    with patch('PortmanTrigger.portman.get_db_connection', side_effect=Exception("Connection failed")):
         with pytest.raises(Exception) as exc_info:
-            save_results_to_db(results)
+            save_results_to_db([{"portCallId": 1, "vesselName": "Test Vessel"}])
         assert "Connection failed" in str(exc_info.value) 
