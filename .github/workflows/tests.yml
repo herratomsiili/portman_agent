@@ -1,0 +1,89 @@
+name: Unit & UI Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  DB_HOST: ${{ secrets.TEST_DB_HOST }}
+  DB_NAME: ${{ secrets.TEST_DB_NAME }}
+  DB_USER: ${{ secrets.TEST_DB_USER }}
+  DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+  DB_PORT: ${{ secrets.TEST_DB_PORT }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: portman_ui/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd portman_ui
+        npm ci
+        npm install cypress --save-dev
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Create database
+      run: |
+        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d postgres -p $DB_PORT -c "CREATE DATABASE $DB_NAME;" || true
+
+    - name: Create database tables
+      run: |
+        python -c "
+        from PortmanTrigger.portman import create_database_and_tables
+        create_database_and_tables()
+        "
+
+    - name: Populate test database
+      run: |
+        python -c "
+        from PortmanTests.test_data import create_test_data
+        create_test_data()
+        "
+
+    - name: Run unit tests
+      run: |
+        pytest PortmanTests/unit_tests/ --cov=PortmanTrigger --cov-report=xml
+
+    - name: Run UI tests
+      run: |
+        cd portman_ui
+        npm run test:ci
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          portman_ui/cypress/screenshots
+          portman_ui/cypress/videos
+          coverage.xml
+        retention-days: 7 
