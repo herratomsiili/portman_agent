@@ -3,6 +3,7 @@
 import pytest
 import pg8000
 import os
+from datetime import datetime, timedelta
 
 @pytest.fixture(scope="session")
 def test_db_connection():
@@ -80,38 +81,39 @@ def setup_test_tables(test_db_cursor):
 @pytest.fixture
 def sample_port_call_data():
     """Sample port call data for testing."""
+    now = datetime.utcnow()
     return {
-        "portCallId": 12345,
-        "imoLloyds": 9876543,
-        "vesselTypeCode": "CARGO",
-        "vesselName": "Test Vessel",
-        "prevPort": "Helsinki",
-        "portToVisit": "Turku",
-        "nextPort": "Stockholm",
+        "portCallId": 3190880,
+        "imoLloyds": 9606900,
+        "vesselTypeCode": "20",
+        "vesselName": "Viking Grace",
+        "prevPort": "FIMHQ",
+        "portToVisit": "FITKU",
+        "nextPort": "FILAN",
         "agentInfo": [
-            {"role": 1, "name": "Test Agent"},
-            {"role": 2, "name": "Test Shipping"}
+            {"role": 1, "name": "Viking Line Abp / Helsinki"},
+            {"role": 2, "name": "Viking Line Abp"}
         ],
         "imoInformation": [
             {
                 "imoGeneralDeclaration": "Arrival",
-                "numberOfPassangers": 0,
-                "numberOfCrew": 10
+                "numberOfPassangers": 235,
+                "numberOfCrew": 1849
             },
             {
                 "imoGeneralDeclaration": "Departure",
-                "numberOfPassangers": 0,
-                "numberOfCrew": 10
+                "numberOfPassangers": 188,
+                "numberOfCrew": 1346
             }
         ],
         "portAreaDetails": [{
-            "eta": "2024-03-13T10:00:00Z",
-            "ata": "2024-03-13T10:15:00Z",
-            "portAreaCode": "FI-TKU",
-            "portAreaName": "Turku",
-            "berthCode": "TKU1",
-            "berthName": "Terminal 1",
-            "etd": "2024-03-13T20:00:00Z",
-            "atd": "2024-03-13T20:15:00Z"
+            "eta": (now + timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "ata": None,
+            "portAreaCode": "PASSE",
+            "portAreaName": "Matkustajasatama",
+            "berthCode": "v1",
+            "berthName": "viking1",
+            "etd": (now + timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "atd": None
         }]
     } 

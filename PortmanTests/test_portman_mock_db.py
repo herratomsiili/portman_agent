@@ -12,38 +12,38 @@ class TestPortmanMockDb(unittest.TestCase):
         """Set up test fixtures before each test method."""
         # Test data
         self.sample_port_call = {
-            "portCallId": 12345,
-            "imoLloyds": 9876543,
-            "vesselTypeCode": "CARGO",
-            "vesselName": "Test Vessel",
-            "prevPort": "Helsinki",
-            "portToVisit": "Turku",
-            "nextPort": "Stockholm",
+            "portCallId": 3190880,
+            "imoLloyds": 9606900,
+            "vesselTypeCode": "20",
+            "vesselName": "Viking Grace",
+            "prevPort": "FIMHQ",
+            "portToVisit": "FITKU",
+            "nextPort": "FILAN",
             "agentInfo": [
-                {"role": 1, "name": "Test Agent"},
-                {"role": 2, "name": "Test Shipping"}
+                {"role": 1, "name": "Viking Line Abp / Helsinki"},
+                {"role": 2, "name": "Viking Line Abp"}
             ],
             "imoInformation": [
                 {
                     "imoGeneralDeclaration": "Arrival",
-                    "numberOfPassangers": 0,
-                    "numberOfCrew": 10
+                    "numberOfPassangers": 235,
+                    "numberOfCrew": 1849
                 },
                 {
                     "imoGeneralDeclaration": "Departure",
-                    "numberOfPassangers": 0,
-                    "numberOfCrew": 10
+                    "numberOfPassangers": 188,
+                    "numberOfCrew": 1346
                 }
             ],
             "portAreaDetails": [{
                 "eta": "2024-03-13T10:00:00Z",
-                "ata": "2024-03-13T10:15:00Z",
-                "portAreaCode": "FI-TKU",
-                "portAreaName": "Turku",
-                "berthCode": "TKU1",
-                "berthName": "Terminal 1",
+                "ata": None,
+                "portAreaCode": "PASSE",
+                "portAreaName": "Matkustajasatama",
+                "berthCode": "v1",
+                "berthName": "viking1",
                 "etd": "2024-03-13T20:00:00Z",
-                "atd": "2024-03-13T20:15:00Z"
+                "atd": None
             }]
         }
 
@@ -55,10 +55,10 @@ class TestPortmanMockDb(unittest.TestCase):
         # Verify results
         self.assertEqual(len(results), 1)
         result = results[0]
-        self.assertEqual(result["portCallId"], 12345)
-        self.assertEqual(result["vesselName"], "Test Vessel")
-        self.assertEqual(result["crewOnArrival"], 10)
-        self.assertEqual(result["crewOnDeparture"], 10)
+        self.assertEqual(result["portCallId"], 3190880)
+        self.assertEqual(result["vesselName"], "Viking Grace")
+        self.assertEqual(result["crewOnArrival"], 1849)
+        self.assertEqual(result["crewOnDeparture"], 1346)
 
     @patch('requests.get')
     def test_fetch_data_from_api(self, mock_get):
