@@ -312,9 +312,9 @@ def save_results_to_db(results, conn=None):
 
         if conn is None:
             conn = get_db_connection(DATABASE_CONFIG["dbname"])
+            if conn is None:
+                raise Exception("Failed to connect to database")
 
-        if conn is None:
-            return
         cursor = conn.cursor()
 
         new_arrival_count = 0  # Track the count of new arrivals
@@ -456,6 +456,7 @@ def save_results_to_db(results, conn=None):
 
     except Exception as e:
         log(f"Error saving results to the database: {e}")
+        raise  # Re-raise the exception to be caught by the test
 
 def createArrivalXml(arrival_data):
      # After detecting a new arrival, trigger XML generation and storage
