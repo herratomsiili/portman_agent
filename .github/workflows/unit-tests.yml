@@ -54,6 +54,19 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
+      - name: Create database tables
+        env:
+          DB_HOST: ${{ env.DB_HOST }}
+          DB_NAME: ${{ env.DB_NAME }}
+          DB_USER: ${{ env.DB_USER }}
+          DB_PASSWORD: ${{ env.DB_PASSWORD }}
+          DB_PORT: ${{ env.DB_PORT }}
+        run: |
+          python -c "
+          from PortmanTrigger.portman import create_database_and_tables
+          create_database_and_tables()
+          "
+
       - name: Populate test database
         env:
           DB_HOST: ${{ env.DB_HOST }}
