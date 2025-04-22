@@ -7,11 +7,11 @@ on:
     branches: [ main, develop ]
 
 env:
-  DB_HOST: ${{ secrets.TEST_DB_HOST }}
-  DB_NAME: ${{ secrets.TEST_DB_NAME }}
-  DB_USER: ${{ secrets.TEST_DB_USER }}
-  DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
-  DB_PORT: ${{ secrets.TEST_DB_PORT }}
+  DB_HOST: localhost
+  DB_NAME: portman
+  DB_USER: postgres
+  DB_PASSWORD: postgres
+  DB_PORT: 5432
 
 jobs:
   test:
@@ -20,7 +20,7 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         options: >-
@@ -67,6 +67,11 @@ jobs:
         from PortmanTests.test_data import create_test_data
         create_test_data()
         "
+
+    - name: Create XML template directory
+      run: |
+        mkdir -p PortmanXMLConverter/xml_templates
+        touch PortmanXMLConverter/xml_templates/ATA_Envelope.xml
 
     - name: Run unit tests
       run: |

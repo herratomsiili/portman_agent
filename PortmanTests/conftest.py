@@ -2,6 +2,7 @@
 
 import pytest
 import pg8000
+import os
 
 @pytest.fixture(scope="session")
 def test_db_connection():
@@ -29,8 +30,7 @@ def setup_test_tables(test_db_cursor):
     # Create voyages table
     test_db_cursor.execute("""
         CREATE TABLE IF NOT EXISTS voyages (
-            id SERIAL PRIMARY KEY,
-            portCallId INTEGER,
+            portCallId INTEGER PRIMARY KEY,
             imoLloyds INTEGER,
             vesselTypeCode TEXT,
             vesselName TEXT,
@@ -39,17 +39,20 @@ def setup_test_tables(test_db_cursor):
             nextPort TEXT,
             agentName TEXT,
             shippingCompany TEXT,
-            crewOnArrival INTEGER,
-            crewOnDeparture INTEGER,
             eta TIMESTAMP NULL,
             ata TIMESTAMP NULL,
-            etd TIMESTAMP NULL,
-            atd TIMESTAMP NULL,
             portAreaCode TEXT,
             portAreaName TEXT,
             berthCode TEXT,
             berthName TEXT,
-            created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            etd TIMESTAMP NULL,
+            atd TIMESTAMP NULL,
+            passengersOnArrival INTEGER DEFAULT 0,
+            passengersOnDeparture INTEGER DEFAULT 0,
+            crewOnArrival INTEGER DEFAULT 0,
+            crewOnDeparture INTEGER DEFAULT 0,
+            created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
