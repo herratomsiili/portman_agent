@@ -80,7 +80,7 @@ jobs:
     - name: Run UI tests
       run: |
         cd portman_ui
-        npm run test:ci
+        npm run test:e2e
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
