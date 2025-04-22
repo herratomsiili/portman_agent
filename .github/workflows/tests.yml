@@ -70,7 +70,7 @@ jobs:
 
     - name: Run unit tests
       run: |
-        pytest PortmanTests/unit_tests/ --cov=PortmanTrigger --cov-report=xml
+        pytest PortmanTests/ --cov=. --cov-report=xml
 
     - name: Run UI tests
       run: |
