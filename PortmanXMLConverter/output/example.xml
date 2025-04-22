@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope xmlns=""
+          xmlns:mai="urn:un:unece:uncefact:data:standard:MAI:MMTPlus"
+          xmlns:ata="urn:un:unece:uncefact:data:standard:ATA:MMTPlus"
+          xmlns:qdt="urn:un:unece:uncefact:data:Standard:QualifiedDataType:30"
+          xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30"
+          xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100">
+  <mai:MAI>
+    <mai:ExchangedDocument>
+      <ram:ID>MSGID1617779134129</ram:ID>
+      <ram:TypeCode>ATA</ram:TypeCode>
+      <ram:PurposeCode>9</ram:PurposeCode>
+      <ram:VersionID>1.0</ram:VersionID>
+      <ram:FirstSignatoryDocumentAuthentication>
+        <ram:ActualDateTime>
+          <udt:DateTimeString>2024-05-25T13:25:00Z</udt:DateTimeString>
+        </ram:ActualDateTime>
+      </ram:FirstSignatoryDocumentAuthentication>
+    </mai:ExchangedDocument>
+    <mai:ExchangedDeclaration>
+      <ram:ID>DECL-TEST-001</ram:ID>
+      <ram:DeclarantTradeParty>
+        <ram:ID>TEST123456789</ram:ID>
+        <ram:Name>Test Shipping Ltd.</ram:Name>
+        <ram:RoleCode>AG</ram:RoleCode>
+        <ram:DefinedTradeContact>
+          <ram:PersonName>Test Person</ram:PersonName>
+          <ram:TelephoneUniversalCommunication>
+            <ram:CompleteNumber>123-456-7890</ram:CompleteNumber>
+          </ram:TelephoneUniversalCommunication>
+          <ram:EmailURIUniversalCommunication>
+            <ram:URIID>test@example.com</ram:URIID>
+          </ram:EmailURIUniversalCommunication>
+        </ram:DefinedTradeContact>
+        <ram:PostalTradeAddress>
+          <ram:PostcodeCode>12345</ram:PostcodeCode>
+          <ram:StreetName>Test Street</ram:StreetName>
+          <ram:CityName>Test City</ram:CityName>
+          <ram:CountryID>IT</ram:CountryID>
+          <ram:BuildingNumber>123</ram:BuildingNumber>
+        </ram:PostalTradeAddress>
+      </ram:DeclarantTradeParty>
+    </mai:ExchangedDeclaration>
+    <mai:SpecifiedLogisticsTransportMovement>
+      <ram:CallTransportEvent>
+        <ram:ID>TEST-20240326-001</ram:ID>
+      </ram:CallTransportEvent>
+    </mai:SpecifiedLogisticsTransportMovement>
+  </mai:MAI>
+  <ata:ATA>
+    <ata:ExchangedDocument>
+      <ram:Remarks>Test remarks</ram:Remarks>
+    </ata:ExchangedDocument>
+    <ata:SpecifiedLogisticsTransportMovement>
+      <ram:ArrivalTransportEvent>
+        <ram:ActualArrivalRelatedDateTime>
+          <qdt:DateTimeString>2024-05-25T13:25:00.000+00:00</qdt:DateTimeString>
+        </ram:ActualArrivalRelatedDateTime>
+        <ram:OccurrenceLogisticsLocation>
+          <ram:ID>Test Terminal</ram:ID>
+        </ram:OccurrenceLogisticsLocation>
+      </ram:ArrivalTransportEvent>
+      <ram:CallTransportEvent>
+        <ram:ActualArrivalRelatedDateTime>
+          <qdt:DateTimeString>2024-05-25T13:25:00.000+00:00</qdt:DateTimeString>
+        </ram:ActualArrivalRelatedDateTime>
+        <ram:MaritimeAnchorageIndicator>0</ram:MaritimeAnchorageIndicator>
+      </ram:CallTransportEvent>
+    </ata:SpecifiedLogisticsTransportMovement>
+  </ata:ATA>
+</Envelope> 

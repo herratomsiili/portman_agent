@@ -71,7 +71,7 @@ jobs:
     - name: Create XML template directory
       run: |
         mkdir -p PortmanXMLConverter/xml_templates
-        touch PortmanXMLConverter/xml_templates/ATA_Envelope.xml
+        cp PortmanXMLConverter/output/example.xml PortmanXMLConverter/xml_templates/ATA_Envelope.xml
 
     - name: Run unit tests
       run: |

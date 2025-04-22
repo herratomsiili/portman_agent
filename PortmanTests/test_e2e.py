@@ -43,8 +43,8 @@ def test_end_to_end_flow(test_db_connection, sample_port_call_data):
     
     assert voyage is not None
     assert voyage[0] == sample_port_call_data["portCallId"]  # portCallId
-    assert voyage[3] == sample_port_call_data["vesselTypeCode"]  # vesselTypeCode
-    assert voyage[4] == sample_port_call_data["vesselName"]  # vesselName
+    assert voyage[2] == sample_port_call_data["vesselTypeCode"]  # vesselTypeCode
+    assert voyage[3] == sample_port_call_data["vesselName"]  # vesselName
     
     # Check arrivals table
     cursor.execute("SELECT * FROM arrivals WHERE portCallId = %s", (sample_port_call_data["portCallId"],))
@@ -93,5 +93,6 @@ def test_error_handling(test_db_connection):
     
     # Test database connection error
     with patch('pg8000.connect', side_effect=Exception("Connection failed")):
-        with pytest.raises(Exception):
-            save_results_to_db(results) 
+        with pytest.raises(Exception) as exc_info:
+            save_results_to_db(results)
+        assert "Connection failed" in str(exc_info.value) 
