@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-  CircularProgress,
-  Alert,
-  TablePagination,
-  Paper
-} from '@mui/material';
+import { Box, Typography, Grid } from '@mui/material';
 import { api } from '../services/api';
 import { PortCall } from '../types';
+import SummaryCards from '../components/dashboard/SummaryCards';
+import UpcomingArrivals from '../components/dashboard/UpcomingArrivals';
+import ActiveVessels from '../components/dashboard/ActiveVessels';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorAlert from '../components/common/ErrorAlert';
 
 const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -25,30 +16,15 @@ const Dashboard: React.FC = () => {
   const [activeVesselsPage, setActiveVesselsPage] = useState(0);
   const [activeVesselsRowsPerPage, setActiveVesselsRowsPerPage] = useState(5);
 
-  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        // In a production environment, these would be actual API calls
-        // For now, we'll use our mock data with a simulated delay
-
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Use mock data
-        // setPortCalls(mockPortCalls);
-        // setTrackedVessels(mockTrackedVessels);
-
-        // In a real implementation, we would use:
         const portCallsResponse = await api.getPortCalls();
         setPortCalls(portCallsResponse);
         const mockTrackedVessels = [9902419, 9902420, 9234567, 9456789, 9567890];
-
-
-        // const vesselsResponse = await api.getTrackedVessels();
         setTrackedVessels(mockTrackedVessels);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -68,22 +44,13 @@ const Dashboard: React.FC = () => {
 
   // Get upcoming arrivals (sorted by ETA)
   const upcomingArrivals = [...portCalls]
-      .filter(call => call.ata === undefined)
-      .sort((a, b) => new Date(a.eta).getTime() - new Date(b.eta).getTime())
-      .slice(0, 5);
-
-  const handleActiveVesselsPageChange = (event: unknown, newPage: number) => {
-    setActiveVesselsPage(newPage);
-  };
-
-  const handleActiveVesselsRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setActiveVesselsRowsPerPage(parseInt(event.target.value, 10));
-    setActiveVesselsPage(0);
-  };
+    .filter(call => call.ata === undefined)
+    .sort((a, b) => new Date(a.eta).getTime() - new Date(b.eta).getTime())
+    .slice(0, 5);
 
   // Get active vessels (sorted by ATA)
   const activeVesselsList = [...portCalls]
-    .filter((call: PortCall) => call.ata !== undefined)
+    .filter(call => call.ata !== undefined)
     .sort((a, b) => {
       const dateA = a.ata ? new Date(a.ata).getTime() : 0;
       const dateB = b.ata ? new Date(b.ata).getTime() : 0;
@@ -96,12 +63,17 @@ const Dashboard: React.FC = () => {
     activeVesselsPage * activeVesselsRowsPerPage + activeVesselsRowsPerPage
   );
 
+  const handleActiveVesselsPageChange = (event: unknown, newPage: number) => {
+    setActiveVesselsPage(newPage);
+  };
+
+  const handleActiveVesselsRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setActiveVesselsRowsPerPage(parseInt(event.target.value, 10));
+    setActiveVesselsPage(0);
+  };
+
   if (loading) {
-    return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-          <CircularProgress data-cy="dashboard-loading" />
-        </Box>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -110,124 +82,29 @@ const Dashboard: React.FC = () => {
         Dashboard
       </Typography>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }} data-cy="dashboard-error">
-          {error}
-        </Alert>
-      )}
+      {error && <ErrorAlert message={error} />}
 
-      <Grid container spacing={3} sx={{ mb: 4 }} data-cy="summary-cards">
-        <Grid item xs={12} sm={6} md={3} data-cy="card-tracked-vessels">
-          <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" color="primary">Tracked Vessels</Typography>
-            <Typography variant="h3">{trackedVessels.length}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} data-cy="card-active-calls">
-          <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" color="primary">Active Port Calls</Typography>
-            <Typography variant="h3">{activeVessels}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} data-cy="card-scheduled-arrivals">
-          <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" color="primary">Scheduled Arrivals</Typography>
-            <Typography variant="h3">{scheduledVessels}</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3} data-cy="card-passengers">
-          <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" color="primary">Total Passengers</Typography>
-            <Typography variant="h3">{totalPassengers}</Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+      <SummaryCards
+        trackedVesselsCount={trackedVessels.length}
+        activeVesselsCount={activeVessels}
+        scheduledVesselsCount={scheduledVessels}
+        totalPassengers={totalPassengers}
+      />
 
-      {/* Main Content */}
       <Grid container spacing={3} data-cy="dashboard-content">
         <Grid item xs={12} md={6}>
-          <Card elevation={3} data-cy="upcoming-arrivals-card">
-            <CardContent>
-              <Typography variant="h6" gutterBottom data-cy="upcoming-arrivals-title">
-                Upcoming Arrivals
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <List data-cy="upcoming-arrivals-list">
-                {upcomingArrivals.map((call) => (
-                  <React.Fragment key={call.portcallid}>
-                    <ListItem data-cy={`arrival-item-${call.portcallid}`}>
-                      <ListItemText
-                        primary={call.vesselname}
-                        secondary={
-                          <>
-                            <Typography component="span" variant="body2" color="text.primary">
-                              {call.portareaname} - {call.berthname}
-                            </Typography>
-                            {` — ETA: ${new Date(call.eta).toLocaleString()}`}
-                          </>
-                        }
-                      />
-                    </ListItem>
-                    <Divider />
-                  </React.Fragment>
-                ))}
-                {upcomingArrivals.length === 0 && (
-                  <ListItem data-cy="no-upcoming-arrivals">
-                    <ListItemText primary="No upcoming arrivals" />
-                  </ListItem>
-                )}
-              </List>
-            </CardContent>
-          </Card>
+          <UpcomingArrivals arrivals={upcomingArrivals} />
         </Grid>
-
-          {/* Active Vessels */}
-          <Grid item xs={12} md={6}>
-            <Card elevation={3} data-cy="active-vessels-card">
-              <CardContent>
-                <Typography variant="h6" gutterBottom data-cy="active-vessels-title">
-                  Active Vessels
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-                <List data-cy="active-vessels-list">
-                  {paginatedActiveVessels.map((call) => (
-                    <React.Fragment key={call.portcallid}>
-                      <ListItem data-cy={`vessel-item-${call.portcallid}`}>
-                        <ListItemText
-                          primary={call.vesselname}
-                          secondary={
-                            <>
-                              <Typography component="span" variant="body2" color="text.primary">
-                                {call.portareaname} - {call.berthname}
-                              </Typography>
-                              {` — ATA: ${call.ata ? new Date(call.ata).toLocaleString() : 'N/A'}`}
-                            </>
-                          }
-                        />
-                      </ListItem>
-                      <Divider />
-                    </React.Fragment>
-                  ))}
-                  {activeVesselsList.length === 0 && (
-                    <ListItem data-cy="no-active-vessels">
-                      <ListItemText primary="No active vessels" />
-                    </ListItem>
-                  )}
-                </List>
-                <TablePagination
-                  component="div"
-                  count={activeVesselsList.length}
-                  page={activeVesselsPage}
-                  onPageChange={handleActiveVesselsPageChange}
-                  rowsPerPage={activeVesselsRowsPerPage}
-                  onRowsPerPageChange={handleActiveVesselsRowsPerPageChange}
-                  rowsPerPageOptions={[5, 10, 25]}
-                  data-cy="table-pagination-for-active-vessels"
-                />
-              </CardContent>
-            </Card>
-          </Grid>
+        <Grid item xs={12} md={6}>
+          <ActiveVessels
+            vessels={paginatedActiveVessels}
+            page={activeVesselsPage}
+            rowsPerPage={activeVesselsRowsPerPage}
+            onPageChange={handleActiveVesselsPageChange}
+            onRowsPerPageChange={handleActiveVesselsRowsPerPageChange}
+          />
         </Grid>
+      </Grid>
     </Box>
   );
 };

@@ -19,7 +19,6 @@ import api from '../services/api';
 import {AISFeature, PortCall} from '../types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-// import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
 import MapView from "../components/MapView";
 
 // Fix Leaflet marker icons
@@ -202,37 +201,6 @@ const VesselTracking: React.FC = () => {
           </FormControl>
         </Grid>
       </Grid>
-
-      {/* Map */}
-      {/*<Paper*/}
-      {/*  id="map"*/}
-      {/*  sx={{*/}
-      {/*    height: 500,*/}
-      {/*    width: '100%',*/}
-      {/*    mb: 3,*/}
-      {/*    '& .leaflet-container': {*/}
-      {/*      height: '100%',*/}
-      {/*      width: '100%'*/}
-      {/*    }*/}
-      {/*  }}*/}
-      {/*/>*/}
-
-      {/*<MapContainer*/}
-      {/*    center={position}*/}
-      {/*    zoom={13}*/}
-      {/*    scrollWheelZoom={true}*/}
-      {/*    style={{ minHeight: '100vh', minWidth: '100vw' }}*/}
-      {/*>*/}
-      {/*  <TileLayer*/}
-      {/*      attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'*/}
-      {/*      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"*/}
-      {/*  />*/}
-      {/*  <Marker position={position}>*/}
-      {/*    <Popup>*/}
-      {/*      A pretty CSS3 popup. <br /> Easily customizable.*/}
-      {/*    </Popup>*/}
-      {/*  </Marker>*/}
-      {/*</MapContainer>*/}
 
       <MapView
         vessels={vesselLocations.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map(vessel => ({
