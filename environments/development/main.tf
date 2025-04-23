@@ -10,6 +10,7 @@ module "common" {
   admin_password                 = var.admin_password
   storage_account_name           = var.storage_account_name
   environment                    = var.environment
+  static_web_app_location        = var.static_web_app_location
 }
 
 output "admin_username" {
@@ -29,7 +30,11 @@ output "dab_container_app_url" {
   value = module.common.dab_container_app_url
 }
 
-# Load environment-specific variables
-variable "environment" {
-  default = "development"
+output "static_website_url" {
+  value = module.common.static_website_url
+}
+
+output "webui_deployment_token" {
+  value     = module.common.webui_deployment_token
+  sensitive = true
 }
