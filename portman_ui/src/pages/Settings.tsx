@@ -101,7 +101,7 @@ const Settings: React.FC = () => {
                         />
                       }
                       label="Enable Auto-Refresh"
-                      sx={{ mb: 2 }}
+                      sx={{ mb: 2, display: 'flex', alignItems: 'center' }}
                   />
 
                   <FormControlLabel
@@ -113,6 +113,7 @@ const Settings: React.FC = () => {
                         />
                       }
                       label="Dark Mode"
+                      sx={{ display: 'flex', alignItems: 'center' }}
                   />
                 </Box>
               </CardContent>

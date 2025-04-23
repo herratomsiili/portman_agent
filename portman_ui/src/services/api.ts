@@ -1,9 +1,11 @@
 import axios from 'axios';
-import { PortCall, ArrivalUpdate } from '../types';
-import { mockPortCalls, mockArrivalUpdates, mockTrackedVessels } from '../data/mockData';
+import { AISResponse, ArrivalUpdate, PortCall } from '../types';
+import { mockArrivalUpdates, mockPortCalls, mockTrackedVessels } from '../data/mockData';
 
-// Base URL for the API - default to localhost for local development
-const API_BASE_URL = 'https://portman-dev-dab-cont.blackpebble-a771c2a7.northeurope.azurecontainerapps.io/api';
+// @ts-ignore
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// @ts-ignore
+const AIS_API_BASE_URL = import.meta.env.VITE_AIS_API_BASE_URL;
 
 // Flag to use mock data instead of real API calls
 const USE_MOCK_DATA = false;
@@ -55,7 +57,6 @@ export const api = {
 
     try {
       const response = await apiClient.get('/voyages', { params });
-      console.log("response", response);
       return response.data.value;
     } catch (error) {
       console.error('Error fetching port calls:', error);
@@ -297,6 +298,17 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error('Error updating settings:', error);
+      throw error;
+    }
+  },
+
+  // Fetch Digitraffic AIS API data for displaying vessel locations on the map
+  getVesselLocations: async (): Promise<AISResponse> => {
+    try {
+      const response = await axios.get(`${AIS_API_BASE_URL}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching vessel locations:', error);
       throw error;
     }
   },

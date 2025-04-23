@@ -24,45 +24,40 @@ class TestPortman(unittest.TestCase):
         )
         self.cursor = self.conn.cursor()
 
-        # Clear test tables before running tests
-        # self.cursor.execute("DELETE FROM arrivals;")
-        # self.cursor.execute("DELETE FROM voyages;")
-        # self.conn.commit()
-
         # Test data
         self.sample_port_call = {
-            "portCallId": 11111,
-            "imoLloyds": 9876543,
-            "vesselTypeCode": "CARGO",
-            "vesselName": "Test Vessel",
-            "prevPort": "Helsinki",
-            "portToVisit": "Turku",
-            "nextPort": "Stockholm",
+            "portCallId": 3190880,
+            "imoLloyds": 9606900,
+            "vesselTypeCode": "20",
+            "vesselName": "Viking Grace",
+            "prevPort": "FIMHQ",
+            "portToVisit": "FITKU",
+            "nextPort": "FILAN",
             "agentInfo": [
-                {"role": 1, "name": "Test Agent"},
-                {"role": 2, "name": "Test Shipping"}
+                {"role": 1, "name": "Viking Line Abp / Helsinki"},
+                {"role": 2, "name": "Viking Line Abp"}
             ],
             "imoInformation": [
                 {
                     "imoGeneralDeclaration": "Arrival",
-                    "numberOfPassangers": 0,
-                    "numberOfCrew": 10
+                    "numberOfPassangers": 235,
+                    "numberOfCrew": 1849
                 },
                 {
                     "imoGeneralDeclaration": "Departure",
-                    "numberOfPassangers": 0,
-                    "numberOfCrew": 10
+                    "numberOfPassangers": 188,
+                    "numberOfCrew": 1346
                 }
             ],
             "portAreaDetails": [{
-                "eta": "2025-03-13T10:00:00Z",
-                "ata": "2025-03-13T10:15:00Z",
-                "portAreaCode": "FI-TKU",
-                "portAreaName": "Turku",
-                "berthCode": "TKU1",
-                "berthName": "Terminal 1",
-                "etd": "2025-03-13T20:00:00Z",
-                "atd": "2025-03-13T20:15:00Z"
+                "eta": "2024-03-13T10:00:00Z",
+                "ata": None,
+                "portAreaCode": "PASSE",
+                "portAreaName": "Matkustajasatama",
+                "berthCode": "v1",
+                "berthName": "viking1",
+                "etd": "2024-03-13T20:00:00Z",
+                "atd": None
             }]
         }
 
@@ -77,10 +72,10 @@ class TestPortman(unittest.TestCase):
 
         self.assertEqual(len(results), 1)
         result = results[0]
-        self.assertEqual(result["portCallId"], 12345)
-        self.assertEqual(result["vesselName"], "Test Vessel")
-        self.assertEqual(result["crewOnArrival"], 10)
-        self.assertEqual(result["crewOnDeparture"], 10)
+        self.assertEqual(result["portCallId"], 3190880)
+        self.assertEqual(result["vesselName"], "Viking Grace")
+        self.assertEqual(result["crewOnArrival"], 1849)
+        self.assertEqual(result["crewOnDeparture"], 1346)
 
     def test_save_results_to_db(self):
         """Test database storage with a real database."""
@@ -88,10 +83,10 @@ class TestPortman(unittest.TestCase):
         save_results_to_db(results)
 
         # Retrieve data from the database and verify storage
-        self.cursor.execute("SELECT vessel_name FROM voyages WHERE port_call_id = %s", (12345,))
+        self.cursor.execute("SELECT vesselName FROM voyages WHERE portCallId = %s", (3190880,))
         row = self.cursor.fetchone()
         self.assertIsNotNone(row)
-        self.assertEqual(row[0], "Test Vessel")
+        self.assertEqual(row[0], "Viking Grace")
 
     def test_get_db_connection(self):
         """Test database connection to the correct database."""

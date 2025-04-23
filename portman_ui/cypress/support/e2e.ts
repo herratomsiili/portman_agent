@@ -1,0 +1,26 @@
+/// <reference types="cypress" />
+
+import './commands';
+import { mockApi } from './mock-api';
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      /**
+       * Custom command to select DOM element by data-cy attribute.
+       * @example cy.dataCy('greeting')
+       */
+      dataCy(value: string): Chainable<JQuery<HTMLElement>>
+    }
+  }
+}
+
+Cypress.Commands.add('dataCy', (value: string) => {
+  return cy.get(`[data-cy=${value}]`)
+})
+
+beforeEach(() => {
+  mockApi.setup();
+});
+
+export {} 
