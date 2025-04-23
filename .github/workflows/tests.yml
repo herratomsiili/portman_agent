@@ -88,7 +88,18 @@ jobs:
     - name: Run UI tests
       run: |
         cd portman_ui
-        npm run test:e2e:dev
+        # Start dev server in background
+        npm run dev &
+        DEV_SERVER_PID=$!
+        
+        # Wait for server to start
+        sleep 5
+        
+        # Run Cypress tests
+        npm run test:e2e
+        
+        # Kill dev server
+        kill $DEV_SERVER_PID || true
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
