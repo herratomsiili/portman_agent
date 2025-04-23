@@ -6,3 +6,5 @@ variable "allowed_ip_end" {}
 variable "allowed_ip_local" {}
 variable "admin_password" {}
 variable "storage_account_name" {}
+variable "environment" {}
+variable "static_web_app_location" {}

@@ -68,4 +68,14 @@ module "openai" {
     environment = var.environment
     application = "portman-cargo-generator"
   }
+}
+
+module "webui" {
+  source                  = "../../modules/webui"
+  resource_group_name     = azurerm_resource_group.main.name
+  location                = var.location
+  naming_prefix           = var.naming_prefix
+  environment             = var.environment
+  dab_api_endpoint        = module.dab_service.dab_container_app_url
+  static_web_app_location = var.static_web_app_location
 } 

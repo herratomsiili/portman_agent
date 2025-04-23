@@ -44,3 +44,8 @@ variable "environment" {
   description = "Selected environment."
   type        = string
 }
+
+variable "static_web_app_location" {
+  description = "Azure Static Web App location"
+  type        = string
+}
