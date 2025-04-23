@@ -76,10 +76,23 @@ Key endpoints mocked:
 - `/api/settings` - User settings
 - AIS API - Vessel location data
 
-### Test Support (`e2e.ts`)
+### Test Support Files
+
+#### `e2e.ts`
 - Sets up global test configuration
 - Initializes mock API before each test
-- Adds custom commands (e.g., `dataCy` for data-cy attribute selection)
+- Imports custom commands
+
+#### `commands.ts`
+- Defines custom Cypress commands
+- Currently includes:
+  - `dataCy`: Selects elements by data-cy attribute
+  - Example: `cy.dataCy('submit-button')` instead of `cy.get('[data-cy=submit-button]')`
+
+#### `mock-api.ts`
+- Defines mock API responses for tests
+- Intercepts HTTP requests
+- Provides consistent test data
 
 ### CI/CD Workflow (`tests.yml`)
 The GitHub Actions workflow:

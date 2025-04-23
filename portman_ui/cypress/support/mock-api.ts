@@ -3,7 +3,7 @@ import { defineConfig } from 'cypress';
 export const mockApi = {
   setup() {
     // Mock port calls endpoints
-    cy.intercept('GET', '/api/voyages', {
+    cy.intercept('GET', 'https://portman-dev-dab-cont.icyocean-53bae37c.swedencentral.azurecontainerapps.io/api/voyages', {
       statusCode: 200,
       body: [
         {
@@ -32,7 +32,7 @@ export const mockApi = {
       ]
     }).as('getPortCalls');
 
-    cy.intercept('GET', '/api/port-calls/3190880', {
+    cy.intercept('GET', '/port-calls/3190880', {
       statusCode: 200,
       body: {
         portCallId: 3190880,

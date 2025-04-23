@@ -11,7 +11,8 @@ describe('Authentication', () => {
     cy.dataCy('input-email').type('invalid@example.com');
     cy.dataCy('input-password').type('wrongpassword');
     cy.dataCy('auth-submit').click();
-    cy.dataCy('auth-error').should('not.visible');
+    cy.dataCy('auth-error').should('be.visible');
+    cy.dataCy('auth-error').should('contain', 'Username or password was incorrect. Please try again.');
   });
 
   it('should login successfully with valid credentials', () => {
@@ -25,6 +26,7 @@ describe('Authentication', () => {
   it('should validate the form inputs', () => {
     cy.dataCy('auth-submit').click();
     cy.dataCy('auth-error').should('be.visible');
+    cy.dataCy('auth-error').should('contain', 'Email and password are required');
   });
 
   it('should toggle to registration form', () => {
@@ -55,6 +57,7 @@ describe('Authentication', () => {
     cy.dataCy('auth-toggle-mode').click();
     cy.dataCy('auth-submit').click();
     cy.dataCy('auth-error').should('be.visible');
+    cy.dataCy('auth-error').should('contain', 'Email and password are required');
   });
 
   it('should toggle back to login form', () => {

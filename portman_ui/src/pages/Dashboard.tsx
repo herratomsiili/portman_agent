@@ -23,7 +23,7 @@ const Dashboard: React.FC = () => {
 
       try {
         const portCallsResponse = await api.getPortCalls();
-        setPortCalls(portCallsResponse);
+        setPortCalls(portCallsResponse || []);
         const mockTrackedVessels = [9902419, 9902420, 9234567, 9456789, 9567890];
         setTrackedVessels(mockTrackedVessels);
       } catch (err) {
@@ -38,22 +38,22 @@ const Dashboard: React.FC = () => {
   }, []);
 
   // Calculate statistics
-  const activeVessels = portCalls.filter(call => call.ata !== undefined).length;
-  const scheduledVessels = portCalls.filter(call => call.ata === undefined).length;
-  const totalPassengers = portCalls.reduce((sum, call) => sum + (call.passengersonarrival || 0), 0);
+  const activeVessels = portCalls?.filter(call => call?.ata !== undefined).length || 0;
+  const scheduledVessels = portCalls?.filter(call => call?.ata === undefined).length || 0;
+  const totalPassengers = portCalls?.reduce((sum, call) => sum + (call?.passengersonarrival || 0), 0) || 0;
 
   // Get upcoming arrivals (sorted by ETA)
-  const upcomingArrivals = [...portCalls]
-    .filter(call => call.ata === undefined)
-    .sort((a, b) => new Date(a.eta).getTime() - new Date(b.eta).getTime())
+  const upcomingArrivals = [...(portCalls || [])]
+    .filter(call => call?.ata === undefined)
+    .sort((a, b) => new Date(a?.eta || 0).getTime() - new Date(b?.eta || 0).getTime())
     .slice(0, 5);
 
   // Get active vessels (sorted by ATA)
-  const activeVesselsList = [...portCalls]
-    .filter(call => call.ata !== undefined)
+  const activeVesselsList = [...(portCalls || [])]
+    .filter(call => call?.ata !== undefined)
     .sort((a, b) => {
-      const dateA = a.ata ? new Date(a.ata).getTime() : 0;
-      const dateB = b.ata ? new Date(b.ata).getTime() : 0;
+      const dateA = a?.ata ? new Date(a.ata).getTime() : 0;
+      const dateB = b?.ata ? new Date(b.ata).getTime() : 0;
       return dateB - dateA;
     });
 

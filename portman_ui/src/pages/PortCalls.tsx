@@ -37,7 +37,7 @@ const PortCalls: React.FC = () => {
 
       try {
         const response = await api.getPortCalls();
-        setPortCalls(response);
+        setPortCalls(response || []);
       } catch (err) {
         console.error('Error fetching port calls:', err);
         setError('Failed to load port calls. Please try again later.');
@@ -50,10 +50,10 @@ const PortCalls: React.FC = () => {
   }, []);
 
   // Filter port calls based on search term
-  const filteredPortCalls = portCalls.filter((call: PortCall) =>
-    call.vesselname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    call.imolloyds.toString().includes(searchTerm) ||
-    call.portareaname.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPortCalls = (portCalls || []).filter((call: PortCall) =>
+    call?.vesselname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    call?.imolloyds?.toString().includes(searchTerm) ||
+    call?.portareaname?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -154,43 +154,43 @@ const PortCalls: React.FC = () => {
                 .map((call: PortCall) => (
                   <TableRow 
                     hover 
-                    key={call.portcallid}
+                    key={call?.portcallid}
                     sx={{ '&:hover .action-buttons': { opacity: 1 } }}
-                    data-cy={`portcall-row-${call.portcallid}`}
+                    data-cy={`portcall-row-${call?.portcallid}`}
                   >
                     <TableCell>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Typography variant="body1" sx={{ fontWeight: 500 }} data-cy="vessel-name">
-                          {call.vesselname}
+                          {call?.vesselname || 'N/A'}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" data-cy="vessel-imo">
-                          IMO: {call.imolloyds}
+                          IMO: {call?.imolloyds || 'N/A'}
                         </Typography>
                       </Box>
                     </TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Typography variant="body1" data-cy="port-area">
-                          {call.portareaname}
+                          {call?.portareaname || 'N/A'}
                         </Typography>
                         <Typography variant="body2" color="text.secondary" data-cy="berth-name">
-                          {call.berthname}
+                          {call?.berthname || 'N/A'}
                         </Typography>
                       </Box>
                     </TableCell>
                     <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="eta-value">
-                      {formatDateTime(call.eta)}
+                      {formatDateTime(call?.eta)}
                     </TableCell>
                     <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="ata-value">
-                      {call.ata ? formatDateTime(call.ata) : '-'}
+                      {call?.ata ? formatDateTime(call.ata) : '-'}
                     </TableCell>
                     <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="etd-value">
-                      {formatDateTime(call.etd)}
+                      {formatDateTime(call?.etd)}
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={call.ata ? 'Arrived' : 'Expected'}
-                        color={call.ata ? 'success' : 'primary'}
+                        label={call?.ata ? 'Arrived' : 'Expected'}
+                        color={call?.ata ? 'success' : 'primary'}
                         size="small"
                         data-cy="status-chip"
                       />
@@ -199,7 +199,7 @@ const PortCalls: React.FC = () => {
                 ))}
               {filteredPortCalls.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" data-cy="no-portcalls">
+                  <TableCell colSpan={6} align="center">
                     No port calls found
                   </TableCell>
                 </TableRow>
@@ -215,8 +215,6 @@ const PortCalls: React.FC = () => {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25]}
-          sx={{ borderTop: 1, borderColor: 'divider' }}
-          data-cy="portcalls-pagination"
         />
       </Paper>
     </Box>
