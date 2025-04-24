@@ -287,6 +287,7 @@ jobs:
     env:
       ENVIRONMENT: ${{ github.event.inputs.environment || 'development' }}
       VITE_AIS_API_BASE_URL: ${{ vars.AIS_API_BASE_URL }}
+      VITE_API_BASE_URL: ${{ vars.API_BASE_URL }}
 
     steps:
       # Checkout the repository
@@ -338,7 +339,7 @@ jobs:
         run: |
           npm ci
           # Create .env file with API URL for the React app
-          echo "VITE_API_BASE_URL=${{ env.DAB_CONTAINER_APP_URL }}" > .env
+          echo "VITE_API_BASE_URL=${{ env.VITE_API_BASE_URL }}" > .env
           echo "VITE_AIS_API_BASE_URL=${{ env.VITE_AIS_API_BASE_URL }}" >> .env
           npm run build
         env:

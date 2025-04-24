@@ -7,9 +7,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // @ts-ignore
 const AIS_API_BASE_URL = import.meta.env.VITE_AIS_API_BASE_URL;
 
-console.log("[DEBUG] API_BASE_URL:", API_BASE_URL);
-console.log("[DEBUG] AIS_API_BASE_URL:", AIS_API_BASE_URL);
-
 // Flag to use mock data instead of real API calls
 const USE_MOCK_DATA = false;
 
