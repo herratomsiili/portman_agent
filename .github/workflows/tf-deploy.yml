@@ -338,7 +338,9 @@ jobs:
         run: |
           npm ci
           # Create .env file with API URL for the React app
-          echo "VITE_API_BASE_URL=https://$DAB_CONTAINER_APP_URL" > .env
+          echo "DAB_CONTAINER_APP_URL: $DAB_CONTAINER_APP_URL"
+          echo "DAB_CONTAINER_APP_URL2: ${{ env.DAB_CONTAINER_APP_URL }}"
+          echo "VITE_API_BASE_URL=${{ env.DAB_CONTAINER_APP_URL }}" > .env
           echo "VITE_AIS_API_BASE_URL=${{ env.VITE_AIS_API_BASE_URL }}" >> .env
           npm run build
         env:
