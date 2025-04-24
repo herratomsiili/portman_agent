@@ -1,13 +1,29 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+/// <reference types="vite/client" />
 
-export default defineConfig({
-    root: 'src',
-    plugins: [react()],
-    server: {
-        port: 3000
-    },
-    build: {
-        outDir: '../dist'
+import { defineConfig, loadEnv } from 'vite'
+import react from '@vitejs/plugin-react'
+import * as path from 'path'
+
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '')
+
+    return {
+        root: 'src',
+        plugins: [react()],
+        resolve: {
+            alias: {
+                '@': path.resolve(__dirname, 'src'),
+            },
+        },
+        define: {
+            __API_BASE_URL__: JSON.stringify(env.VITE_API_BASE_URL), // Usage: __API_BASE_URL__
+        },
+        build: {
+            outDir: '../dist',
+            emptyOutDir: true,
+        },
+        server: {
+            port: 3000
+        },
     }
 })

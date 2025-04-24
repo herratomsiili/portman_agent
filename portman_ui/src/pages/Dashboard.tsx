@@ -1,51 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-  CircularProgress,
-  Alert
-} from '@mui/material';
+import { Box, Typography, Grid } from '@mui/material';
 import { api } from '../services/api';
-import { mockPortCalls, mockTrackedVessels } from '../data/mockData';
 import { PortCall } from '../types';
+import SummaryCards from '../components/dashboard/SummaryCards';
+import UpcomingArrivals from '../components/dashboard/UpcomingArrivals';
+import ActiveVessels from '../components/dashboard/ActiveVessels';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorAlert from '../components/common/ErrorAlert';
 
 const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [portCalls, setPortCalls] = useState<PortCall[]>([]);
   const [trackedVessels, setTrackedVessels] = useState<number[]>([]);
+  const [activeVesselsPage, setActiveVesselsPage] = useState(0);
+  const [activeVesselsRowsPerPage, setActiveVesselsRowsPerPage] = useState(5);
 
-  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        // In a production environment, these would be actual API calls
-        // For now, we'll use our mock data with a simulated delay
-
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Use mock data
-        // setPortCalls(mockPortCalls);
-        // setTrackedVessels(mockTrackedVessels);
-
-        // In a real implementation, we would use:
         const portCallsResponse = await api.getPortCalls();
-        setPortCalls(portCallsResponse);
+        setPortCalls(portCallsResponse || []);
         const mockTrackedVessels = [9902419, 9902420, 9234567, 9456789, 9567890];
-
-
-        // const vesselsResponse = await api.getTrackedVessels();
         setTrackedVessels(mockTrackedVessels);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -59,151 +38,74 @@ const Dashboard: React.FC = () => {
   }, []);
 
   // Calculate statistics
-  const activeVessels = portCalls.filter(call => call.ata !== undefined).length;
-  const scheduledVessels = portCalls.filter(call => call.ata === undefined).length;
-  const totalPassengers = portCalls.reduce((sum, call) => sum + (call.passengersonarrival || 0), 0);
+  const activeVessels = portCalls?.filter(call => call?.ata !== undefined).length || 0;
+  const scheduledVessels = portCalls?.filter(call => call?.ata === undefined).length || 0;
+  const totalPassengers = portCalls?.reduce((sum, call) => sum + (call?.passengersonarrival || 0), 0) || 0;
 
   // Get upcoming arrivals (sorted by ETA)
-  const upcomingArrivals = [...portCalls]
-      .filter(call => call.ata === undefined)
-      .sort((a, b) => new Date(a.eta).getTime() - new Date(b.eta).getTime())
-      .slice(0, 5);
+  const upcomingArrivals = [...(portCalls || [])]
+    .filter(call => call?.ata === undefined)
+    .sort((a, b) => new Date(a?.eta || 0).getTime() - new Date(b?.eta || 0).getTime())
+    .slice(0, 5);
+
+  // Get active vessels (sorted by ATA)
+  const activeVesselsList = [...(portCalls || [])]
+    .filter(call => call?.ata !== undefined)
+    .sort((a, b) => {
+      const dateA = a?.ata ? new Date(a.ata).getTime() : 0;
+      const dateB = b?.ata ? new Date(b.ata).getTime() : 0;
+      return dateB - dateA;
+    });
+
+  // Paginate active vessels
+  const paginatedActiveVessels = activeVesselsList.slice(
+    activeVesselsPage * activeVesselsRowsPerPage,
+    activeVesselsPage * activeVesselsRowsPerPage + activeVesselsRowsPerPage
+  );
+
+  const handleActiveVesselsPageChange = (event: unknown, newPage: number) => {
+    setActiveVesselsPage(newPage);
+  };
+
+  const handleActiveVesselsRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setActiveVesselsRowsPerPage(parseInt(event.target.value, 10));
+    setActiveVesselsPage(0);
+  };
 
   if (loading) {
-    return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-          <CircularProgress />
-        </Box>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
-      <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h4" gutterBottom component="div">
-          Vessel Tracking Dashboard
-        </Typography>
+    <Box sx={{ flexGrow: 1, p: 3 }} data-cy="dashboard-container">
+      <Typography variant="h4" gutterBottom component="div" data-cy="dashboard-title">
+        Dashboard
+      </Typography>
 
-        {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {error}
-            </Alert>
-        )}
+      {error && <ErrorAlert message={error} />}
 
-        {/* Summary Cards */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={3} sx={{ height: '100%' }}>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h6" color="primary">Tracked Vessels</Typography>
-                <Typography variant="h3">{trackedVessels.length}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={3} sx={{ height: '100%' }}>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h6" color="primary">Active Port Calls</Typography>
-                <Typography variant="h3">{activeVessels}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={3} sx={{ height: '100%' }}>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h6" color="primary">Scheduled Arrivals</Typography>
-                <Typography variant="h3">{scheduledVessels}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={3} sx={{ height: '100%' }}>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h6" color="primary">Total Passengers</Typography>
-                <Typography variant="h3">{totalPassengers}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+      <SummaryCards
+        trackedVesselsCount={trackedVessels.length}
+        activeVesselsCount={activeVessels}
+        scheduledVesselsCount={scheduledVessels}
+        totalPassengers={totalPassengers}
+      />
+
+      <Grid container spacing={3} data-cy="dashboard-content">
+        <Grid item xs={12} md={6}>
+          <UpcomingArrivals arrivals={upcomingArrivals} />
         </Grid>
-
-        {/* Main Content */}
-        <Grid container spacing={3}>
-          {/* Upcoming Arrivals */}
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Upcoming Arrivals
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-                <List>
-                  {upcomingArrivals.map((call) => (
-                      <React.Fragment key={call.portcallid}>
-                        <ListItem>
-                          <ListItemText
-                              primary={call.vesselname}
-                              secondary={
-                                <>
-                                  <Typography component="span" variant="body2" color="text.primary">
-                                    {call.portareaname} - {call.berthname}
-                                  </Typography>
-                                  {` — ETA: ${new Date(call.eta).toLocaleString()}`}
-                                </>
-                              }
-                          />
-                        </ListItem>
-                        <Divider />
-                      </React.Fragment>
-                  ))}
-                  {upcomingArrivals.length === 0 && (
-                      <ListItem>
-                        <ListItemText primary="No upcoming arrivals" />
-                      </ListItem>
-                  )}
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Active Vessels */}
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Active Vessels
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-                <List>
-                  {portCalls
-                      .filter(call => call.ata !== undefined)
-                      .map((call) => (
-                          <React.Fragment key={call.portcallid}>
-                            <ListItem>
-                              <ListItemText
-                                  primary={call.vesselname}
-                                  secondary={
-                                    <>
-                                      <Typography component="span" variant="body2" color="text.primary">
-                                        {call.portareaname} - {call.berthname}
-                                      </Typography>
-                                      {` — ATA: ${call.ata ? new Date(call.ata).toLocaleString() : 'N/A'}`}
-                                    </>
-                                  }
-                              />
-                            </ListItem>
-                            <Divider />
-                          </React.Fragment>
-                      ))}
-                  {portCalls.filter(call => call.ata !== undefined).length === 0 && (
-                      <ListItem>
-                        <ListItemText primary="No active vessels" />
-                      </ListItem>
-                  )}
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
+        <Grid item xs={12} md={6}>
+          <ActiveVessels
+            vessels={paginatedActiveVessels}
+            page={activeVesselsPage}
+            rowsPerPage={activeVesselsRowsPerPage}
+            onPageChange={handleActiveVesselsPageChange}
+            onRowsPerPageChange={handleActiveVesselsRowsPerPageChange}
+          />
         </Grid>
-      </Box>
+      </Grid>
+    </Box>
   );
 };
 

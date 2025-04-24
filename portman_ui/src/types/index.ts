@@ -79,3 +79,31 @@ export interface AppSettings {
   refreshInterval: number; // in seconds
   defaultView: 'map' | 'list' | 'timeline';
 }
+
+// Types for Digitraffic AIS API
+export interface AISFeature {
+  mmsi: number;
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: [number, number];
+  };
+  properties: {
+    mmsi: number;
+    sog: number;
+    cog: number;
+    navStat: number;
+    rot: number;
+    posAcc: boolean;
+    raim: boolean;
+    heading: number;
+    timestamp: number;
+    timestampExternal: number;
+  };
+}
+
+export interface AISResponse {
+  type: string;
+  dataUpdatedTime: string;
+  features: AISFeature[];
+}

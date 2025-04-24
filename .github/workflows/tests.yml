@@ -1,0 +1,113 @@
+name: Unit & UI Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  DB_HOST: localhost
+  DB_NAME: portman
+  DB_USER: postgres
+  DB_PASSWORD: postgres
+  DB_PORT: 5432
+  VITE_API_BASE_URL: https://portman-dev-dab-cont.icyocean-53bae37c.swedencentral.azurecontainerapps.io/api
+  VITE_AIS_API_BASE_URL: https://meri.digitraffic.fi/api/ais/v1/locations
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: portman_ui/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd portman_ui
+        npm ci
+        npm install cypress --save-dev
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Create database
+      run: |
+        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d postgres -p $DB_PORT -c "CREATE DATABASE $DB_NAME;" || true
+
+    - name: Create database tables
+      run: |
+        python -c "
+        from PortmanTrigger.portman import create_database_and_tables
+        create_database_and_tables()
+        "
+
+    - name: Populate test database
+      run: |
+        python -c "
+        from PortmanTests.test_data import create_test_data
+        create_test_data()
+        "
+
+    - name: Create XML template directory
+      run: |
+        mkdir -p PortmanXMLConverter/xml_templates
+        cp PortmanXMLConverter/output/example.xml PortmanXMLConverter/xml_templates/ATA_Envelope.xml
+
+    - name: Create .env file
+      run: |
+        cd portman_ui/src
+        echo "VITE_API_BASE_URL=$VITE_API_BASE_URL" > .env
+        echo "VITE_AIS_API_BASE_URL=$VITE_AIS_API_BASE_URL" >> .env
+
+    - name: Run unit tests
+      run: |
+        pytest PortmanTests/ --cov=. --cov-report=xml
+
+    - name: Run UI tests
+      run: |
+        cd portman_ui
+        # Start dev server in background
+        npm run dev &
+        DEV_SERVER_PID=$!
+        
+        # Wait for server to start
+        sleep 5
+        
+        # Run Cypress tests
+        npm run test:e2e
+        
+        # Kill dev server
+        kill $DEV_SERVER_PID || true
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          portman_ui/cypress/screenshots
+          portman_ui/cypress/videos
+          coverage.xml
+        retention-days: 7 

@@ -13,7 +13,7 @@ Built using [Vite](https://vitejs.dev/) for blazing fast development and optimiz
 - 📊 Chart.js integration for data visualization
 - 🔗 React Router v7 for navigation
 - 🔍 Axios for API communication
-- 🧪 Testing with Testing Library + Jest
+- 🧪 Testing with Testing Library + Jest + Cypress
 
 ---
 
@@ -25,7 +25,11 @@ Built using [Vite](https://vitejs.dev/) for blazing fast development and optimiz
 npm install
 ```
 
-### 2. Start development server
+### 2. Add .env file to /portman_ui/ directory with
+- Azure API url
+- digitraffic AIS data URL
+
+### 3. Start development server
 
 ```bash
 npm run dev
@@ -33,7 +37,7 @@ npm run dev
 
 The app will be available at http://localhost:3000
 
-### 3. 📦 Build for Production
+### 4. 📦 Build for Production
 
 ```bash
 npm run build
@@ -41,7 +45,7 @@ npm run build
 
 Compiled output will be located in the dist/ directory.
 
-### 4. 🔍 Preview Production Build
+### 5. 🔍 Preview Production Build
 
 ```bash
 npm run preview
@@ -49,13 +53,13 @@ npm run preview
 
 Runs a local static file server to test the production build.
 
-### 5. 🧪 Run Tests
+### 6. 🧪 Run Tests
 
 ```bash
 npm test
 ```
 
-### 6. 🧹 Lint the Project
+### 7. 🧹 Lint the Project
 
 ```bash
 npm run lint
@@ -65,12 +69,34 @@ npm run lint
 
 ```plaintext
 portman-ui/
-├── index.html          # Vite HTML entry
-├── vite.config.ts      # Vite config
+├── cypress/            # Cypress tests
 ├── public/             # Static assets (favicon, manifest, etc.)
 ├── src/
-│   ├── main.tsx        # App entry point
-│   ├── App.tsx         # Root component
 │   ├── components/     # Reusable UI components
-│   └── index.css       # Global styles
+│   ├── context/        # Authentication context provider
+│   ├── data/           # Mock data (not needed anymore)
+│   ├── pages/          # UI views
+│   ├── services/       # UI service layer (only api.ts at the moment)
+│   ├── types/          # Types used in the UI
+│   ├── .env            # API endpoints etc
+│   ├── App.css         # Styles
+│   ├── App.test.tsx
+│   ├── App.tsx
+│   ├── index.css
+│   ├── index.html      # Vite HTML entry
+├── .gitignore
+├── cypress.config.ts   # Cypress configurations
+├── eslint.config.js    # ESLint configurations
+├── jest.config.js      # Jest configurations
+├── package.json        # UI dependencies etc
+├── package-lock.json
+├── README.md           # Documentation
+├── setupTests.ts       # Jest configurations
+├── tsconfig.json       # Typescript configurations
+├── UI_TESTING.md       # UI testing readme
+├── vite.config.ts      # Vite config
 ```
+
+## Testing
+
+Refer to `UI_TESTING.md`

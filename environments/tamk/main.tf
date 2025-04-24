@@ -29,6 +29,15 @@ output "dab_container_app_url" {
   value = module.common.dab_container_app_url
 }
 
+output "static_website_url" {
+  value = module.common.static_website_url
+}
+
+output "webui_deployment_token" {
+  value     = module.common.webui_deployment_token
+  sensitive = true
+}
+
 # Load environment-specific variables
 variable "environment" {
   default = "tamk"
