@@ -215,7 +215,7 @@ jobs:
   deploy-function-app:
     name: Deploy Functions
     runs-on: ubuntu-latest
-    #needs: tf-apply  # Apply only if terraform plan has been applied
+    needs: tf-apply  # Apply only if terraform plan has been applied
     environment: ${{ github.event.inputs.environment || 'development' }}
     
     env:
@@ -281,7 +281,7 @@ jobs:
   deploy-web-ui:
     name: Deploy Web UI
     runs-on: ubuntu-latest
-    needs: tf-apply
+    #needs: tf-apply
     environment: ${{ github.event.inputs.environment || 'development' }}
 
     env:
