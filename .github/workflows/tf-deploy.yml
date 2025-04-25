@@ -293,6 +293,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       # Log in to Azure
       - name: Log in to Azure
         uses: azure/login@v1
@@ -317,7 +321,7 @@ jobs:
           echo "DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN" >> $GITHUB_ENV
           
           # Get the DAB Container App URL for API integration
-          DAB_CONTAINER_APP_URL=$(terraform -chdir=environments/${{ env.ENVIRONMENT }} output -raw dab_container_app_url)/api
+          DAB_CONTAINER_APP_URL=$(terraform -chdir=environments/${{ env.ENVIRONMENT }} output -raw dab_container_app_url)
           echo "DAB_CONTAINER_APP_URL=$DAB_CONTAINER_APP_URL" >> $GITHUB_ENV
 
       # Setup Node.js
@@ -334,7 +338,7 @@ jobs:
         run: |
           npm ci
           # Create .env file with API URL for the React app
-          echo "VITE_API_BASE_URL=https://$DAB_CONTAINER_APP_URL" > .env
+          echo "VITE_API_BASE_URL=${{ env.DAB_CONTAINER_APP_URL }}" > .env
           echo "VITE_AIS_API_BASE_URL=${{ env.VITE_AIS_API_BASE_URL }}" >> .env
           npm run build
         env:
