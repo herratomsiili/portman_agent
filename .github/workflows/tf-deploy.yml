@@ -321,7 +321,7 @@ jobs:
           echo "DEPLOYMENT_TOKEN=$DEPLOYMENT_TOKEN" >> $GITHUB_ENV
           
           # Get the DAB Container App URL for API integration
-          DAB_CONTAINER_APP_URL=$(terraform -chdir=environments/${{ env.ENVIRONMENT }} output -raw dab_container_app_url)/api
+          DAB_CONTAINER_APP_URL=$(terraform -chdir=environments/${{ env.ENVIRONMENT }} output -raw dab_container_app_url)
           echo "DAB_CONTAINER_APP_URL=$DAB_CONTAINER_APP_URL" >> $GITHUB_ENV
 
       # Setup Node.js
