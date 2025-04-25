@@ -8,7 +8,6 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '')
 
     return {
-        root: 'src',
         plugins: [react()],
         resolve: {
             alias: {
@@ -19,7 +18,7 @@ export default defineConfig(({ mode }) => {
             __API_BASE_URL__: JSON.stringify(env.VITE_API_BASE_URL), // Usage: __API_BASE_URL__
         },
         build: {
-            outDir: '../dist',
+            outDir: 'dist',
             emptyOutDir: true,
         },
         server: {
