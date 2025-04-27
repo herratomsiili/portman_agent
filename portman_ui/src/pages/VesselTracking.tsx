@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Box,
@@ -16,7 +16,7 @@ import {
   TablePagination
 } from '@mui/material';
 import api from '../services/api';
-import {AISFeature, PortCall} from '../types';
+import { AISFeature, PortCall } from '../types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapView from "../components/MapView";
@@ -45,7 +45,7 @@ const VesselTracking: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const mapRef = useRef<L.Map | null>(null);
-  const markersRef = useRef<{[key: string]: L.Marker}>({});
+  const markersRef = useRef<{ [key: string]: L.Marker }>({});
 
   // Fetch data on component mount
   useEffect(() => {
@@ -74,7 +74,7 @@ const VesselTracking: React.FC = () => {
             const marker = L.marker([lat, lng], {
               title: `MMSI: ${feature.mmsi}\nSOG: ${feature.properties.sog} knots\nCOG: ${feature.properties.cog}°`
             }).addTo(mapRef.current!);
-            
+
             markersRef.current[feature.mmsi] = marker;
           });
         }
@@ -154,7 +154,7 @@ const VesselTracking: React.FC = () => {
   }
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }} data-cy="vesseltracking-container">
       <Typography variant="h4" gutterBottom component="div">
         Vessel Tracking
       </Typography>
@@ -176,6 +176,7 @@ const VesselTracking: React.FC = () => {
               value={filterStatus}
               label="Status"
               onChange={handleStatusChange}
+              data-cy="status-filter"
             >
               <MenuItem value="all">All Statuses</MenuItem>
               <MenuItem value="ACTIVE">Active</MenuItem>
@@ -192,6 +193,7 @@ const VesselTracking: React.FC = () => {
               value={filterPort}
               label="Port"
               onChange={handlePortChange}
+              data-cy="port-filter"
             >
               <MenuItem value="all">All Ports</MenuItem>
               {uniquePorts.map(port => (
@@ -212,7 +214,6 @@ const VesselTracking: React.FC = () => {
         }))}
       />
 
-
       {/* Vessel List */}
       <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
         Tracked Vessels ({vesselLocations.length} active)
@@ -221,7 +222,7 @@ const VesselTracking: React.FC = () => {
       <Grid container spacing={2}>
         {vesselLocations.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map(vessel => (
           <Grid item xs={12} sm={6} md={4} key={vessel.mmsi}>
-            <Card>
+            <Card data-cy="vessel-card">
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <Typography variant="h6" component="div">
@@ -260,6 +261,7 @@ const VesselTracking: React.FC = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
         rowsPerPageOptions={[10, 25, 50, 100]}
         sx={{ mt: 2 }}
+        data-cy="pagination-controls"
       />
     </Box>
   );

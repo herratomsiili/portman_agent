@@ -65,4 +65,4 @@ describe('Dashboard', () => {
   //   cy.dataCy('no-upcoming-arrivals').should('exist')
   //   cy.dataCy('no-active-vessels').should('exist')
   // })
-}) 
+})
