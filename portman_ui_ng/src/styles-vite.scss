@@ -1,0 +1,24 @@
+/* Vite-specific styles entry point */
+
+/* Import the main styles.scss */
+@import './styles.scss';
+
+/* Import component styles */
+/* Here we manually import styles from components that might be missing */
+@import './app/app.component.scss';
+@import './app/components/voyages/voyages-list/voyages-list.component.scss';
+
+/* Add other component styles as needed */
+
+/* Global style overrides for Vite specifically */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+} 

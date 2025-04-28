@@ -1,0 +1,22 @@
+<div class="app-container">
+  <header class="app-header">
+    <div class="app-logo">
+      <h1>{{ title }}</h1>
+    </div>
+    <nav class="app-nav">
+      <ul>
+        <li><a routerLink="/voyages" routerLinkActive="active">Voyages</a></li>
+        <li><a routerLink="/standalone-test" routerLinkActive="active">Standalone Test</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main class="app-content">
+    <app-test></app-test>
+    <router-outlet></router-outlet>
+  </main>
+  
+  <footer class="app-footer">
+    <p>&copy; 2024 Portman - Angular Port Management System</p>
+  </footer>
+</div>

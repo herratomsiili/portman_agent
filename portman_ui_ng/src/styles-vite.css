@@ -1,0 +1,162 @@
+/* Basic resets and common styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* App container styles */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1565c0;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-logo h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.app-nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.app-nav li {
+  margin-left: 1.5rem;
+}
+
+.app-nav a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.app-nav a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.app-content {
+  flex: 1;
+  background-color: #f5f5f5;
+}
+
+.app-footer {
+  padding: 1rem 2rem;
+  background-color: #f0f0f0;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+  color: #666;
+}
+
+.app-footer p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Voyages list styles */
+.voyages-list-container {
+  padding: 20px;
+}
+
+.voyages-list-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.loading-spinner span {
+  font-style: italic;
+  color: #666;
+}
+
+.error-alert {
+  background-color: #ffeeee;
+  border: 1px solid #ffcccc;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
+  color: #cc0000;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+.voyages-table {
+  overflow-x: auto;
+}
+
+.voyages-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.voyages-table th, 
+.voyages-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.voyages-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.voyages-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.voyages-table tr.active {
+  background-color: #e6f7ff;
+}
+
+.voyages-table tr.active:hover {
+  background-color: #d6f0ff;
+} 

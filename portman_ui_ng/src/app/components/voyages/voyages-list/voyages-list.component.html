@@ -1,0 +1,92 @@
+<div class="voyages-list-container">
+  <h2>Voyages</h2>
+  
+  <div class="debug-info" style="margin-bottom: 20px; padding: 10px; background-color: #f9f9f9; border: 1px solid #ddd;">
+    <p><strong>Debug Info:</strong></p>
+    <p>Loading: {{ loading$ | async }}</p>
+    <p>Error: {{ error$ | async | json }}</p>
+  </div>
+  
+  <!-- Loading -->
+  <div *ngIf="loading$ | async" class="loading-spinner">
+    <span>Loading voyages...</span>
+  </div>
+  
+  <!-- Error state -->
+  <div *ngIf="error$ | async" class="error-alert">
+    <p>Error loading voyages: {{ error$ | async }}</p>
+  </div>
+  
+  <!-- Show empty state when no voyages in state -->
+  @if ((voyages$ | async)?.length === 0 && !(loading$ | async)) {
+    <div class="empty-state">
+      <p>No voyages found from store. Showing mock data instead.</p>
+    </div>
+  }
+  
+  <!-- Primary table from store data -->
+  @if ((voyages$ | async) && (voyages$ | async)!.length > 0) {
+    <div class="voyages-table">
+      <h3>Voyages from Store</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Vessel Name</th>
+            <th>IMO</th>
+            <th>Port</th>
+            <th>Berth</th>
+            <th>ETA</th>
+            <th>ATA</th>
+            <th>ETD</th>
+            <th>Passengers</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (voyage of voyages$ | async; track voyage.portcallid) {
+            <tr [class.active]="voyage.ata">
+              <td>{{ voyage.vesselname }}</td>
+              <td>{{ voyage.imolloyds }}</td>
+              <td>{{ voyage.portareaname }}</td>
+              <td>{{ voyage.berthname }}</td>
+              <td>{{ formatDate(voyage.eta) }}</td>
+              <td>{{ formatDate(voyage.ata) }}</td>
+              <td>{{ formatDate(voyage.etd) }}</td>
+              <td>{{ voyage.passengersonarrival || 0 }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  
+  <!-- Debug table with direct mock data -->
+  <div class="voyages-table" style="margin-top: 30px;">
+    <h3>Debug: Mock Voyages (Direct Rendering)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Vessel Name</th>
+          <th>IMO</th>
+          <th>Port</th>
+          <th>Berth</th>
+          <th>ETA</th>
+          <th>ATA</th>
+          <th>ETD</th>
+          <th>Passengers</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let voyage of debugMockVoyages" [class.active]="voyage.ata">
+          <td>{{ voyage.vesselname }}</td>
+          <td>{{ voyage.imolloyds }}</td>
+          <td>{{ voyage.portareaname }}</td>
+          <td>{{ voyage.berthname }}</td>
+          <td>{{ formatDate(voyage.eta) }}</td>
+          <td>{{ formatDate(voyage.ata) }}</td>
+          <td>{{ formatDate(voyage.etd) }}</td>
+          <td>{{ voyage.passengersonarrival || 0 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div> 
