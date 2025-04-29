@@ -14,11 +14,8 @@ import {
   TablePagination,
   TableRow,
   TextField,
-  InputAdornment,
+  Typography,
   IconButton,
-  Paper,
-  CircularProgress,
-  Alert,
   Collapse,
   Grid2
 } from '@mui/material';
@@ -107,12 +104,14 @@ const PortCalls: React.FC = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
-      </Box>
+      <>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <CircularProgress />
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <CircularProgress />
+        </Box>
+      </>
     );
   }
 
