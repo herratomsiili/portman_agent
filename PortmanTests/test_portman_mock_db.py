@@ -93,7 +93,8 @@ class TestPortmanMockDb(unittest.TestCase):
         
         # Verify database operations
         mock_cursor.execute.assert_called()
-        mock_conn.commit.assert_called_once()
+        # Expect two commits due to the NOA XML generation feature
+        self.assertEqual(mock_conn.commit.call_count, 2)
 
     def test_get_db_connection(self):
         """Test database connection."""
