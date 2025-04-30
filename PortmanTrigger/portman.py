@@ -10,6 +10,18 @@ import natsort
 import logging
 
 from config import DATABASE_CONFIG, XML_CONVERTER_CONFIG
+# Import the blob utilities
+try:
+    from PortmanTrigger.blob_utils import generate_blob_storage_link
+except ImportError:
+    try:
+        # Try alternative import path
+        from blob_utils import generate_blob_storage_link
+    except ImportError:
+        # Fallback definition if the module can't be imported
+        def generate_blob_storage_link(blob_name, connection_string=None):
+            log("Warning: generate_blob_storage_link function not available")
+            return ""
 
 # Configure logging
 logging.basicConfig(
@@ -138,6 +150,92 @@ def create_database_and_tables():
         log("Database and tables setup complete.")
     except Exception as e:
         log(f"Error setting up database and tables: {e}")
+
+def update_database_schema():
+    """Update database schema by adding new columns if they don't exist."""
+    try:
+        log("Checking for schema updates...")
+        conn = get_db_connection(DATABASE_CONFIG["dbname"])
+        if conn is None:
+            return
+        
+        cursor = conn.cursor()
+        
+        # Check and update voyages table schema
+        cursor.execute("""
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_name = 'voyages' AND table_schema = 'public'
+        """)
+        existing_columns = [row[0].lower() for row in cursor.fetchall()]
+        log(f"Current columns in voyages table: {existing_columns}")
+        
+        # Add new columns to voyages table if they don't exist
+        columns_to_add = {
+            'noa_xml_url': 'TEXT DEFAULT NULL'
+        }
+        
+        for column_name, column_def in columns_to_add.items():
+            if column_name.lower() not in existing_columns:
+                log(f"Adding column '{column_name}' to voyages table")
+                cursor.execute(f"ALTER TABLE voyages ADD COLUMN {column_name} {column_def};")
+                conn.commit()
+                # Verify the column was added successfully
+                cursor.execute("""
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name = 'voyages' AND column_name = %s AND table_schema = 'public'
+                """, (column_name,))
+                if cursor.fetchone():
+                    log(f"Successfully added column '{column_name}' to voyages table")
+                else:
+                    log(f"Failed to add column '{column_name}' to voyages table. Will retry.")
+                    try:
+                        # Try one more time with a different approach
+                        cursor.execute(f"ALTER TABLE voyages ADD COLUMN IF NOT EXISTS {column_name} {column_def};")
+                        conn.commit()
+                        log(f"Second attempt to add column '{column_name}' completed")
+                    except Exception as inner_e:
+                        log(f"Second attempt to add column '{column_name}' failed: {inner_e}")
+        
+        # Check and update arrivals table schema
+        cursor.execute("""
+            SELECT column_name FROM information_schema.columns 
+            WHERE table_name = 'arrivals' AND table_schema = 'public'
+        """)
+        existing_columns = [row[0].lower() for row in cursor.fetchall()]
+        log(f"Current columns in arrivals table: {existing_columns}")
+        
+        # Add new columns to arrivals table if they don't exist
+        columns_to_add = {
+            'ata_xml_url': 'TEXT DEFAULT NULL'
+        }
+        
+        for column_name, column_def in columns_to_add.items():
+            if column_name.lower() not in existing_columns:
+                log(f"Adding column '{column_name}' to arrivals table")
+                cursor.execute(f"ALTER TABLE arrivals ADD COLUMN {column_name} {column_def};")
+                conn.commit()
+                # Verify the column was added successfully
+                cursor.execute("""
+                    SELECT column_name FROM information_schema.columns 
+                    WHERE table_name = 'arrivals' AND column_name = %s AND table_schema = 'public'
+                """, (column_name,))
+                if cursor.fetchone():
+                    log(f"Successfully added column '{column_name}' to arrivals table")
+                else:
+                    log(f"Failed to add column '{column_name}' to arrivals table. Will retry.")
+                    try:
+                        # Try one more time with a different approach
+                        cursor.execute(f"ALTER TABLE arrivals ADD COLUMN IF NOT EXISTS {column_name} {column_def};")
+                        conn.commit()
+                        log(f"Second attempt to add column '{column_name}' completed")
+                    except Exception as inner_e:
+                        log(f"Second attempt to add column '{column_name}' failed: {inner_e}")
+        
+        cursor.close()
+        conn.close()
+        log("Schema updates complete.")
+    except Exception as e:
+        log(f"Error updating database schema: {e}")
 
 def parse_arguments():
     """Parse command-line arguments and environment variables."""
@@ -304,163 +402,142 @@ def process_query(data, tracked_vessels=None):
     log(f"Processed {len(results)} records.")
     return results
 
-def save_results_to_db(results, conn=None):
-    """Save processed results into the 'voyages' table and trigger arrivals only when `ata` is updated at the minute level."""
+def createNoaXml(voyage_data):
+    """Generate and store Notice of Arrival (NOA) XML document."""
     try:
-        log(f"Saving {len(results)} records to the database...")
-        connection_managed_elsewhere = conn is not None
+        # Validate mandatory fields and data types
+        required_fields = ["portCallId", "imoLloyds", "vesselName", "eta", "portAreaName"]
+        for field in required_fields:
+            if field not in voyage_data or voyage_data[field] is None:
+                log(f"Cannot generate NOA XML: Missing required field '{field}' for portCallId {voyage_data.get('portCallId', 'unknown')}")
+                return None
+        
+        # Convert numeric fields to strings to avoid NoneType issues
+        for field in ["portCallId", "imoLloyds"]:
+            if field in voyage_data and voyage_data[field] is not None:
+                voyage_data[field] = str(voyage_data[field])
+        
+        # Store original portCallId for database operations
+        original_port_call_id = voyage_data.get("portCallId")
+        
+        # Ensure string fields have proper values
+        for field in ["vesselName", "portAreaName", "portToVisit", "prevPort", "berthName"]:
+            if field in voyage_data and voyage_data[field] is None:
+                voyage_data[field] = ""  # Replace None with empty string
+        
+        # Truncate IDs if needed to prevent validation errors (max 17 chars)
+        if "portCallId" in voyage_data and len(str(voyage_data["portCallId"])) > 17:
+            original_id = voyage_data["portCallId"]
+            voyage_data["portCallId"] = str(voyage_data["portCallId"])[-17:]  # Keep the last 17 chars
+            log(f"Warning: Truncated portCallId from {original_id} to {voyage_data['portCallId']} for XML compatibility")
+            
+        # Call the XML Storage Function
+        xml_converterfunction_url = XML_CONVERTER_CONFIG["function_url"]
+        xml_converter_function_key = XML_CONVERTER_CONFIG["function_key"]
+        
+        # Add the function key to the URL if it exists
+        if xml_converter_function_key:
+            if "?" in xml_converterfunction_url:
+                xml_converterfunction_url += f"&code={xml_converter_function_key}"
+            else:
+                xml_converterfunction_url += f"?code={xml_converter_function_key}"
+        
+        log(f"Calling xml-converter for NOA: {xml_converterfunction_url}")
 
-        if conn is None:
-            conn = get_db_connection(DATABASE_CONFIG["dbname"])
-            if conn is None:
-                raise Exception("Failed to connect to database")
-
-        cursor = conn.cursor()
-
-        new_arrival_count = 0  # Track the count of new arrivals
-
-        # Extract unique portCallIds from JSON data
-        port_call_ids = list(set(entry["portCallId"] for entry in results))
-
-        # Fetch all old ata values in one query
-        old_ata_map = {}
-        if port_call_ids:
-            # Detect if using SQLite
-            is_sqlite = isinstance(conn, sqlite3.Connection)
-            placeholder = "?" if is_sqlite else "%s"
-
-            # Fetch old ATA values using proper placeholders
-            port_call_ids = list(set(entry["portCallId"] for entry in results))
-            query = f"""
-                SELECT portCallId, ata FROM voyages WHERE portCallId IN ({','.join([placeholder] * len(port_call_ids))});
-            """
-            cursor.execute(query, tuple(port_call_ids))
-
-            fetched_data = cursor.fetchall()
-
-            # Debugging: Log fetched data
-            log(f"Fetched {len(fetched_data)} existing records from voyages table.")
-
-            # Populate old_ata_map with correctly formatted timestamps (ignore NULL values)
-            for row in fetched_data:
-                port_call_id, old_ata = row
-                if old_ata:  # Only store valid timestamps
-                    old_ata_map[int(port_call_id)] = old_ata.strftime("%Y-%m-%dT%H:%M:00.000Z")  # Normalize to minute level
-
-        for entry in results:
-            port_call_id = int(entry["portCallId"])  # Ensure it's stored as an integer
-            imo_number = int(entry["imoLloyds"])  # Ensure it's stored as an integer
-            new_ata = entry["ata"]
-            if new_ata:
-                new_ata = datetime.strptime(new_ata, "%Y-%m-%dT%H:%M:%S.%f%z").strftime("%Y-%m-%dT%H:%M:00.000Z")  # Normalize
-
-            # Fetch old ata from the map (default to None)
-            old_ata = old_ata_map.get(port_call_id, None)
-
-            # Insert or update voyages
-            insert_query = f"""
-            INSERT INTO voyages (portCallId, imoLloyds, vesselTypeCode, vesselName, prevPort,
-                portToVisit, nextPort, agentName, shippingCompany, eta, ata, portAreaCode,
-                portAreaName, berthCode, berthName, etd, atd,
-                passengersOnArrival, passengersOnDeparture, crewOnArrival, crewOnDeparture,
-                modified
-            ) VALUES ({','.join([placeholder] * 21)}, CURRENT_TIMESTAMP)
-            ON CONFLICT (portCallId) DO UPDATE SET
-                imoLloyds = excluded.imoLloyds,
-                vesselTypeCode = excluded.vesselTypeCode,
-                vesselName = excluded.vesselName,
-                prevPort = excluded.prevPort,
-                portToVisit = excluded.portToVisit,
-                nextPort = excluded.nextPort,
-                agentName = excluded.agentName,
-                shippingCompany = excluded.shippingCompany,
-                eta = excluded.eta,
-                ata = excluded.ata,
-                portAreaCode = excluded.portAreaCode,
-                portAreaName = excluded.portAreaName,
-                berthCode = excluded.berthCode,
-                berthName = excluded.berthName,
-                etd = excluded.etd,
-                atd = excluded.atd,
-                passengersOnArrival = excluded.passengersOnArrival,
-                passengersOnDeparture = excluded.passengersOnDeparture,
-                crewOnArrival = excluded.crewOnArrival,
-                crewOnDeparture = excluded.crewOnDeparture,
-                modified = CURRENT_TIMESTAMP;
-            """
-
-            cursor.execute(insert_query, (
-                port_call_id, imo_number, entry["vesselTypeCode"], entry["vesselName"],
-                entry["prevPort"], entry["portToVisit"], entry["nextPort"], entry["agentName"],
-                entry["shippingCompany"], entry["eta"], new_ata, entry["portAreaCode"], entry["portAreaName"],
-                entry["berthCode"], entry["berthName"], entry["etd"], entry["atd"],
-                entry["passengersOnArrival"], entry["passengersOnDeparture"], entry["crewOnArrival"],
-                entry["crewOnDeparture"]
-            ))
-
-            if old_ata != new_ata and new_ata is not None:
-                insert_arrival_query = f"""
-                INSERT INTO arrivals (portCallId, eta, old_ata, ata, vesselName, portAreaName, berthName, created)
-                VALUES ({','.join([placeholder] * 7)}, CURRENT_TIMESTAMP);
-                """
-                cursor.execute(insert_arrival_query, (
-                    port_call_id, entry["eta"], old_ata, new_ata,
-                    entry["vesselName"], entry["portAreaName"], entry["berthName"]
-                ))
-                new_arrival_count += 1
-                print(
-                    f"-----------------------------\n"
-                    f"Port Call ID: {port_call_id}\n"
-                    f"Port Call Time Stamp: {entry['portCallTimestamp']}\n\n"
-                    f"Aluksen IMO/nimi: {imo_number}/{entry['vesselName']}\n\n"
-                    f"Satamakoodi: {entry['portToVisit']}\n"
-                    f"Satama: {entry['portAreaName']}\n"
-                    f"Laituri: {entry['berthName']}\n\n"
-                    f"Saapuminen\n"
-                    f"Arvioitu saapumisaika (UTC): {datetime.strptime(entry['eta'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if entry.get('eta') else 'N/A'}\n"
-                    f"Toteutunut saapumisaika (UTC): {datetime.strptime(new_ata, '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if new_ata else 'N/A'}\n"
-                    f"Miehistön lukumäärä: {entry['crewOnArrival']}\n"
-                    f"Matkustajien lukumäärä: {entry['passengersOnArrival']}\n\n"
-                    f"Lähtö\n"
-                    f"Arvioitu lähtöaika (UTC): {datetime.strptime(entry['etd'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if entry.get('etd') else 'N/A'}\n"
-                    f"Toteutunut lähtöaika (UTC): {datetime.strptime(entry['atd'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if entry.get('atd') else 'N/A'}\n"
-                    f"Miehistön lukumäärä: {entry['crewOnDeparture']}\n"
-                    f"Matkustajien lukumäärä: {entry['passengersOnDeparture']}\n"
+        # Send the voyage data to the function for NOA generation
+        response = requests.post(
+            xml_converterfunction_url,
+            json={"portcall_data": voyage_data, "formality_type": "NOA"},
+            headers={"Content-Type": "application/json"}
+        )
+        
+        if response.status_code == 200:
+            response_data = response.json()
+            plain_url = response_data.get('url')
+            
+            if not plain_url:
+                log(f"No URL found in XML converter response for portCallId {voyage_data.get('portCallId')}")
+                return None
+                
+            # Extract the blob name from the URL
+            # URL format: https://storage_account.blob.core.windows.net/container_name/blob_path
+            try:
+                blob_path = plain_url.split('.net/')[1]  # Get container_name/blob_path
+            except (IndexError, AttributeError):
+                log(f"Could not parse blob path from URL: {plain_url}")
+                blob_path = plain_url  # Fallback to using the URL as is
+            
+            # Generate the SAS URL using the shared utility function
+            storage_connection_string = os.getenv("AzureWebJobsStorage")
+            sas_url = generate_blob_storage_link(blob_path, storage_connection_string)
+            
+            if not sas_url:
+                log(f"Failed to generate SAS URL for blob: {blob_path}")
+                sas_url = plain_url  # Fallback to plain URL if SAS generation fails
+            
+            log(f"NOA XML for portCallId {voyage_data.get('portCallId')} successfully generated and stored.")
+            
+            # Store the XML URL in the voyages table
+            try:
+                conn = get_db_connection(DATABASE_CONFIG["dbname"])
+                if conn is None:
+                    log(f"Failed to connect to database when storing NOA XML URL")
+                    return None
+                
+                cursor = conn.cursor()
+                
+                # Update the record with the NOA XML URL (use SAS URL if available)
+                cursor.execute(
+                    "UPDATE voyages SET noa_xml_url = %s WHERE portcallid = %s",
+                    (sas_url, original_port_call_id)
                 )
-                #log(f"Trigger executed: New arrival detected for portCallId {port_call_id} (old_ata: {old_ata}, new_ata: {new_ata})")
-                createArrivalXml({
-                    "portCallId": port_call_id,
-                    "imoLloyds": imo_number,
-                    "vesselName": entry["vesselName"],
-                    "eta": entry["eta"],
-                    "ata": new_ata,
-                    "portAreaCode": entry["portAreaCode"],
-                    "portAreaName": entry["portAreaName"],
-                    "berthCode": entry["berthCode"],
-                    "berthName": entry["berthName"],
-                    "passengersOnArrival": entry["passengersOnArrival"],
-                    "crewOnArrival": entry["crewOnArrival"],
-                    "portToVisit": entry["portToVisit"],
-                    "prevPort": entry["prevPort"],
-                    "agentName": entry["agentName"],
-                    "shippingCompany": entry["shippingCompany"],
-                    # Add any other fields needed for the XML
-                })
-
-        conn.commit()
-        cursor.close()
-        if not connection_managed_elsewhere:
-            conn.close()
-        log(f"{len(results)} records saved/updated in the database.")
-        log(f"Total new arrivals detected: {new_arrival_count}")
-
+                
+                affected = cursor.rowcount
+                if affected > 0:
+                    log(f"NOA XML URL (with SAS token) stored in voyages table for portCallId {original_port_call_id}")
+                else:
+                    log(f"No rows updated for portCallId {original_port_call_id}")
+                
+                conn.commit()
+                cursor.close()
+                conn.close()
+                return sas_url
+            except Exception as e:
+                log(f"Error storing NOA XML URL in voyages table: {str(e)}")
+        else:
+            log(f"Error with NOA XML generation/storage for portCallId {voyage_data.get('portCallId')}: Status {response.status_code}")
+            
     except Exception as e:
-        log(f"Error saving results to the database: {e}")
-        raise  # Re-raise the exception to be caught by the test
+        log(f"Error triggering NOA XML function for portCallId {voyage_data.get('portCallId', 'unknown')}: {str(e)}")
+    
+    return None
 
 def createArrivalXml(arrival_data):
-     # After detecting a new arrival, trigger XML generation and storage
+    """Generate and store Actual Time of Arrival (ATA) XML document."""
     try:
+        # Validate mandatory fields and data types
+        required_fields = ["portCallId", "imoLloyds", "vesselName", "ata", "portAreaName"]
+        for field in required_fields:
+            if field not in arrival_data or arrival_data[field] is None:
+                log(f"Cannot generate ATA XML: Missing required field '{field}' for portCallId {arrival_data.get('portCallId', 'unknown')}")
+                return None
+        
+        # Convert numeric fields to strings to avoid NoneType issues
+        for field in ["portCallId", "imoLloyds"]:
+            if field in arrival_data and arrival_data[field] is not None:
+                arrival_data[field] = str(arrival_data[field])
+        
+        # Ensure string fields have proper values
+        for field in ["vesselName", "portAreaName", "portToVisit", "prevPort", "berthName"]:
+            if field in arrival_data and arrival_data[field] is None:
+                arrival_data[field] = ""  # Replace None with empty string
+        
+        # Truncate IDs if needed to prevent validation errors (max 17 chars)
+        if "portCallId" in arrival_data and len(str(arrival_data["portCallId"])) > 17:
+            original_id = arrival_data["portCallId"]
+            arrival_data["portCallId"] = str(arrival_data["portCallId"])[-17:]  # Keep the last 17 chars
+            log(f"Warning: Truncated portCallId from {original_id} to {arrival_data['portCallId']} for XML compatibility")
+            
         # Call the XML Storage Function
         xml_converterfunction_url = XML_CONVERTER_CONFIG["function_url"]
         xml_converter_function_key = XML_CONVERTER_CONFIG["function_key"]
@@ -482,17 +559,319 @@ def createArrivalXml(arrival_data):
         )
         
         if response.status_code == 200:
-            log(f"XML for portCallId {arrival_data['portCallId']} successfully generated and stored. URL: {response.json().get('url')}")
+            response_data = response.json()
+            plain_url = response_data.get('url')
+            
+            if not plain_url:
+                log(f"No URL found in XML converter response for portCallId {arrival_data.get('portCallId')}")
+                return None
+                
+            # Extract the blob name from the URL
+            # URL format: https://storage_account.blob.core.windows.net/container_name/blob_path
+            try:
+                blob_path = plain_url.split('.net/')[1]  # Get container_name/blob_path
+            except (IndexError, AttributeError):
+                log(f"Could not parse blob path from URL: {plain_url}")
+                blob_path = plain_url  # Fallback to using the URL as is
+            
+            # Generate the SAS URL using the shared utility function
+            storage_connection_string = os.getenv("AzureWebJobsStorage")
+            sas_url = generate_blob_storage_link(blob_path, storage_connection_string)
+            
+            if not sas_url:
+                log(f"Failed to generate SAS URL for blob: {blob_path}")
+                sas_url = plain_url  # Fallback to plain URL if SAS generation fails
+            
+            log(f"ATA XML for portCallId {arrival_data.get('portCallId')} successfully generated and stored.")
+            
+            # Store the XML URL in the arrivals table
+            try:
+                conn = get_db_connection(DATABASE_CONFIG["dbname"])
+                if conn is not None:
+                    cursor = conn.cursor()
+                    
+                    # First find the ID of the most recent arrival record for this port call
+                    cursor.execute(
+                        "SELECT id FROM arrivals WHERE portCallId = %s ORDER BY id DESC LIMIT 1",
+                        (arrival_data.get('portCallId'),)
+                    )
+                    
+                    result = cursor.fetchone()
+                    if result:
+                        arrival_id = result[0]
+                        # Then update that specific record with the SAS URL
+                        cursor.execute(
+                            "UPDATE arrivals SET ata_xml_url = %s WHERE id = %s",
+                            (sas_url, arrival_id)
+                        )
+                        conn.commit()
+                        log(f"XML URL (with SAS token) stored in arrivals table for portCallId {arrival_data.get('portCallId')}")
+                    else:
+                        log(f"No arrival record found for portCallId {arrival_data.get('portCallId')}")
+                    
+                    cursor.close()
+                    conn.close()
+                    return sas_url  # Return the XML URL on success
+            except Exception as e:
+                log(f"Error storing XML URL in arrivals table: {str(e)}")
         else:
-            log(f"Error with XML generation/storage for portCallId {arrival_data['portCallId']}: {response}")
+            log(f"Error with XML generation/storage for portCallId {arrival_data.get('portCallId')}: Status {response.status_code}")
             
     except Exception as e:
-        log(f"Error triggering XML function for portCallId {arrival_data['portCallId']}: {str(e)}")
+        log(f"Error triggering XML function for portCallId {arrival_data.get('portCallId', 'unknown')}: {str(e)}")
+    
+    return None  # Return None if unsuccessful
+
+def diagnose_database_structure():
+    """Diagnose database structure to help identify issues with XML URL storage."""
+    try:
+        log("Diagnosing database structure...")
+        conn = get_db_connection(DATABASE_CONFIG["dbname"])
+        if conn is None:
+            log("Cannot diagnose database - connection failed")
+            return
+        
+        cursor = conn.cursor()
+        
+        # Check voyages table structure
+        cursor.execute("""
+            SELECT column_name, data_type 
+            FROM information_schema.columns 
+            WHERE table_name = 'voyages' AND table_schema = 'public'
+        """)
+        columns = cursor.fetchall()
+        
+        log("Voyages table structure:")
+        for col in columns:
+            log(f"  Column: {col[0]}, Type: {col[1]}")
+        
+        cursor.close()
+        conn.close()
+        log("Database diagnosis complete.")
+    except Exception as e:
+        log(f"Error diagnosing database structure: {str(e)}")
+
+def save_results_to_db(results, conn=None):
+    """Save processed results into the 'voyages' table and trigger arrivals only when `ata` is updated at the minute level."""
+    try:
+        log(f"Saving {len(results)} records to the database...")
+        connection_managed_elsewhere = conn is not None
+
+        if conn is None:
+            conn = get_db_connection(DATABASE_CONFIG["dbname"])
+            if conn is None:
+                raise Exception("Failed to connect to database")
+
+        cursor = conn.cursor()
+
+        new_arrival_count = 0   # Track the count of new arrivals
+        new_voyage_count = 0    # Track count of new voyages for NOA generation
+        updated_voyage_count = 0 # Track count of updated existing voyages
+
+        # Extract unique portCallIds from JSON data
+        port_call_ids = list(set(entry["portCallId"] for entry in results))
+
+        # Fetch all old ata values and existing port calls in one query
+        old_ata_map = {}
+        existing_port_calls = set()
+        if port_call_ids:
+            # Detect if using SQLite
+            is_sqlite = isinstance(conn, sqlite3.Connection)
+            placeholder = "?" if is_sqlite else "%s"
+
+            # Fetch old ATA values and port call IDs using proper placeholders
+            port_call_ids = list(set(entry["portCallId"] for entry in results))
+            query = f"""
+                SELECT portCallId, ata FROM voyages WHERE portCallId IN ({','.join([placeholder] * len(port_call_ids))});
+            """
+            cursor.execute(query, tuple(port_call_ids))
+
+            fetched_data = cursor.fetchall()
+
+            # Populate maps with data
+            for row in fetched_data:
+                port_call_id, old_ata = row
+                existing_port_calls.add(int(port_call_id))
+                if old_ata:  # Only store valid timestamps
+                    old_ata_map[int(port_call_id)] = old_ata.strftime("%Y-%m-%dT%H:%M:00.000Z")  # Normalize to minute level
+
+        for entry in results:
+            port_call_id = int(entry["portCallId"])  # Ensure it's stored as an integer
+            imo_number = int(entry["imoLloyds"])  # Ensure it's stored as an integer
+            new_ata = entry["ata"]
+            if new_ata:
+                new_ata = datetime.strptime(new_ata, "%Y-%m-%dT%H:%M:%S.%f%z").strftime("%Y-%m-%dT%H:%M:00.000Z")  # Normalize
+
+            # Fetch old ata from the map (default to None)
+            old_ata = old_ata_map.get(port_call_id, None)
+
+            # Check if this is a new port call that needs NOA
+            is_new_port_call = port_call_id not in existing_port_calls
+
+            # Determine operation - new insert or update existing
+            if is_new_port_call:
+                # For new port calls, use INSERT
+                insert_query = f"""
+                INSERT INTO voyages (portCallId, imoLloyds, vesselTypeCode, vesselName, prevPort,
+                    portToVisit, nextPort, agentName, shippingCompany, eta, ata, portAreaCode,
+                    portAreaName, berthCode, berthName, etd, atd,
+                    passengersOnArrival, passengersOnDeparture, crewOnArrival, crewOnDeparture,
+                    modified)
+                VALUES ({','.join([placeholder] * 21)}, CURRENT_TIMESTAMP)
+                RETURNING portCallId;
+                """
+                
+                cursor.execute(insert_query, (
+                    port_call_id, imo_number, entry["vesselTypeCode"], entry["vesselName"],
+                    entry["prevPort"], entry["portToVisit"], entry["nextPort"], entry["agentName"],
+                    entry["shippingCompany"], entry["eta"], new_ata, entry["portAreaCode"], entry["portAreaName"],
+                    entry["berthCode"], entry["berthName"], entry["etd"], entry["atd"],
+                    entry["passengersOnArrival"], entry["passengersOnDeparture"], entry["crewOnArrival"],
+                    entry["crewOnDeparture"]
+                ))
+                
+                new_voyage_count += 1
+            else:
+                # For existing port calls, use UPDATE
+                update_query = f"""
+                UPDATE voyages SET
+                    imoLloyds = %s,
+                    vesselTypeCode = %s,
+                    vesselName = %s,
+                    prevPort = %s,
+                    portToVisit = %s,
+                    nextPort = %s,
+                    agentName = %s,
+                    shippingCompany = %s,
+                    eta = %s,
+                    ata = %s,
+                    portAreaCode = %s,
+                    portAreaName = %s,
+                    berthCode = %s,
+                    berthName = %s,
+                    etd = %s,
+                    atd = %s,
+                    passengersOnArrival = %s,
+                    passengersOnDeparture = %s,
+                    crewOnArrival = %s,
+                    crewOnDeparture = %s,
+                    modified = CURRENT_TIMESTAMP
+                WHERE portCallId = %s
+                """
+                
+                cursor.execute(update_query, (
+                    imo_number, entry["vesselTypeCode"], entry["vesselName"],
+                    entry["prevPort"], entry["portToVisit"], entry["nextPort"], entry["agentName"],
+                    entry["shippingCompany"], entry["eta"], new_ata, entry["portAreaCode"], entry["portAreaName"],
+                    entry["berthCode"], entry["berthName"], entry["etd"], entry["atd"],
+                    entry["passengersOnArrival"], entry["passengersOnDeparture"], entry["crewOnArrival"],
+                    entry["crewOnDeparture"], port_call_id
+                ))
+                
+                updated_voyage_count += 1
+
+            # Generate NOA XML for new port calls with ETA data
+            if is_new_port_call and entry.get("eta"):
+                log(f"New port call detected for portCallId {port_call_id}. Generating NOA-XML.")
+                
+                # IMPORTANT: Commit the transaction to ensure the new record is stored
+                # before generating the XML
+                conn.commit()
+                
+                # Prepare data for NOA XML generation, ensuring no None values
+                noa_data = {
+                    "portCallId": port_call_id,
+                    "imoLloyds": imo_number,
+                    "vesselName": entry.get("vesselName") or "",
+                    "eta": entry.get("eta") or "",
+                    "portAreaCode": entry.get("portAreaCode") or "",
+                    "portAreaName": entry.get("portAreaName") or "",
+                    "berthCode": entry.get("berthCode") or "", 
+                    "berthName": entry.get("berthName") or "",
+                    "passengersOnArrival": entry.get("passengersOnArrival") or 0,
+                    "crewOnArrival": entry.get("crewOnArrival") or 0,
+                    "portToVisit": entry.get("portToVisit") or "",
+                    "prevPort": entry.get("prevPort") or "",
+                    "agentName": entry.get("agentName") or "",
+                    "shippingCompany": entry.get("shippingCompany") or ""
+                }
+                
+                # Generate and store the NOA XML
+                createNoaXml(noa_data)
+
+            # Generate ATA XML for arrivals with updated ATA
+            if old_ata != new_ata and new_ata is not None:
+                insert_arrival_query = f"""
+                INSERT INTO arrivals (portCallId, eta, old_ata, ata, vesselName, portAreaName, berthName, created)
+                VALUES ({','.join([placeholder] * 7)}, CURRENT_TIMESTAMP);
+                """
+                cursor.execute(insert_arrival_query, (
+                    port_call_id, entry["eta"], old_ata, new_ata,
+                    entry["vesselName"], entry["portAreaName"], entry["berthName"]
+                ))
+                
+                # Commit the arrival record before XML generation
+                conn.commit()
+                
+                new_arrival_count += 1
+                print(
+                    f"-----------------------------\n"
+                    f"Port Call ID: {port_call_id}\n"
+                    f"Port Call Time Stamp: {entry['portCallTimestamp']}\n\n"
+                    f"Aluksen IMO/nimi: {imo_number}/{entry['vesselName']}\n\n"
+                    f"Satamakoodi: {entry['portToVisit']}\n"
+                    f"Satama: {entry['portAreaName']}\n"
+                    f"Laituri: {entry['berthName']}\n\n"
+                    f"Saapuminen\n"
+                    f"Arvioitu saapumisaika (UTC): {datetime.strptime(entry['eta'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if entry.get('eta') else 'N/A'}\n"
+                    f"Toteutunut saapumisaika (UTC): {datetime.strptime(new_ata, '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if new_ata else 'N/A'}\n"
+                    f"Miehistön lukumäärä: {entry['crewOnArrival']}\n"
+                    f"Matkustajien lukumäärä: {entry['passengersOnArrival']}\n\n"
+                    f"Lähtö\n"
+                    f"Arvioitu lähtöaika (UTC): {datetime.strptime(entry['etd'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if entry.get('etd') else 'N/A'}\n"
+                    f"Toteutunut lähtöaika (UTC): {datetime.strptime(entry['atd'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M') if entry.get('atd') else 'N/A'}\n"
+                    f"Miehistön lukumäärä: {entry['crewOnDeparture']}\n"
+                    f"Matkustajien lukumäärä: {entry['passengersOnDeparture']}\n"
+                )
+                
+                # Prepare data for ATA XML generation, ensuring no None values
+                ata_data = {
+                    "portCallId": port_call_id,
+                    "imoLloyds": imo_number,
+                    "vesselName": entry.get("vesselName") or "",
+                    "eta": entry.get("eta") or "",
+                    "ata": new_ata,
+                    "portAreaCode": entry.get("portAreaCode") or "",
+                    "portAreaName": entry.get("portAreaName") or "",
+                    "berthCode": entry.get("berthCode") or "", 
+                    "berthName": entry.get("berthName") or "",
+                    "passengersOnArrival": entry.get("passengersOnArrival") or 0,
+                    "crewOnArrival": entry.get("crewOnArrival") or 0,
+                    "portToVisit": entry.get("portToVisit") or "",
+                    "prevPort": entry.get("prevPort") or "",
+                    "agentName": entry.get("agentName") or "",
+                    "shippingCompany": entry.get("shippingCompany") or ""
+                }
+                
+                createArrivalXml(ata_data)
+
+        # Final commit at the end of processing all records
+        conn.commit()
+        cursor.close()
+        if not connection_managed_elsewhere:
+            conn.close()
+        log(f"{len(results)} records saved/updated in the database.")
+        log(f"Total new voyages: {new_voyage_count}, updated voyages: {updated_voyage_count}, new arrivals: {new_arrival_count}")
+
+    except Exception as e:
+        log(f"Error saving results to the database: {e}")
+        raise  # Re-raise the exception to be caught by the test
 
 def main(req=None):
     log("Program started.")
     create_database_and_tables()
-
+    update_database_schema()
+    
     # Parse CLI arguments and environment variables
     args = {}
     if req:

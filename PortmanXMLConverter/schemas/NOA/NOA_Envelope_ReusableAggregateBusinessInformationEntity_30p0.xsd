@@ -1,0 +1,3850 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:qdt="urn:un:unece:uncefact:data:Standard:QualifiedDataType:30"
+    xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
+    targetNamespace="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30"
+    elementFormDefault="qualified"
+    version="30.0">
+  <xs:import namespace="urn:un:unece:uncefact:data:Standard:QualifiedDataType:30" schemaLocation="NOA_Envelope_QualifiedDataType_30p0.xsd"/>
+  <xs:import namespace="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100" schemaLocation="NOA_Envelope_UnqualifiedDataType_100pD22B.xsd"/>
+  <xs:complexType name="ApplicableTransshipmentType">
+    <xs:annotation>
+      <xs:documentation>Applicable Transshipment</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Applicable_ Transshipment. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="OccurrenceIndicator" type="udt:IndicatorType">
+        <xs:annotation>
+          <xs:documentation>Occurrence Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Applicable_ Transshipment. Occurrence. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ApplicableTransshipmentTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Applicable Transshipment</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Applicable_ Transshipment. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="OccurrenceIndicator" type="udt:IndicatorType">
+        <xs:annotation>
+          <xs:documentation>DE-054-01 Cargo transshipment indicator</xs:documentation>
+          <xs:documentation>DE-054-01 Cargo transshipment indicator</xs:documentation>
+          <xs:documentation>Occurrence Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ContactPersonType">
+    <xs:annotation>
+      <xs:documentation>Contact Person</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Contact_ Person. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GivenName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Given Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Contact_ Person. Given Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FamilyName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Family Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Contact_ Person. Family Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ContactPersonTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Contact Person</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Contact_ Person. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GivenName" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-15 Agent contact given name</xs:documentation>
+          <xs:documentation>Given Name</xs:documentation>
+          <xs:documentation>DE-029-15 Agent contact given name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FamilyName" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-04 Agent contact family name</xs:documentation>
+          <xs:documentation>Family Name</xs:documentation>
+          <xs:documentation>DE-029-04 Agent contact family name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DocumentAuthenticationType">
+    <xs:annotation>
+      <xs:documentation>Document Authentication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Document_ Authentication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ActualDateTime" type="udt:DateTimeType">
+        <xs:annotation>
+          <xs:documentation>Actual Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Document_ Authentication. Actual. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DocumentAuthenticationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Document Authentication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Document_ Authentication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ActualDateTime" type="udt:DateTimeType">
+        <xs:annotation>
+          <xs:documentation>DE-002-02 Authentication date time</xs:documentation>
+          <xs:documentation>RE-002-02 Authentication date time</xs:documentation>
+          <xs:documentation>Actual Date Time</xs:documentation>
+          <xs:documentation>DE-002-02 Authentication date time</xs:documentation>
+          <xs:documentation>RE-002-02 Authentication date time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDeclarationType">
+    <xs:annotation>
+      <xs:documentation>Exchanged Declaration</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Declaration. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Declaration. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CustomsAssignedID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Customs Assigned Identifier</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Declaration. Customs Assigned_ Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DeclarantTradeParty" type="ram:TradePartyType">
+        <xs:annotation>
+          <xs:documentation>Declarant</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Declaration. Declarant. Trade_ Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDeclarationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Exchanged Declaration</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Declaration. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_10" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-002-09 LRN</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-002-09 LRN</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CustomsAssignedID" type="udt:IDTypeValidationVersion_11" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-002-13 MRN</xs:documentation>
+          <xs:documentation>Customs Assigned Identifier</xs:documentation>
+          <xs:documentation>DE-002-13 MRN</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DeclarantTradeParty" type="ram:TradePartyTypeValidationVersion_6">
+        <xs:annotation>
+          <xs:documentation>Declarant</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDocumentType">
+    <xs:annotation>
+      <xs:documentation>Exchanged Document</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Document. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TypeCode" type="qdt:FormalityTypesCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Remarks" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Remark</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Remarks. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PurposeCode" type="qdt:MessageFunctionCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Purpose Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Purpose. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="VersionID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Version ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Version_ Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FirstSignatoryDocumentAuthentication" type="ram:DocumentAuthenticationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>First Signatory Authentication</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. First_ Signatory. Document_ Authentication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AttachedSpecifiedBinaryFile" type="ram:SpecifiedBinaryFileType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Attached File</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Exchanged_ Document. Attached. Specified_ Binary File</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDocumentTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Exchanged Document</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Document. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Remarks" type="udt:TextTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-003-01 Remarks</xs:documentation>
+          <xs:documentation>RE-003-01 Remarks</xs:documentation>
+          <xs:documentation>DE-014-08 Security, other matters to report</xs:documentation>
+          <xs:documentation>Remark</xs:documentation>
+          <xs:documentation>DE-003-01 Remarks</xs:documentation>
+          <xs:documentation>RE-003-01 Remarks</xs:documentation>
+          <xs:documentation>DE-014-08 Security, other matters to report</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AttachedSpecifiedBinaryFile" type="ram:SpecifiedBinaryFileTypeValidationVersion" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Attached File</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExchangedDocumentTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Exchanged Document</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Exchanged_ Document. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>DE-002-07 Message identifier</xs:documentation>
+          <xs:documentation>RE-002-06 Message identifier</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-002-07 Message identifier</xs:documentation>
+          <xs:documentation>RE-002-06 Message identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TypeCode" type="qdt:FormalityTypesCodeTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-002-03 Formality type, coded</xs:documentation>
+          <xs:documentation>DE-002-03 Formality type, coded</xs:documentation>
+          <xs:documentation>Type Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PurposeCode" type="qdt:MessageFunctionCodeTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-002-08 Message function, coded</xs:documentation>
+          <xs:documentation>RE-002-07 Message function, coded</xs:documentation>
+          <xs:documentation>Purpose Code</xs:documentation>
+          <xs:documentation>DE-002-08 Message function, coded</xs:documentation>
+          <xs:documentation>RE-002-07 Message function, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="VersionID" type="udt:IDTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-002-10 Version</xs:documentation>
+          <xs:documentation>RE-002-08 Version</xs:documentation>
+          <xs:documentation>Version ID</xs:documentation>
+          <xs:documentation>DE-002-10 Version</xs:documentation>
+          <xs:documentation>RE-002-08 Version</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FirstSignatoryDocumentAuthentication" type="ram:DocumentAuthenticationTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>First Signatory Authentication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsConvoyType">
+    <xs:annotation>
+      <xs:documentation>Logistics Convoy</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Convoy. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ArrivalConstellationIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Arrival Constellation Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Convoy. Arrival_ Constellation. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsConvoyTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Logistics Convoy</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Convoy. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ArrivalConstellationIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-020-01 Constellation at arrival indicator</xs:documentation>
+          <xs:documentation>Arrival Constellation Indicator</xs:documentation>
+          <xs:documentation>DE-020-01 Constellation at arrival indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationType">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Location. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Location. Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SubordinateLocation" type="ram:SubordinateLocationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Subordinate Location</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Location. Subordinate. Subordinate_ Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="SubordinateLocation" type="ram:SubordinateLocationTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>Subordinate Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-005-12 Ship registry port, coded</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-005-12 Ship registry port, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-005-11 Ship registry port name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-005-11 Ship registry port name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_4">
+        <xs:annotation>
+          <xs:documentation>DE-022-06 Last port of call, coded</xs:documentation>
+          <xs:documentation>DE-022-08 Next port of call, coded</xs:documentation>
+          <xs:documentation>DE-023-01 Previous Port of call, coded</xs:documentation>
+          <xs:documentation>DE-024-01 Subsequent port of call, coded</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-022-06 Last port of call, coded</xs:documentation>
+          <xs:documentation>DE-022-08 Next port of call, coded</xs:documentation>
+          <xs:documentation>DE-023-01 Previous Port of call, coded</xs:documentation>
+          <xs:documentation>DE-024-01 Subsequent port of call, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationTypeValidationVersion_4">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-083-04 Pilot exemption certificate validity from port, coded</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-083-04 Pilot exemption certificate validity from port, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-083-05 Pilot exemption certificate validity from port name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-083-05 Pilot exemption certificate validity from port name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SubordinateLocation" type="ram:SubordinateLocationTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Subordinate Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationTypeValidationVersion_5">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-083-08 Pilot exemption certificate validity to port, coded</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-083-08 Pilot exemption certificate validity to port, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-083-09 Pilot exemption certificate validity to port name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-083-09 Pilot exemption certificate validity to port name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SubordinateLocation" type="ram:SubordinateLocationTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Subordinate Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationTypeValidationVersion_6">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-075-02 Cargo operation area identifier</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-075-02 Cargo operation area identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-075-01 Cargo operation area name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-075-01 Cargo operation area name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationTypeValidationVersion_7">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>DE-015-01 Expected port area identification text</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-015-01 Expected port area identification text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsLocationTypeValidationVersion_8">
+    <xs:annotation>
+      <xs:documentation>Logistics Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_4">
+        <xs:annotation>
+          <xs:documentation>DE-025-01 Cruise itinerary port, coded</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-025-01 Cruise itinerary port, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsTransportMeansType">
+    <xs:annotation>
+      <xs:documentation>Logistics Transport Means</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Transport Means. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="TypeCode" type="qdt:TransportMeansTypeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ForwardDraughtLevelMeasure" type="udt:MeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Forward Draught Level Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Forward_ Draught Level. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AftDraughtLevelMeasure" type="udt:MeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Aft Draught Level Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Aft_ Draught Level. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="WidthMeasure" type="qdt:LinearUnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Width Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Width. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AirDraughtLevelMeasure" type="qdt:LinearUnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Air Draught Level Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Air_ Draught Level. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MidShipDraughtLevelMeasure" type="udt:MeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Mid-Ship Draught</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Mid-Ship_ Draught Level. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ProtrudingParts" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Protruding Parts Text</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Protruding Parts. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DeadWeightMeasure" type="qdt:WeightUnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Dead Weight Tonnage</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Dead Weight. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ActualMaximumDraughtLevelMeasure" type="udt:MeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Actual Maximum Draught</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Actual Maximum_ Draught Level. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedMaximumDraughtLevelMeasure" type="qdt:LinearUnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Estimated Maximum Draught</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Estimated Maximum_ Draught Level. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OverallLengthMeasure" type="qdt:LinearUnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Overall Length</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Overall_ Length. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OffStandardLengthMeasure" type="udt:MeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Off-Standard Length Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Off-Standard Length. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OffStandardLeftMeasure" type="udt:MeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Off-Standard Port Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Off-Standard Left. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OffStandardRightMeasure" type="udt:MeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Off-Standard Starboard Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Off-Standard Right. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GrossTonnageMeasure" type="qdt:UnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Gross Tonnage</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Gross Tonnage. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="NetTonnageMeasure" type="qdt:UnitMeasureType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Net Tonnage</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Net Tonnage. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegistrationTradeCountry" type="ram:TradeCountryType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Registration Country</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Registration. Trade_ Country</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegistrationTransportEvent" type="ram:TransportEventType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Registration Event</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Registration. Transport_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ShipCompanyTradeParty" type="ram:TradePartyType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Ship Company Party</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Ship Company. Trade_ Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ConstructionSpecifiedTransportMeansCharacteristic" type="ram:SpecifiedTransportMeansCharacteristicType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Construction Characteristic</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Means. Construction. Specified_ Transport Means Characteristic</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsTransportMeansTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Logistics Transport Means</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Transport Means. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="TypeCode" type="qdt:TransportMeansTypeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-005-16 Ship type, coded</xs:documentation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>DE-005-16 Ship type, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ForwardDraughtLevelMeasure" type="udt:MeasureTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-017-01 Draught forward</xs:documentation>
+          <xs:documentation>Forward Draught Level Measure</xs:documentation>
+          <xs:documentation>DE-017-01 Draught forward</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AftDraughtLevelMeasure" type="udt:MeasureTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-017-02 Draught aft</xs:documentation>
+          <xs:documentation>Aft Draught Level Measure</xs:documentation>
+          <xs:documentation>DE-017-02 Draught aft</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="WidthMeasure" type="qdt:LinearUnitMeasureTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-008-13 Vessel breadth</xs:documentation>
+          <xs:documentation>DE-008-13 Vessel breadth</xs:documentation>
+          <xs:documentation>Width Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AirDraughtLevelMeasure" type="qdt:LinearUnitMeasureTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-017-06 Air draught</xs:documentation>
+          <xs:documentation>Air Draught Level Measure</xs:documentation>
+          <xs:documentation>DE-017-06 Air draught</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MidShipDraughtLevelMeasure" type="udt:MeasureTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-017-05 Mid-ship draught</xs:documentation>
+          <xs:documentation>Mid-Ship Draught</xs:documentation>
+          <xs:documentation>DE-017-05 Mid-ship draught</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ProtrudingParts" type="udt:TextTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-30 Protruding parts description</xs:documentation>
+          <xs:documentation>Protruding Parts Text</xs:documentation>
+          <xs:documentation>DE-014-30 Protruding parts description</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DeadWeightMeasure" type="qdt:WeightUnitMeasureTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-008-29 Ship deadweight tonnage</xs:documentation>
+          <xs:documentation>Dead Weight Tonnage</xs:documentation>
+          <xs:documentation>DE-008-29 Ship deadweight tonnage</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ActualMaximumDraughtLevelMeasure" type="udt:MeasureTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-017-03 Actual maximum draught</xs:documentation>
+          <xs:documentation>Actual Maximum Draught</xs:documentation>
+          <xs:documentation>DE-017-03 Actual maximum draught</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedMaximumDraughtLevelMeasure" type="qdt:LinearUnitMeasureTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-017-08 Estimated departure draught</xs:documentation>
+          <xs:documentation>Estimated Maximum Draught</xs:documentation>
+          <xs:documentation>DE-017-08 Estimated departure draught</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OverallLengthMeasure" type="qdt:LinearUnitMeasureTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-008-25 Ship length overall</xs:documentation>
+          <xs:documentation>Overall Length</xs:documentation>
+          <xs:documentation>DE-008-25 Ship length overall</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OffStandardLengthMeasure" type="udt:MeasureTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-008-19 Extra length</xs:documentation>
+          <xs:documentation>Off-Standard Length Measure</xs:documentation>
+          <xs:documentation>DE-008-19 Extra length</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OffStandardLeftMeasure" type="udt:MeasureTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-008-21 Extra width port</xs:documentation>
+          <xs:documentation>Off-Standard Port Measure</xs:documentation>
+          <xs:documentation>DE-008-21 Extra width port</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OffStandardRightMeasure" type="udt:MeasureTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-008-20 Extra width starboard</xs:documentation>
+          <xs:documentation>Off-Standard Starboard Measure</xs:documentation>
+          <xs:documentation>DE-008-20 Extra width starboard</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GrossTonnageMeasure" type="qdt:UnitMeasureTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-008-27 Ship gross tonnage</xs:documentation>
+          <xs:documentation>Gross Tonnage</xs:documentation>
+          <xs:documentation>DE-008-27 Ship gross tonnage</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="NetTonnageMeasure" type="qdt:UnitMeasureTypeValidationVersion_2" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>DE-008-28 Ship net tonnage</xs:documentation>
+          <xs:documentation>Net Tonnage</xs:documentation>
+          <xs:documentation>DE-008-28 Ship net tonnage</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegistrationTradeCountry" type="ram:TradeCountryTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Registration Country</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegistrationTransportEvent" type="ram:TransportEventTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Registration Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ShipCompanyTradeParty" type="ram:TradePartyTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Ship Company Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ConstructionSpecifiedTransportMeansCharacteristic" type="ram:SpecifiedTransportMeansCharacteristicTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Construction Characteristic</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsTransportMovementType">
+    <xs:annotation>
+      <xs:documentation>Logistics Transport Movement</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Transport Movement. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ModeCode" type="qdt:TransportModeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Mode Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Mode. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PassengerQuantity" type="udt:QuantityType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Passenger Quantity</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Passenger. Quantity</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CrewQuantity" type="udt:QuantityType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Crew Quantity</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Crew. Quantity</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CargoDescription" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Cargo Description</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Cargo Description. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DangerousGoodsIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Dangerous Goods Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Dangerous Goods. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Service" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Liner Service Text</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Service. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CallPurposeCode" type="udt:CodeType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Call Purpose Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Call Purpose. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegularServiceIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Regular Service Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Regular_ Service. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegularServiceID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Regular Service ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Regular Service. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="LinerServiceIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Liner Service Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Liner_ Service. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TotalOnboardPersonQuantity" type="udt:QuantityType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Onboard Person Quantity</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Total Onboard Person. Quantity</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DriverQuantity" type="udt:QuantityType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Driver Quantity</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Driver. Quantity</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CabotageIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Cabotage Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Cabotage. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GovernmentShipIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Government Ship Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Government Ship. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FoundStowawayIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Found Stowaway Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Found Stowaway. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SixGhzTransmittingFrequencyIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Six Ghz Transmitting Frequency Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Six Ghz Transmitting Frequency. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ShippingAreaCode" type="qdt:ShippingAreaCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Shipping Area Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Shipping Area. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="VoyageTypeServiceCode" type="qdt:VoyageTypeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Voyage Type Service Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Voyage Type_ Service. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FumigatedIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Fumigated Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Fumigated. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MasterResponsibleTransportPerson" type="ram:TransportPersonType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Master</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Master_ Responsible. Transport_ Person</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalTransportEvent" type="ram:TransportEventType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Arrival Event</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Arrival. Transport_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="UsedLogisticsTransportMeans" type="ram:LogisticsTransportMeansType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Used Transport Means</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Used. Logistics_ Transport Means</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CarrierTradeParty" type="ram:TradePartyType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Carrier</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Carrier. Trade_ Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ItineraryTransportRoute" type="ram:TransportRouteType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Itinerary Route</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Itinerary. Transport_ Route</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CallTransportEvent" type="ram:TransportEventType">
+        <xs:annotation>
+          <xs:documentation>Call Event</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Call. Transport_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CarrierAgentTradeParty" type="ram:TradePartyType" minOccurs="0" maxOccurs="2">
+        <xs:annotation>
+          <xs:documentation>Carrier Agent</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Carrier Agent. Trade_ Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecifiedTransportEvent" type="ram:TransportEventType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Transport Event</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Specified. Transport_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CargoApplicableTransshipment" type="ram:ApplicableTransshipmentType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Cargo Transshipment</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Cargo. Applicable_ Transshipment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DefectReportingTransportEvent" type="ram:TransportEventType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Defect Reporting Event</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Defect Reporting. Transport_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CruiseItineraryTransportRoute" type="ram:TransportRouteType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Cruise Itinerary</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Cruise_ Itinerary. Transport_ Route</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PortCallTradeContact" type="ram:TradeContactType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Port Call Contact</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Port Call. Trade_ Contact</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecifiedStatutoryReportEvent" type="ram:StatutoryReportEventType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specified Statutory Report</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Logistics_ Transport Movement. Specified. Statutory Report_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsTransportMovementTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Logistics Transport Movement</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Transport Movement. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ModeCode" type="qdt:TransportModeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-03 Mode of transport at the border</xs:documentation>
+          <xs:documentation>Mode Code</xs:documentation>
+          <xs:documentation>DE-014-03 Mode of transport at the border</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-02 Voyage Number</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-014-02 Voyage Number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PassengerQuantity" type="udt:QuantityTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-034-02 Number of passengers</xs:documentation>
+          <xs:documentation>Passenger Quantity</xs:documentation>
+          <xs:documentation>DE-034-02 Number of passengers</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CrewQuantity" type="udt:QuantityTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-034-03 Number of crew</xs:documentation>
+          <xs:documentation>Crew Quantity</xs:documentation>
+          <xs:documentation>DE-034-03 Number of crew</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CargoDescription" type="udt:TextTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-16 Cargo brief description</xs:documentation>
+          <xs:documentation>Cargo Description</xs:documentation>
+          <xs:documentation>DE-014-16 Cargo brief description</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DangerousGoodsIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-11 Dangerous goods carrier indicator</xs:documentation>
+          <xs:documentation>Dangerous Goods Indicator</xs:documentation>
+          <xs:documentation>DE-014-11 Dangerous goods carrier indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Service" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-26 Liner service name</xs:documentation>
+          <xs:documentation>Liner Service Text</xs:documentation>
+          <xs:documentation>DE-014-26 Liner service name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CallPurposeCode" type="udt:CodeTypeValidationVersion" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>DE-014-10 Primary Purpose of Call, coded</xs:documentation>
+          <xs:documentation>Call Purpose Code</xs:documentation>
+          <xs:documentation>DE-014-10 Primary Purpose of Call, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegularServiceIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-20 Regular service indicator</xs:documentation>
+          <xs:documentation>Regular Service Indicator</xs:documentation>
+          <xs:documentation>DE-014-20 Regular service indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegularServiceID" type="udt:IDTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-21 Regular service identifier</xs:documentation>
+          <xs:documentation>Regular Service ID</xs:documentation>
+          <xs:documentation>DE-014-21 Regular service identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="LinerServiceIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-25 Liner service indicator</xs:documentation>
+          <xs:documentation>Liner Service Indicator</xs:documentation>
+          <xs:documentation>DE-014-25 Liner service indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TotalOnboardPersonQuantity" type="udt:QuantityTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-034-01 Number of persons on board</xs:documentation>
+          <xs:documentation>Onboard Person Quantity</xs:documentation>
+          <xs:documentation>DE-034-01 Number of persons on board</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DriverQuantity" type="udt:QuantityTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-034-05 Number of drivers</xs:documentation>
+          <xs:documentation>Driver Quantity</xs:documentation>
+          <xs:documentation>DE-034-05 Number of drivers</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CabotageIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-23 Cabotage indicator</xs:documentation>
+          <xs:documentation>DE-014-23 Cabotage indicator</xs:documentation>
+          <xs:documentation>Cabotage Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GovernmentShipIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-28 Governmental ship indicator</xs:documentation>
+          <xs:documentation>DE-014-28 Governmental ship indicator</xs:documentation>
+          <xs:documentation>Government Ship Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FoundStowawayIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-034-04 Stowaways found indicator</xs:documentation>
+          <xs:documentation>Found Stowaway Indicator</xs:documentation>
+          <xs:documentation>DE-034-04 Stowaways found indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SixGhzTransmittingFrequencyIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-29 Transmitting on 6 GHz frequency indicator</xs:documentation>
+          <xs:documentation>Six Ghz Transmitting Frequency Indicator</xs:documentation>
+          <xs:documentation>DE-014-29 Transmitting on 6 GHz frequency indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ShippingAreaCode" type="qdt:ShippingAreaCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-27 Shipping area, coded</xs:documentation>
+          <xs:documentation>DE-014-27 Shipping area, coded</xs:documentation>
+          <xs:documentation>Shipping Area Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="VoyageTypeServiceCode" type="qdt:VoyageTypeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-22 Type of voyage, coded</xs:documentation>
+          <xs:documentation>Voyage Type Service Code</xs:documentation>
+          <xs:documentation>DE-014-22 Type of voyage, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FumigatedIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-053-01 Fumigation indicator</xs:documentation>
+          <xs:documentation>DE-053-01 Fumigation indicator</xs:documentation>
+          <xs:documentation>Fumigated Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MasterResponsibleTransportPerson" type="ram:TransportPersonTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Master</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalTransportEvent" type="ram:TransportEventTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Arrival Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="UsedLogisticsTransportMeans" type="ram:LogisticsTransportMeansTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Used Transport Means</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CarrierTradeParty" type="ram:TradePartyTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Carrier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ItineraryTransportRoute" type="ram:TransportRouteTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>Itinerary Route</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CallTransportEvent" type="ram:TransportEventTypeValidationVersion_4">
+        <xs:annotation>
+          <xs:documentation>Call Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CarrierAgentTradeParty" type="ram:TradePartyTypeValidationVersion_5" minOccurs="0" maxOccurs="2">
+        <xs:annotation>
+          <xs:documentation>Carrier Agent</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecifiedTransportEvent" type="ram:TransportEventTypeValidationVersion_5" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Transport Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CargoApplicableTransshipment" type="ram:ApplicableTransshipmentTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Cargo Transshipment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DefectReportingTransportEvent" type="ram:TransportEventTypeValidationVersion_6" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Reporting Defect Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CruiseItineraryTransportRoute" type="ram:TransportRouteTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Cruise Itinerary</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PortCallTradeContact" type="ram:TradeContactTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Port Call Contact</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecifiedStatutoryReportEvent" type="ram:StatutoryReportEventTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specified Statutory Report</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LogisticsTransportMovementTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Logistics Transport Movement</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Logistics_ Transport Movement. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CallTransportEvent" type="ram:TransportEventTypeValidationVersion_8">
+        <xs:annotation>
+          <xs:documentation>Call Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PilotExemptionCertificateType">
+    <xs:annotation>
+      <xs:documentation>Specified Certificate</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Pilot Exemption_ Certificate. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Pilot Exemption_ Certificate. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TypeCode" type="qdt:PilotExemptionCertificateTypeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Pilot Exemption_ Certificate. Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExpiryDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Expiry Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Pilot Exemption_ Certificate. Expiry. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CertifiedTradeParty" type="ram:TradePartyType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Holder Party</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Pilot Exemption_ Certificate. Certified. Trade_ Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ValidFromLogisticsLocation" type="ram:LogisticsLocationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Valid From Location</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Pilot Exemption_ Certificate. Valid From. Logistics_ Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ValidToLogisticsLocation" type="ram:LogisticsLocationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Valid To Location</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Pilot Exemption_ Certificate. Valid To. Logistics_ Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PilotExemptionCertificateTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Specified Certificate</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Pilot Exemption_ Certificate. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_7">
+        <xs:annotation>
+          <xs:documentation>DE-083-02 Pilotage exemption certificate number</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-083-02 Pilotage exemption certificate number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TypeCode" type="qdt:PilotExemptionCertificateTypeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-083-11 Pilot exemption certificate type, coded</xs:documentation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>DE-083-11 Pilot exemption certificate type, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExpiryDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-083-07 Pilot exemption certificate validity date</xs:documentation>
+          <xs:documentation>Expiry Date</xs:documentation>
+          <xs:documentation>DE-083-07 Pilot exemption certificate validity date</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CertifiedTradeParty" type="ram:TradePartyTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Holder Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ValidFromLogisticsLocation" type="ram:LogisticsLocationTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Valid From Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ValidToLogisticsLocation" type="ram:LogisticsLocationTypeValidationVersion_5" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Valid To Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PortOperationEventType">
+    <xs:annotation>
+      <xs:documentation>Port Operation Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Port Operation_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="WaterwayDirectionCode" type="qdt:StreamDirectionCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Waterway Direction Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Port Operation_ Event. Waterway Direction. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PortOperationEventTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Port Operation Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Port Operation_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="WaterwayDirectionCode" type="qdt:StreamDirectionCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-020-03 Arrival direction, coded</xs:documentation>
+          <xs:documentation>Arrival Waterway Direction Code</xs:documentation>
+          <xs:documentation>DE-020-03 Arrival direction, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ReferencedTransportServiceType">
+    <xs:annotation>
+      <xs:documentation>Referenced Transport Service</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Referenced Transport_ Service. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="RequestedSpecifiedPilotageService" type="ram:SpecifiedPilotageServiceType">
+        <xs:annotation>
+          <xs:documentation>Requested Pilotage Service</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Referenced Transport_ Service. Requested. Specified_ Pilotage Service</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ReferencedTransportServiceTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Referenced Transport Service</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Referenced Transport_ Service. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="RequestedSpecifiedPilotageService" type="ram:SpecifiedPilotageServiceTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>Requested Pilotage Service</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RepresentativePersonType">
+    <xs:annotation>
+      <xs:documentation>Representative Person</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Representative_ Person. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="FamilyName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Family Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Representative_ Person. Family Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GivenName" type="udt:TextType">
+        <xs:annotation>
+          <xs:documentation>Given Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Representative_ Person. Given Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RepresentativePersonTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Representative Person</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Representative_ Person. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="FamilyName" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-083-12 Pilot exemption certificate holder family name</xs:documentation>
+          <xs:documentation>DE-083-12 Pilot exemption certificate holder family name</xs:documentation>
+          <xs:documentation>Family Name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GivenName" type="udt:TextTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>DE-083-13 Pilot exemption certificate holder given name</xs:documentation>
+          <xs:documentation>DE-083-13 Pilot exemption certificate holder given name</xs:documentation>
+          <xs:documentation>Given Name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedBerthType">
+    <xs:annotation>
+      <xs:documentation>Specified Berth</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Berth. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="MooringTypeCode" type="qdt:MooringTypeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Mooring Type Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Berth. Mooring_ Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExpectedMooringOrientationCode" type="qdt:ShipSideCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Expected Mooring Orientation Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Berth. Expected_ Mooring Orientation. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExpectedMooringOrientationReason" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Expected Mooring Orientation Reason Text</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Berth. Expected_ Mooring Orientation Reason. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ShipRequirements" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Ship Requirements Text</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Berth. Ship Requirements. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FirstBollardID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>First Bollard ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Berth. First_ Bollard. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="LastBollardID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Last Bollard ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Berth. Last_ Bollard. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccupancySpecifiedPeriod" type="ram:SpecifiedPeriodType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Occupancy Period</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Specified_ Berth. Occupancy. Specified_ Period</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedBerthTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Specified Berth</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Berth. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="MooringTypeCode" type="qdt:MooringTypeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-019-03 Mooring type, coded</xs:documentation>
+          <xs:documentation>RE-005-02 Mooring type, coded</xs:documentation>
+          <xs:documentation>Mooring Type Code</xs:documentation>
+          <xs:documentation>DE-019-03 Mooring type, coded</xs:documentation>
+          <xs:documentation>RE-005-02 Mooring type, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExpectedMooringOrientationCode" type="qdt:ShipSideCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-019-04 Expected mooring orientation, coded</xs:documentation>
+          <xs:documentation>RE-005-03 Expected mooring orientation, coded</xs:documentation>
+          <xs:documentation>Expected Mooring Orientation Code</xs:documentation>
+          <xs:documentation>DE-019-04 Expected mooring orientation, coded</xs:documentation>
+          <xs:documentation>RE-005-03 Expected mooring orientation, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExpectedMooringOrientationReason" type="udt:TextTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-019-05 Expected mooring orientation reason</xs:documentation>
+          <xs:documentation>Expected Mooring Orientation Reason Text</xs:documentation>
+          <xs:documentation>DE-019-05 Expected mooring orientation reason</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ShipRequirements" type="udt:TextTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-019-06 Ship requirements at berth description</xs:documentation>
+          <xs:documentation>DE-019-06 Ship requirements at berth description</xs:documentation>
+          <xs:documentation>Ship Requirements Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FirstBollardID" type="udt:IDTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-019-07 First bollard identifier</xs:documentation>
+          <xs:documentation>RE-005-04 First bollard identifier</xs:documentation>
+          <xs:documentation>First Bollard ID</xs:documentation>
+          <xs:documentation>DE-019-07 First bollard identifier</xs:documentation>
+          <xs:documentation>RE-005-04 First bollard identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="LastBollardID" type="udt:IDTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-019-08 Last bollard identifier</xs:documentation>
+          <xs:documentation>RE-005-05 Last bollard identifier</xs:documentation>
+          <xs:documentation>Last Bollard ID</xs:documentation>
+          <xs:documentation>DE-019-08 Last bollard identifier</xs:documentation>
+          <xs:documentation>RE-005-05 Last bollard identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccupancySpecifiedPeriod" type="ram:SpecifiedPeriodTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Occupancy Period</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedBinaryFileType">
+    <xs:annotation>
+      <xs:documentation>Binary File</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Binary File. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Description" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Description</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Binary File. Description. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TypeCode" type="qdt:AttachmentTypeCodeType">
+        <xs:annotation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Binary File. Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedBinaryFileTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Binary File</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Binary File. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Description" type="udt:TextTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-003-03 Attachment description</xs:documentation>
+          <xs:documentation>RE-003-03 Attachment description</xs:documentation>
+          <xs:documentation>Description</xs:documentation>
+          <xs:documentation>DE-003-03 Attachment description</xs:documentation>
+          <xs:documentation>RE-003-03 Attachment description</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TypeCode" type="qdt:AttachmentTypeCodeTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-003-02 Attachment type, coded</xs:documentation>
+          <xs:documentation>RE-003-02 Attachment type, coded</xs:documentation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>DE-003-02 Attachment type, coded</xs:documentation>
+          <xs:documentation>RE-003-02 Attachment type, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedFaultType">
+    <xs:annotation>
+      <xs:documentation>Fault</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Fault. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="TypeCode" type="qdt:ShipDefectTypeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Fault. Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Description" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Description</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Fault. Description. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedFaultTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Fault</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Fault. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="TypeCode" type="qdt:ShipDefectTypeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-013-02 Ship defect, coded</xs:documentation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>DE-013-02 Ship defect, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Description" type="udt:TextTypeValidationVersion_8" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-013-03 Ship defect description</xs:documentation>
+          <xs:documentation>Description</xs:documentation>
+          <xs:documentation>DE-013-03 Ship defect description</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedOperationType">
+    <xs:annotation>
+      <xs:documentation>Specified Operation</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Operation. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PropulsionEnergyTypeCode" type="qdt:EnergyTypeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Propulsion Energy</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Operation. Propulsion_ Energy Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="StayEnergyTypeCode" type="qdt:EnergyTypeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Stay Energy</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Operation. Stay_ Energy Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CallPurposeCode" type="qdt:TransportCallPurposeCodeType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Purpose of Call</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Operation. Call Purpose. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RelevantLogisticsLocation" type="ram:LogisticsLocationType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Cargo Area Location</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Specified_ Operation. Relevant. Logistics_ Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedOccurrenceSpecifiedPeriod" type="ram:SpecifiedPeriodType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Estimated Occurrence Period</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Specified_ Operation. Estimated_ Occurrence. Specified_ Period</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedOperationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Specified Operation</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Operation. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PropulsionEnergyTypeCode" type="qdt:EnergyTypeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-075-06 Propulsion energy, coded</xs:documentation>
+          <xs:documentation>Propulsion Energy</xs:documentation>
+          <xs:documentation>DE-075-06 Propulsion energy, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="StayEnergyTypeCode" type="qdt:EnergyTypeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-075-07 Port stay energy, coded</xs:documentation>
+          <xs:documentation>Stay Energy</xs:documentation>
+          <xs:documentation>DE-075-07 Port stay energy, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CallPurposeCode" type="qdt:TransportCallPurposeCodeTypeValidationVersion" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>DE-075-03 Purpose of call at location, coded</xs:documentation>
+          <xs:documentation>DE-075-03 Purpose of call at location, coded</xs:documentation>
+          <xs:documentation>Purpose of Call</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RelevantLogisticsLocation" type="ram:LogisticsLocationTypeValidationVersion_6" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Relevant Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedOccurrenceSpecifiedPeriod" type="ram:SpecifiedPeriodTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Estimated Occurrence Period</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedPeriodType">
+    <xs:annotation>
+      <xs:documentation>Period</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Period. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="StartDateTime" type="udt:DateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Start Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Period. Start. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EndDateTime" type="udt:DateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>End Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Period. End. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedPeriodTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Period</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Period. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="StartDateTime" type="udt:DateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-019-01 Berth occupancy start date time</xs:documentation>
+          <xs:documentation>RE-005-01 Berth occupancy start date time</xs:documentation>
+          <xs:documentation>Start Date Time</xs:documentation>
+          <xs:documentation>DE-019-01 Berth occupancy start date time</xs:documentation>
+          <xs:documentation>RE-005-01 Berth occupancy start date time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EndDateTime" type="udt:DateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-019-02 Berth occupancy end date time</xs:documentation>
+          <xs:documentation>End Date Time</xs:documentation>
+          <xs:documentation>DE-019-02 Berth occupancy end date time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedPeriodTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Period</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Period. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="StartDateTime" type="udt:DateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-022-10 Itinerary start date</xs:documentation>
+          <xs:documentation>Start Date</xs:documentation>
+          <xs:documentation>DE-022-10 Itinerary start date</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedPeriodTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Period</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Period. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="StartDateTime" type="udt:DateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-075-04 Operations expected start date time</xs:documentation>
+          <xs:documentation>RE-006-01 Operations expected start date time</xs:documentation>
+          <xs:documentation>Start Date Time</xs:documentation>
+          <xs:documentation>DE-075-04 Operations expected start date time</xs:documentation>
+          <xs:documentation>RE-006-01 Operations expected start date time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EndDateTime" type="udt:DateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-075-05 Operations expected end date time</xs:documentation>
+          <xs:documentation>RE-006-02 Operations expected end date time</xs:documentation>
+          <xs:documentation>End Date Time</xs:documentation>
+          <xs:documentation>DE-075-05 Operations expected end date time</xs:documentation>
+          <xs:documentation>RE-006-02 Operations expected end date time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedPilotageServiceType">
+    <xs:annotation>
+      <xs:documentation>Specified Pilotage</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Pilotage Service. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ApplicableSpecifiedPilotExemption" type="ram:SpecifiedPilotExemptionType">
+        <xs:annotation>
+          <xs:documentation>Applicable Pilotage Exemption</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Specified_ Pilotage Service. Applicable. Specified_ Pilot Exemption</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedPilotageServiceTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Specified Pilotage</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Pilotage Service. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ApplicableSpecifiedPilotExemption" type="ram:SpecifiedPilotExemptionTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>Applicable Pilotage Exemption</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedPilotExemptionType">
+    <xs:annotation>
+      <xs:documentation>Specified Pilot Exemption</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Pilot Exemption. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="TypeCode" type="qdt:PilotageExemptionTypeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Pilot Exemption. Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ShipExemptIndicator" type="udt:IndicatorType">
+        <xs:annotation>
+          <xs:documentation>Ship Exempt Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Pilot Exemption. Ship Exempt. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExaminationCandidatePermittedOnboardIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Examination Candidate Permitted Onboard Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Pilot Exemption. Examination Candidate Permitted Onboard. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PilotExemptionCertificate" type="ram:PilotExemptionCertificateType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Pilot Exemption Certificate</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Specified_ Pilot Exemption. Pilot Exemption. Pilot Exemption_ Certificate</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedPilotExemptionTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Specified Pilot Exemption</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Pilot Exemption. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="TypeCode" type="qdt:PilotageExemptionTypeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-083-14 Pilotage exemption type, coded</xs:documentation>
+          <xs:documentation>Type Code</xs:documentation>
+          <xs:documentation>DE-083-14 Pilotage exemption type, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ShipExemptIndicator" type="udt:IndicatorType">
+        <xs:annotation>
+          <xs:documentation>DE-083-01 Pilotage exemption indicator</xs:documentation>
+          <xs:documentation>Ship Exempt Indicator</xs:documentation>
+          <xs:documentation>DE-083-01 Pilotage exemption indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExaminationCandidatePermittedOnboardIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-083-03 Pilot exemption exam indicator</xs:documentation>
+          <xs:documentation>Examination Candidate Permitted Onboard Indicator</xs:documentation>
+          <xs:documentation>DE-083-03 Pilot exemption exam indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PilotExemptionCertificate" type="ram:PilotExemptionCertificateTypeValidationVersion" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Pilot Exemption Certificate</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedTransportMeansCharacteristicType">
+    <xs:annotation>
+      <xs:documentation>Transport Means Characteristic</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Transport Means Characteristic. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="SolidTransverseMetacentricHeightMeasure" type="qdt:LinearUnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Solid Transverse Metacentric Height Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Transport Means Characteristic. Solid Transverse Metacentric_ Height. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FreeLiquidSurfaceCorrectionMeasure" type="qdt:LinearUnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Free Liquid Surface Correction Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Transport Means Characteristic. Free Liquid Surface Correction. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RollPeriodMeasure" type="qdt:DurationUnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Roll Period Measure</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Transport Means Characteristic. Roll Period. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MaximumDraughtLevelMeasure" type="qdt:LinearUnitMeasureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Maximum Draught</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Specified_ Transport Means Characteristic. Maximum_ Draught Level. Measure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SpecifiedTransportMeansCharacteristicTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Transport Means Characteristic</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Specified_ Transport Means Characteristic. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="SolidTransverseMetacentricHeightMeasure" type="qdt:LinearUnitMeasureTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-47 Solid transverse metacentric height</xs:documentation>
+          <xs:documentation>Solid Transverse Metacentric Height Measure</xs:documentation>
+          <xs:documentation>DE-014-47 Solid transverse metacentric height</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FreeLiquidSurfaceCorrectionMeasure" type="qdt:LinearUnitMeasureTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-48 Correction for free liquid surface</xs:documentation>
+          <xs:documentation>Free Liquid Surface Correction Measure</xs:documentation>
+          <xs:documentation>DE-014-48 Correction for free liquid surface</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RollPeriodMeasure" type="qdt:DurationUnitMeasureTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-49 Roll period</xs:documentation>
+          <xs:documentation>Roll Period Measure</xs:documentation>
+          <xs:documentation>DE-014-49 Roll period</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MaximumDraughtLevelMeasure" type="qdt:LinearUnitMeasureTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-008-22 Maximum draught</xs:documentation>
+          <xs:documentation>Maximum Draught</xs:documentation>
+          <xs:documentation>DE-008-22 Maximum draught</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="StatutoryReportEventType">
+    <xs:annotation>
+      <xs:documentation>Statutory Reporting Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Statutory Report_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ExpectedIndicator" type="udt:IndicatorType">
+        <xs:annotation>
+          <xs:documentation>Expected Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Statutory Report_ Event. Expected. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="StatutoryReportEventTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Statutory Reporting Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Statutory Report_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ExpectedIndicator" type="udt:IndicatorType">
+        <xs:annotation>
+          <xs:documentation>DE-027-01 Kiel canal passage planned indicator</xs:documentation>
+          <xs:documentation>Expected Indicator</xs:documentation>
+          <xs:documentation>DE-027-01 Kiel canal passage planned indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SubordinateLocationType">
+    <xs:annotation>
+      <xs:documentation>Subordinate Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Subordinate_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Subordinate_ Location. Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SubordinateSubordinateLocation" type="ram:SubordinateSubordinateLocationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Subordinate Subordinate Location</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Subordinate_ Location. Subordinate. Subordinate Subordinate_ Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SubordinateLocationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Subordinate Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Subordinate_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>DE-015-04 Expected first location</xs:documentation>
+          <xs:documentation>DE-018-04 Shifting arrival location</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-015-04 Expected first location</xs:documentation>
+          <xs:documentation>DE-018-04 Shifting arrival location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SubordinateLocationTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Subordinate Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Subordinate_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="SubordinateSubordinateLocation" type="ram:SubordinateSubordinateLocationTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>Subordinate Subordinate Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SubordinateLocationTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Subordinate Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Subordinate_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="SubordinateSubordinateLocation" type="ram:SubordinateSubordinateLocationTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>Subordinate Subordinate Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SubordinateSubordinateLocationType">
+    <xs:annotation>
+      <xs:documentation>Subordinate Subordinate Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Subordinate Subordinate_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" type="udt:TextType">
+        <xs:annotation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Subordinate Subordinate_ Location. Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SubordinateSubordinateLocationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Subordinate Subordinate Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Subordinate Subordinate_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>DE-083-06 Pilot exemption certificate validity from berth name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-083-06 Pilot exemption certificate validity from berth name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SubordinateSubordinateLocationTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Subordinate Subordinate Location</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Subordinate Subordinate_ Location. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>DE-083-10 Pilot exemption certificate validity to berth name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-083-10 Pilot exemption certificate validity to berth name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeAddressType">
+    <xs:annotation>
+      <xs:documentation>Trade Address</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Address. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PostcodeCode" type="udt:CodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Postcode</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Postcode. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostOfficeBox" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Post Office Box</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Post Office Box. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="LineOne" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Line One</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Line One. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="StreetName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Street Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Street Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CityName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>City Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. City Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountryID" type="qdt:CountryIDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Country Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Country. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountrySubDivisionName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Country Sub-Division Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Country Sub-Division Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BuildingNumber" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Building Number</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Building Number. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FreeForm" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Free Form Text</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Free Form. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AdditionalStreetName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Additional Street Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Address. Additional_ Street Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeAddressTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Trade Address</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Address. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PostcodeCode" type="udt:CodeTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-007-04 IMO company postal code</xs:documentation>
+          <xs:documentation>Postcode</xs:documentation>
+          <xs:documentation>DE-007-04 IMO company postal code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="LineOne" type="udt:TextTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-007-03 IMO company street and number</xs:documentation>
+          <xs:documentation>Line One</xs:documentation>
+          <xs:documentation>DE-007-03 IMO company street and number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CityName" type="udt:TextTypeValidationVersion_5" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-007-05 IMO company city name</xs:documentation>
+          <xs:documentation>City Name</xs:documentation>
+          <xs:documentation>DE-007-05 IMO company city name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountryID" type="qdt:CountryIDTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-007-06 IMO company country, coded</xs:documentation>
+          <xs:documentation>Country Code</xs:documentation>
+          <xs:documentation>DE-007-06 IMO company country, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeAddressTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Trade Address</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Address. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PostcodeCode" type="udt:CodeTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-10 Agent postcode</xs:documentation>
+          <xs:documentation>Postcode</xs:documentation>
+          <xs:documentation>DE-029-10 Agent postcode</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostOfficeBox" type="udt:TextTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-16 Agent P.O. Box</xs:documentation>
+          <xs:documentation>Post Office Box</xs:documentation>
+          <xs:documentation>DE-029-16 Agent P.O. Box</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="LineOne" type="udt:TextTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-09 Agent street and number</xs:documentation>
+          <xs:documentation>Line One</xs:documentation>
+          <xs:documentation>DE-029-09 Agent street and number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CityName" type="udt:TextTypeValidationVersion_5" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-11 Agent City</xs:documentation>
+          <xs:documentation>City Name</xs:documentation>
+          <xs:documentation>DE-029-11 Agent City</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountryID" type="qdt:CountryIDTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-13 Agent country, coded</xs:documentation>
+          <xs:documentation>Country Code</xs:documentation>
+          <xs:documentation>DE-029-13 Agent country, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountrySubDivisionName" type="udt:TextTypeValidationVersion_5" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-12 Agent country sub-division name</xs:documentation>
+          <xs:documentation>Country Sub-Division Name</xs:documentation>
+          <xs:documentation>DE-029-12 Agent country sub-division name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeAddressTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Trade Address</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Address. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="FreeForm" type="udt:TextTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>DE-012-07 Ship contact person address</xs:documentation>
+          <xs:documentation>Free Form Text</xs:documentation>
+          <xs:documentation>DE-012-07 Ship contact person address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeAddressTypeValidationVersion_4">
+    <xs:annotation>
+      <xs:documentation>Trade Address</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Address. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PostcodeCode" type="udt:CodeTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>DE-004-12 Declarant address postal code</xs:documentation>
+          <xs:documentation>Postcode</xs:documentation>
+          <xs:documentation>DE-004-12 Declarant address postal code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostOfficeBox" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-09 Declarant address P.O. box</xs:documentation>
+          <xs:documentation>Post Office Box</xs:documentation>
+          <xs:documentation>DE-004-09 Declarant address P.O. box</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="StreetName" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-06 Declarant address street</xs:documentation>
+          <xs:documentation>Street Name</xs:documentation>
+          <xs:documentation>DE-004-06 Declarant address street</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CityName" type="udt:TextTypeValidationVersion_5">
+        <xs:annotation>
+          <xs:documentation>DE-004-13 Declarant address city</xs:documentation>
+          <xs:documentation>City Name</xs:documentation>
+          <xs:documentation>DE-004-13 Declarant address city</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountryID" type="qdt:CountryIDTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-004-11 Declarant address country</xs:documentation>
+          <xs:documentation>Country Code</xs:documentation>
+          <xs:documentation>DE-004-11 Declarant address country</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountrySubDivisionName" type="udt:TextTypeValidationVersion_5" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-10 Declarant address sub-division</xs:documentation>
+          <xs:documentation>Country Sub-Division Name</xs:documentation>
+          <xs:documentation>DE-004-10 Declarant address sub-division</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BuildingNumber" type="udt:TextTypeValidationVersion_5" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-08 Declarant address number</xs:documentation>
+          <xs:documentation>Building Number</xs:documentation>
+          <xs:documentation>DE-004-08 Declarant address number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AdditionalStreetName" type="udt:TextTypeValidationVersion_7" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-07 Declarant address street additional line</xs:documentation>
+          <xs:documentation>Additional Street Name</xs:documentation>
+          <xs:documentation>DE-004-07 Declarant address street additional line</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeContactType">
+    <xs:annotation>
+      <xs:documentation>Trade Contact</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Contact. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PersonName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Person Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Person Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Telephone. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DirectTelephoneUniversalCommunication" type="ram:UniversalCommunicationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Direct Telephone</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Direct_ Telephone. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MobileTelephoneUniversalCommunication" type="ram:UniversalCommunicationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Mobile Telephone</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Mobile_ Telephone. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Email_ URI. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecifiedContactPerson" type="ram:ContactPersonType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Person</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Specified. Contact_ Person</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostalTradeAddress" type="ram:TradeAddressType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Postal Address</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Contact. Postal. Trade_ Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeContactTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Trade Contact</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Contact. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-14 Agent contact identification number</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-029-14 Agent contact identification number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DirectTelephoneUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Direct Telephone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MobileTelephoneUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Mobile Telephone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_5" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecifiedContactPerson" type="ram:ContactPersonTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Person</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeContactTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Trade Contact</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Contact. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PersonName" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-012-04 Ship contact person name</xs:documentation>
+          <xs:documentation>Person Name</xs:documentation>
+          <xs:documentation>DE-012-04 Ship contact person name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_6" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_7" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostalTradeAddress" type="ram:TradeAddressTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Postal Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeContactTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Trade Contact</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Contact. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="PersonName" type="udt:TextTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>DE-004-14 Declarant, Contact person: Name</xs:documentation>
+          <xs:documentation>Person Name</xs:documentation>
+          <xs:documentation>DE-004-14 Declarant, Contact person: Name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_8">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_9">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeCountryType">
+    <xs:annotation>
+      <xs:documentation>Trade Country</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Country. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="qdt:CountryIDType">
+        <xs:annotation>
+          <xs:documentation>Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Country. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradeCountryTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Trade Country</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Country. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="qdt:CountryIDTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-005-09 Ship Flag state, coded</xs:documentation>
+          <xs:documentation>DE-005-15 Departure transport means nationality</xs:documentation>
+          <xs:documentation>Code</xs:documentation>
+          <xs:documentation>DE-005-09 Ship Flag state, coded</xs:documentation>
+          <xs:documentation>DE-005-15 Departure transport means nationality</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradePartyType">
+    <xs:annotation>
+      <xs:documentation>Trade Party</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Party. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RoleCode" type="qdt:PartyRoleCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Role Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Role. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegisteredID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Registered ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Registered_ Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SMDGCode" type="udt:CodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Ship Company SMDG Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. SMDG. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AffiliationID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Tax ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Affiliation_ Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SequenceNumeric" type="udt:NumericType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Sequence Number</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Sequence. Numeric</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DefinedTradeContact" type="ram:TradeContactType" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Defined Contact Details</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Defined. Trade_ Contact</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostalTradeAddress" type="ram:TradeAddressType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Postal Address</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Postal. Trade_ Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Telephone. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Email_ URI. Universal_ Communication</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecifiedRepresentativePerson" type="ram:RepresentativePersonType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Representative Person</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Trade_ Party. Specified. Representative_ Person</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradePartyTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Trade Party</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Party. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_5">
+        <xs:annotation>
+          <xs:documentation>DE-005-10 Ship registry, coded</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-005-10 Ship registry, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradePartyTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Trade Party</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Party. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-007-01 IMO company number</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-007-01 IMO company number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-007-02 IMO company name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-007-02 IMO company name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RegisteredID" type="udt:IDTypeValidationVersion_6" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-007-33 NOx Fund company number</xs:documentation>
+          <xs:documentation>Registered ID</xs:documentation>
+          <xs:documentation>DE-007-33 NOx Fund company number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SMDGCode" type="udt:CodeTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-007-35 Ship company SMDG code</xs:documentation>
+          <xs:documentation>Ship Company SMDG Code</xs:documentation>
+          <xs:documentation>DE-007-35 Ship company SMDG code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AffiliationID" type="udt:IDTypeValidationVersion_7" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-007-34 NOx Fund affiliation number</xs:documentation>
+          <xs:documentation>Tax ID</xs:documentation>
+          <xs:documentation>DE-007-34 NOx Fund affiliation number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostalTradeAddress" type="ram:TradeAddressTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Postal Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_2" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradePartyTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Trade Party</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Party. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_9">
+        <xs:annotation>
+          <xs:documentation>DE-014-24 Shipping line, coded</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-014-24 Shipping line, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradePartyTypeValidationVersion_4">
+    <xs:annotation>
+      <xs:documentation>Trade Party</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Party. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="SpecifiedRepresentativePerson" type="ram:RepresentativePersonTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>Representative Person</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradePartyTypeValidationVersion_5">
+    <xs:annotation>
+      <xs:documentation>Trade Party</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Party. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-01 Agent identification number</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-029-01 Agent identification number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-029-02 Agency name</xs:documentation>
+          <xs:documentation>DE-029-03 Additional agent name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-029-02 Agency name</xs:documentation>
+          <xs:documentation>DE-029-03 Additional agent name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SequenceNumeric" type="udt:NumericTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-001-02 Sequence number</xs:documentation>
+          <xs:documentation>RE-001-01 Sequence number</xs:documentation>
+          <xs:documentation>Sequence Number</xs:documentation>
+          <xs:documentation>DE-001-02 Sequence number</xs:documentation>
+          <xs:documentation>RE-001-01 Sequence number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DefinedTradeContact" type="ram:TradeContactTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Defined Contact Details</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostalTradeAddress" type="ram:TradeAddressTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Postal Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TradePartyTypeValidationVersion_6">
+    <xs:annotation>
+      <xs:documentation>Trade Party</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Trade_ Party. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-004-01 Declarant identification number</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-004-01 Declarant identification number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Name" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-004-02 Declarant name</xs:documentation>
+          <xs:documentation>Name</xs:documentation>
+          <xs:documentation>DE-004-02 Declarant name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RoleCode" type="qdt:PartyRoleCodeTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-004-03 Declarant role, coded</xs:documentation>
+          <xs:documentation>Role Code</xs:documentation>
+          <xs:documentation>DE-004-03 Declarant role, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DefinedTradeContact" type="ram:TradeContactTypeValidationVersion_3" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Defined Contact Details</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PostalTradeAddress" type="ram:TradeAddressTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Postal Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TelephoneUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_10" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Telephone</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EmailURIUniversalCommunication" type="ram:UniversalCommunicationTypeValidationVersion_11" minOccurs="0" maxOccurs="9">
+        <xs:annotation>
+          <xs:documentation>Email Address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventType">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Identification. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Description" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Description</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Description. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ActualOccurrenceDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Actual Occurrence Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Actual_ Occurrence. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Arrival Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Arrival_ Related. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DepartureRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Departure Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Departure_ Related. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedTransportMeansArrivalOccurrenceDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Estimated Transport Means Arrival Occurrence Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Estimated Transport Means Arrival_ Occurrence. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ScheduledArrivalRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Scheduled Arrival Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Scheduled Arrival_ Related. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedTransportMeansDepartureOccurrenceDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Estimated Transport Means Departure Occurrence Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Estimated Transport Means Departure_ Occurrence. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DefectIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Defect Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Defect. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExtendedStayRegimeIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Extended Stay Regime Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Extended Stay Regime. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="InspectionReadyIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Inspection Ready Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Inspection Ready. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountryFirstCallIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Country First Call Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Country First Call. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CruiseTurnAroundIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Cruise Turn Around Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Cruise Turn Around. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="VisitorsExpectedIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Visitors Expected Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Visitors Expected. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SailingPlanningRequestTypeCode" type="qdt:PlanningTypeCodeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Sailing Planning Request Type Code</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Sailing Planning Request Type. Code</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PilotCompulsoryIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Pilot Compulsory Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Pilot Compulsory. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BallastWaterChangedIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Ballast Water Changed Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Ballast Water Changed. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedPortAreaArrivalRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Expected Port Area Arrival Date Time</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Estimated Port Area Arrival_ Related. Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalPortEntryLocationLocation" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Arrival Port Entry Location Text</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Arrival Port Entry Location_ Location. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CruiseShipIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Cruise Ship Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Cruise Ship. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GNBAreaVisitedIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>GNB Area Visited Indicator</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. GNB Area Visited. Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalBorderPortLocationID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Arrival Border Port</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Arrival Border Port_ Location. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SequenceNumeric" type="udt:NumericType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Sequence Number</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Sequence. Numeric</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccurrenceLogisticsLocation" type="ram:LogisticsLocationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Occurrence Location</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Occurrence. Logistics_ Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CertifyingTradeParty" type="ram:TradePartyType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Certifying Party</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Certifying. Trade_ Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RequestedRelatedReferencedTransportService" type="ram:ReferencedTransportServiceType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Related Services</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Requested_ Related. Referenced Transport_ Service</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ReportedSpecifiedFault" type="ram:SpecifiedFaultType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Reported Fault</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Reported. Specified_ Fault</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ApplicableSpecifiedOperation" type="ram:SpecifiedOperationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Applicable Operation</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Applicable. Specified_ Operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccupiedSpecifiedBerth" type="ram:SpecifiedBerthType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Occupied Berth</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Occupied. Specified_ Berth</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RelatedLogisticsConvoy" type="ram:LogisticsConvoyType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Related Convoy</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Related. Logistics_ Convoy</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExpectedArrivalPortAreaRelatedLogisticsLocation" type="ram:LogisticsLocationType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Expected Arrival Port Area Location</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Expected Arrival Port Area_ Related. Logistics_ Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalPortOperationsPortOperationEvent" type="ram:PortOperationEventType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Port Call Arrival Event</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Event. Arrival_ Port Operations. Port Operation_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="EstimatedTransportMeansArrivalOccurrenceDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-015-05 ETA at first port call location</xs:documentation>
+          <xs:documentation>DE-018-02 Shifting estimated end time</xs:documentation>
+          <xs:documentation>Estimated Transport Means Arrival Occurrence Date Time</xs:documentation>
+          <xs:documentation>DE-015-05 ETA at first port call location</xs:documentation>
+          <xs:documentation>DE-018-02 Shifting estimated end time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ScheduledArrivalRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-022-03 Date and time of arrival - estimated in ENS</xs:documentation>
+          <xs:documentation>Scheduled Arrival Date Time</xs:documentation>
+          <xs:documentation>DE-022-03 Date and time of arrival - estimated in ENS</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccurrenceLogisticsLocation" type="ram:LogisticsLocationTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Occurrence Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccupiedSpecifiedBerth" type="ram:SpecifiedBerthTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Occupied Berth</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-005-14 Ship registry number</xs:documentation>
+          <xs:documentation>ID</xs:documentation>
+          <xs:documentation>DE-005-14 Ship registry number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ActualOccurrenceDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-005-13 Ship registry issue date</xs:documentation>
+          <xs:documentation>Actual Occurrence Date</xs:documentation>
+          <xs:documentation>DE-005-13 Ship registry issue date</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccurrenceLogisticsLocation" type="ram:LogisticsLocationTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Occurrence Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CertifyingTradeParty" type="ram:TradePartyTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Certifying Party</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ArrivalRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-022-09 Estimated date and time of arrival at the next port of call</xs:documentation>
+          <xs:documentation>Arrival Date Time</xs:documentation>
+          <xs:documentation>DE-022-09 Estimated date and time of arrival at the next port of call</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DepartureRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-023-09 Previous port call departure date</xs:documentation>
+          <xs:documentation>Departure Date</xs:documentation>
+          <xs:documentation>DE-023-09 Previous port call departure date</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedTransportMeansDepartureOccurrenceDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-022-07 Estimated date and time of departure from the last port of call</xs:documentation>
+          <xs:documentation>Estimated Transport Means Departure Occurrence Date Time</xs:documentation>
+          <xs:documentation>DE-022-07 Estimated date and time of departure from the last port of call</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SequenceNumeric" type="udt:NumericTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-001-02 Sequence number</xs:documentation>
+          <xs:documentation>RE-001-01 Sequence number</xs:documentation>
+          <xs:documentation>Sequence Number</xs:documentation>
+          <xs:documentation>DE-001-02 Sequence number</xs:documentation>
+          <xs:documentation>RE-001-01 Sequence number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccurrenceLogisticsLocation" type="ram:LogisticsLocationTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>Occurrence Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion_4">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="EstimatedTransportMeansArrivalOccurrenceDateTime" type="qdt:FormattedDateTimeType">
+        <xs:annotation>
+          <xs:documentation>DE-022-02 Date and time of arrival - estimated</xs:documentation>
+          <xs:documentation>Estimated Transport Means Arrival Occurrence Date Time</xs:documentation>
+          <xs:documentation>DE-022-02 Date and time of arrival - estimated</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedTransportMeansDepartureOccurrenceDateTime" type="qdt:FormattedDateTimeType">
+        <xs:annotation>
+          <xs:documentation>DE-022-05 Date and time of departure - estimated</xs:documentation>
+          <xs:documentation>Estimated Transport Means Departure Occurrence Date Time</xs:documentation>
+          <xs:documentation>DE-022-05 Date and time of departure - estimated</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExtendedStayRegimeIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-33 Extended stay regime indicator</xs:documentation>
+          <xs:documentation>Extended Stay Regime Indicator</xs:documentation>
+          <xs:documentation>DE-014-33 Extended stay regime indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="InspectionReadyIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-39 Ready for inspection indicator</xs:documentation>
+          <xs:documentation>Inspection Ready Indicator</xs:documentation>
+          <xs:documentation>DE-014-39 Ready for inspection indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CountryFirstCallIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-40 First port in country indicator</xs:documentation>
+          <xs:documentation>Country First Call Indicator</xs:documentation>
+          <xs:documentation>DE-014-40 First port in country indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CruiseTurnAroundIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-41 Cruise turn around indicator</xs:documentation>
+          <xs:documentation>Cruise Turn Around Indicator</xs:documentation>
+          <xs:documentation>DE-014-41 Cruise turn around indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="VisitorsExpectedIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-42 Ship visitors indicator</xs:documentation>
+          <xs:documentation>Visitors Expected Indicator</xs:documentation>
+          <xs:documentation>DE-014-42 Ship visitors indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SailingPlanningRequestTypeCode" type="qdt:PlanningTypeCodeTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-44 Planning type for sailing request, coded</xs:documentation>
+          <xs:documentation>Sailing Planning Request Type Code</xs:documentation>
+          <xs:documentation>DE-014-44 Planning type for sailing request, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PilotCompulsoryIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-45 Pilot compulsory indicator</xs:documentation>
+          <xs:documentation>Pilot Compulsory Indicator</xs:documentation>
+          <xs:documentation>DE-014-45 Pilot compulsory indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BallastWaterChangedIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-50 Ballast waters changed indicator</xs:documentation>
+          <xs:documentation>Ballast Water Changed Indicator</xs:documentation>
+          <xs:documentation>DE-014-50 Ballast waters changed indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EstimatedPortAreaArrivalRelatedDateTime" type="qdt:FormattedDateTimeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-015-02 ETA in port area</xs:documentation>
+          <xs:documentation>Expected Port Area Arrival Date Time</xs:documentation>
+          <xs:documentation>DE-015-02 ETA in port area</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalPortEntryLocationLocation" type="udt:TextTypeValidationVersion_7" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-015-03 Entry point at port of call</xs:documentation>
+          <xs:documentation>Arrival Port Entry Location Text</xs:documentation>
+          <xs:documentation>DE-015-03 Entry point at port of call</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CruiseShipIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-09 Cruise ship indicator</xs:documentation>
+          <xs:documentation>Cruise Ship Indicator</xs:documentation>
+          <xs:documentation>DE-014-09 Cruise ship indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GNBAreaVisitedIndicator" type="udt:IndicatorType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-014-46 Visited GNB area before indicator</xs:documentation>
+          <xs:documentation>GNB Area Visited Indicator</xs:documentation>
+          <xs:documentation>DE-014-46 Visited GNB area before indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalBorderPortLocationID" type="udt:IDTypeValidationVersion_4" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-022-11 Border port at arrival, coded</xs:documentation>
+          <xs:documentation>Arrival Border Port</xs:documentation>
+          <xs:documentation>DE-022-11 Border port at arrival, coded</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RequestedRelatedReferencedTransportService" type="ram:ReferencedTransportServiceTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Related Services</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ApplicableSpecifiedOperation" type="ram:SpecifiedOperationTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Applicable Operation</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="RelatedLogisticsConvoy" type="ram:LogisticsConvoyTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Related Inland waterway vessels</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ExpectedArrivalPortAreaRelatedLogisticsLocation" type="ram:LogisticsLocationTypeValidationVersion_7" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Expected Arrival Port Area Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalPortOperationsPortOperationEvent" type="ram:PortOperationEventTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Port Call Arrival Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion_5">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Description" type="udt:TextTypeValidationVersion">
+        <xs:annotation>
+          <xs:documentation>DE-022-13 Voyage event description</xs:documentation>
+          <xs:documentation>Description</xs:documentation>
+          <xs:documentation>DE-022-13 Voyage event description</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion_6">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="DefectIndicator" type="udt:IndicatorType">
+        <xs:annotation>
+          <xs:documentation>DE-013-01 Ship defect indicator</xs:documentation>
+          <xs:documentation>DE-013-01 Ship defect indicator</xs:documentation>
+          <xs:documentation>Defect Indicator</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ReportedSpecifiedFault" type="ram:SpecifiedFaultTypeValidationVersion" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Reported Defect</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion_7">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDType">
+        <xs:annotation>
+          <xs:documentation>ID</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Description" type="udt:TextTypeValidationVersion" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-025-04 Cruise activity description</xs:documentation>
+          <xs:documentation>Description</xs:documentation>
+          <xs:documentation>DE-025-04 Cruise activity description</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArrivalRelatedDateTime" type="qdt:FormattedDateTimeType">
+        <xs:annotation>
+          <xs:documentation>DE-025-02 Cruise itinerary date and time of arrival</xs:documentation>
+          <xs:documentation>Arrival Date Time</xs:documentation>
+          <xs:documentation>DE-025-02 Cruise itinerary date and time of arrival</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DepartureRelatedDateTime" type="qdt:FormattedDateTimeType">
+        <xs:annotation>
+          <xs:documentation>DE-025-03 Cruise itinerary date and time of departure</xs:documentation>
+          <xs:documentation>Departure Date Time</xs:documentation>
+          <xs:documentation>DE-025-03 Cruise itinerary date and time of departure</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ScheduledArrivalRelatedDateTime" type="qdt:FormattedDateTimeType">
+        <xs:annotation>
+          <xs:documentation>Scheduled Arrival Date Time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SequenceNumeric" type="udt:NumericTypeValidationVersion_2">
+        <xs:annotation>
+          <xs:documentation>DE-001-02 Sequence number</xs:documentation>
+          <xs:documentation>RE-001-01 Sequence number</xs:documentation>
+          <xs:documentation>Sequence Number</xs:documentation>
+          <xs:documentation>DE-001-02 Sequence number</xs:documentation>
+          <xs:documentation>RE-001-01 Sequence number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="OccurrenceLogisticsLocation" type="ram:LogisticsLocationTypeValidationVersion_8">
+        <xs:annotation>
+          <xs:documentation>Occurrence Location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportEventTypeValidationVersion_8">
+    <xs:annotation>
+      <xs:documentation>Transport Event</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Event. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ID" type="udt:IDTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>Stay ID</xs:documentation>
+          <xs:documentation>DE-014-01 Visit ID</xs:documentation>
+          <xs:documentation>RE-004-01 Visit ID</xs:documentation>
+          <xs:documentation>DE-014-01 Visit ID</xs:documentation>
+          <xs:documentation>RE-004-01 Visit ID</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportPersonType">
+    <xs:annotation>
+      <xs:documentation>Transport Person</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Person. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GivenName" type="udt:TextType">
+        <xs:annotation>
+          <xs:documentation>Given Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Person. Given Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FamilyName" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Family Name</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Transport_ Person. Family Name. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportPersonTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Transport Person</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Person. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="GivenName" type="udt:TextTypeValidationVersion_3">
+        <xs:annotation>
+          <xs:documentation>DE-012-08 Master given name</xs:documentation>
+          <xs:documentation>Given Name</xs:documentation>
+          <xs:documentation>DE-012-08 Master given name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FamilyName" type="udt:TextTypeValidationVersion_3" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>DE-012-01 Master family name</xs:documentation>
+          <xs:documentation>Family Name</xs:documentation>
+          <xs:documentation>DE-012-01 Master family name</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportRouteType">
+    <xs:annotation>
+      <xs:documentation>Transport Route</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Route. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ItineraryStopTransportEvent" type="ram:TransportEventType" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Itinerary Stop Event</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Route. Itinerary Stop. Transport_ Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ScheduledSpecifiedPeriod" type="ram:SpecifiedPeriodType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specified Period</xs:documentation>
+          <xs:documentation>ASBIE</xs:documentation>
+          <xs:documentation>Transport_ Route. Scheduled. Specified_ Period</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportRouteTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Transport Route</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Route. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ItineraryStopTransportEvent" type="ram:TransportEventTypeValidationVersion_3" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Itinerary Stop Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ScheduledSpecifiedPeriod" type="ram:SpecifiedPeriodTypeValidationVersion_2" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specified Period</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TransportRouteTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Transport Route</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Transport_ Route. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ItineraryStopTransportEvent" type="ram:TransportEventTypeValidationVersion_7" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Itinerary Stop Event</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationType">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="URIID" type="udt:IDType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>URI</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Universal_ Communication. URI. Identifier</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CompleteNumber" type="udt:TextType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>BBIE</xs:documentation>
+          <xs:documentation>Universal_ Communication. Complete Number. Text</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CompleteNumber" type="udt:TextTypeValidationVersion_6">
+        <xs:annotation>
+          <xs:documentation>DE-007-07 IMO company phone number</xs:documentation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>DE-007-07 IMO company phone number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_10">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CompleteNumber" type="udt:TextTypeValidationVersion_5">
+        <xs:annotation>
+          <xs:documentation>DE-004-04 Declarant phone number</xs:documentation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>DE-004-04 Declarant phone number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_11">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="URIID" type="udt:IDTypeValidationVersion_8">
+        <xs:annotation>
+          <xs:documentation>DE-004-05 Declarant e-mail address</xs:documentation>
+          <xs:documentation>URI</xs:documentation>
+          <xs:documentation>DE-004-05 Declarant e-mail address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_2">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="URIID" type="udt:IDTypeValidationVersion_8">
+        <xs:annotation>
+          <xs:documentation>DE-007-08 IMO company email address</xs:documentation>
+          <xs:documentation>URI</xs:documentation>
+          <xs:documentation>DE-007-08 IMO company email address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_3">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CompleteNumber" type="udt:TextTypeValidationVersion_6">
+        <xs:annotation>
+          <xs:documentation>DE-029-06 Agent landline number</xs:documentation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>DE-029-06 Agent landline number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_4">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CompleteNumber" type="udt:TextTypeValidationVersion_6">
+        <xs:annotation>
+          <xs:documentation>DE-029-07 Agent mobile number</xs:documentation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>DE-029-07 Agent mobile number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_5">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="URIID" type="udt:IDTypeValidationVersion_8">
+        <xs:annotation>
+          <xs:documentation>DE-029-08 Agent email</xs:documentation>
+          <xs:documentation>URI</xs:documentation>
+          <xs:documentation>DE-029-08 Agent email</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_6">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CompleteNumber" type="udt:TextTypeValidationVersion_5">
+        <xs:annotation>
+          <xs:documentation>DE-012-05 Ship contact person phone number</xs:documentation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>DE-012-05 Ship contact person phone number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_7">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="URIID" type="udt:IDTypeValidationVersion_8">
+        <xs:annotation>
+          <xs:documentation>DE-012-06 Ship contact person email address</xs:documentation>
+          <xs:documentation>URI</xs:documentation>
+          <xs:documentation>DE-012-06 Ship contact person email address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_8">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CompleteNumber" type="udt:TextTypeValidationVersion_5">
+        <xs:annotation>
+          <xs:documentation>DE-004-15 Declarant, Contact person: Phone number</xs:documentation>
+          <xs:documentation>Complete Number</xs:documentation>
+          <xs:documentation>DE-004-15 Declarant, Contact person: Phone number</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UniversalCommunicationTypeValidationVersion_9">
+    <xs:annotation>
+      <xs:documentation>Communication</xs:documentation>
+      <xs:documentation>ABIE</xs:documentation>
+      <xs:documentation>Universal_ Communication. Details</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="URIID" type="udt:IDTypeValidationVersion_8">
+        <xs:annotation>
+          <xs:documentation>DE-004-16 Declarant, Contact person: E-mail address</xs:documentation>
+          <xs:documentation>URI</xs:documentation>
+          <xs:documentation>DE-004-16 Declarant, Contact person: E-mail address</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

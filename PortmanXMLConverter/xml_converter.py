@@ -277,10 +277,13 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     # Adapt Digitraffic data to Portman format
     portman_data = adapt_digitraffic_to_portman(port_call)
 
-    # Generate a unique filename
+    # Generate a unique filename based on formality type
     port_call_id = portcall_data.get('portCallId')
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    filename = f"ATA_{port_call_id}_{timestamp}.xml"
+    
+    # Use appropriate prefix based on the XML type (default to ATA if not specified)
+    xml_prefix = xml_type if xml_type in ["ATA", "NOA"] else "ATA"
+    filename = f"{xml_prefix}_{port_call_id}_{timestamp}.xml"
 
     # Convert to EMSWe XML
     success, result = converter.convert_to_emswe(portman_data)
@@ -337,21 +340,32 @@ def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
             )
         
         portcall_data = req_body.get('portcall_data')
-        formality_type = req_body.get('formality_type')
+        
+        formality_type = req_body.get('formality_type', 'ATA')  # Default to ATA if not specified
+        
+        # Validate formality type
+        if formality_type not in ['ATA', 'NOA']:
+            return func.HttpResponse(
+                json.dumps({"status": "error", "message": f"Invalid formality_type: {formality_type}. Supported types are ATA and NOA."}),
+                mimetype="application/json",
+                status_code=400
+            )
+        
+        logging.info(f"Generating {formality_type}-XML message from: {portcall_data}")
         blob_url = convert_from_portcall_data(portcall_data, formality_type)
 
         # The condition is reversed - when blob_url is None, (not blob_url) is True
         # So we're correctly entering this block when blob_url is None
         if blob_url is None:
             return func.HttpResponse(
-                json.dumps({"status": "success", "message": "XML generated but not stored"}),
+                json.dumps({"status": "success", "message": f"{formality_type} XML generated but not stored"}),
                 mimetype="application/json",
                 status_code=200
             )
         # This else block only executes when blob_url is not None
         else:
             return func.HttpResponse(
-                json.dumps({"status": "success", "message": "XML generated and stored successfully", "url": blob_url}),
+                json.dumps({"status": "success", "message": f"{formality_type} XML generated and stored successfully", "url": blob_url}),
                 mimetype="application/json",
                 status_code=200
             )
