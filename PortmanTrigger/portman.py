@@ -171,7 +171,8 @@ def update_database_schema():
         
         # Add new columns to voyages table if they don't exist
         columns_to_add = {
-            'noa_xml_url': 'TEXT DEFAULT NULL'
+            'noa_xml_url': 'TEXT DEFAULT NULL',
+            'ata_xml_url': 'TEXT DEFAULT NULL'
         }
         
         for column_name, column_def in columns_to_add.items():
@@ -453,27 +454,30 @@ def createNoaXml(voyage_data):
         
         if response.status_code == 200:
             response_data = response.json()
-            plain_url = response_data.get('url')
-            
-            if not plain_url:
-                log(f"No URL found in XML converter response for portCallId {voyage_data.get('portCallId')}")
-                return None
-                
-            # Extract the blob name from the URL
-            # URL format: https://storage_account.blob.core.windows.net/container_name/blob_path
-            try:
-                blob_path = plain_url.split('.net/')[1]  # Get container_name/blob_path
-            except (IndexError, AttributeError):
-                log(f"Could not parse blob path from URL: {plain_url}")
-                blob_path = plain_url  # Fallback to using the URL as is
-            
-            # Generate the SAS URL using the shared utility function
-            storage_connection_string = os.getenv("AzureWebJobsStorage")
-            sas_url = generate_blob_storage_link(blob_path, storage_connection_string)
+            # Get SAS URL from the response (new format uses sasUrl instead of url)
+            sas_url = response_data.get('sasUrl')
             
             if not sas_url:
-                log(f"Failed to generate SAS URL for blob: {blob_path}")
-                sas_url = plain_url  # Fallback to plain URL if SAS generation fails
+                # Fallback to old response format if sasUrl is not found
+                plain_url = response_data.get('url')
+                if not plain_url:
+                    log(f"No URL found in XML converter response for portCallId {voyage_data.get('portCallId')}")
+                    return None
+                    
+                # Extract the blob name from the URL for SAS token generation
+                try:
+                    blob_path = plain_url.split('.net/')[1]  # Get container_name/blob_path
+                except (IndexError, AttributeError):
+                    log(f"Could not parse blob path from URL: {plain_url}")
+                    blob_path = plain_url  # Fallback to using the URL as is
+                
+                # Generate the SAS URL using the shared utility function
+                storage_connection_string = os.getenv("AzureWebJobsStorage")
+                sas_url = generate_blob_storage_link(blob_path, storage_connection_string)
+                
+                if not sas_url:
+                    log(f"Failed to generate SAS URL for blob: {blob_path}")
+                    sas_url = plain_url  # Fallback to plain URL if SAS generation fails
             
             log(f"NOA XML for portCallId {voyage_data.get('portCallId')} successfully generated and stored.")
             
@@ -488,7 +492,7 @@ def createNoaXml(voyage_data):
                 
                 # Update the record with the NOA XML URL (use SAS URL if available)
                 cursor.execute(
-                    "UPDATE voyages SET noa_xml_url = %s WHERE portcallid = %s",
+                    "UPDATE voyages SET noa_xml_url = %s WHERE portCallId = %s",
                     (sas_url, original_port_call_id)
                 )
                 
@@ -560,27 +564,30 @@ def createArrivalXml(arrival_data):
         
         if response.status_code == 200:
             response_data = response.json()
-            plain_url = response_data.get('url')
-            
-            if not plain_url:
-                log(f"No URL found in XML converter response for portCallId {arrival_data.get('portCallId')}")
-                return None
-                
-            # Extract the blob name from the URL
-            # URL format: https://storage_account.blob.core.windows.net/container_name/blob_path
-            try:
-                blob_path = plain_url.split('.net/')[1]  # Get container_name/blob_path
-            except (IndexError, AttributeError):
-                log(f"Could not parse blob path from URL: {plain_url}")
-                blob_path = plain_url  # Fallback to using the URL as is
-            
-            # Generate the SAS URL using the shared utility function
-            storage_connection_string = os.getenv("AzureWebJobsStorage")
-            sas_url = generate_blob_storage_link(blob_path, storage_connection_string)
+            # Get SAS URL from the response (new format uses sasUrl instead of url)
+            sas_url = response_data.get('sasUrl')
             
             if not sas_url:
-                log(f"Failed to generate SAS URL for blob: {blob_path}")
-                sas_url = plain_url  # Fallback to plain URL if SAS generation fails
+                # Fallback to old response format if sasUrl is not found
+                plain_url = response_data.get('url')
+                if not plain_url:
+                    log(f"No URL found in XML converter response for portCallId {arrival_data.get('portCallId')}")
+                    return None
+                    
+                # Extract the blob name from the URL for SAS token generation
+                try:
+                    blob_path = plain_url.split('.net/')[1]  # Get container_name/blob_path
+                except (IndexError, AttributeError):
+                    log(f"Could not parse blob path from URL: {plain_url}")
+                    blob_path = plain_url  # Fallback to using the URL as is
+                
+                # Generate the SAS URL using the shared utility function
+                storage_connection_string = os.getenv("AzureWebJobsStorage")
+                sas_url = generate_blob_storage_link(blob_path, storage_connection_string)
+                
+                if not sas_url:
+                    log(f"Failed to generate SAS URL for blob: {blob_path}")
+                    sas_url = plain_url  # Fallback to plain URL if SAS generation fails
             
             log(f"ATA XML for portCallId {arrival_data.get('portCallId')} successfully generated and stored.")
             
@@ -604,8 +611,15 @@ def createArrivalXml(arrival_data):
                             "UPDATE arrivals SET ata_xml_url = %s WHERE id = %s",
                             (sas_url, arrival_id)
                         )
+                        
+                        # Also update the voyages table with the ATA XML URL
+                        cursor.execute(
+                            "UPDATE voyages SET ata_xml_url = %s WHERE portCallId = %s",
+                            (sas_url, arrival_data.get('portCallId'))
+                        )
+                        
                         conn.commit()
-                        log(f"XML URL (with SAS token) stored in arrivals table for portCallId {arrival_data.get('portCallId')}")
+                        log(f"XML URL (with SAS token) stored in arrivals and voyages tables for portCallId {arrival_data.get('portCallId')}")
                     else:
                         log(f"No arrival record found for portCallId {arrival_data.get('portCallId')}")
                     
