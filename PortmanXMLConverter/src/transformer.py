@@ -34,30 +34,40 @@ class XMLTransformer:
 
         Args:
             portman_data: Dictionary containing Portman agent data
-            formality_type: Type of formality to generate (e.g., "ATA")
+            formality_type: Type of formality to generate (e.g., "ATA", "NOA")
 
         Returns:
             Root element of the generated XML document or None if transformation fails
         """
         try:
             # Create root element with namespaces
-            root = etree.Element("Envelope", nsmap={
+            nsmap = {
                 None: "",  # Default namespace
                 "mai": self.namespaces["mai"],
-                "ata": self.namespaces["ata"],
                 "qdt": self.namespaces["qdt"],
                 "ram": self.namespaces["ram"],
                 "udt": self.namespaces["udt"]
-            })
+            }
+            
+            # Add formality-specific namespace
+            if formality_type == "ATA":
+                nsmap["ata"] = self.namespaces["ata"]
+            elif formality_type == "NOA":
+                nsmap["noa"] = self.namespaces["noa"]
+                
+            root = etree.Element("Envelope", nsmap=nsmap)
 
             # Generate MAI element
-            mai_element = self._generate_mai_element(portman_data)
+            mai_element = self._generate_mai_element(portman_data, formality_type)
             root.append(mai_element)
 
-            # Generate formality-specific element (e.g., ATA)
+            # Generate formality-specific element
             if formality_type == "ATA":
-                ata_element = self._generate_ata_element(portman_data)
-                root.append(ata_element)
+                formality_element = self._generate_ata_element(portman_data)
+                root.append(formality_element)
+            elif formality_type == "NOA":
+                formality_element = self._generate_noa_element(portman_data)
+                root.append(formality_element)
             # Add support for other formality types as needed
 
             return root
@@ -120,12 +130,13 @@ class XMLTransformer:
             logger.error(f"Error saving XML to file: {str(e)}")
             return ""
 
-    def _generate_mai_element(self, portman_data: Dict[str, Any]) -> etree._Element:
+    def _generate_mai_element(self, portman_data: Dict[str, Any], formality_type: str = "ATA") -> etree._Element:
         """
         Generate the MAI element from Portman data.
 
         Args:
             portman_data: Dictionary containing Portman agent data
+            formality_type: Type of formality (e.g., "ATA", "NOA")
 
         Returns:
             MAI element
@@ -142,7 +153,7 @@ class XMLTransformer:
 
         # Add document type code
         type_code = etree.SubElement(exchanged_doc, f"{{{self.namespaces['ram']}}}TypeCode")
-        type_code.text = "ATA"  # For ATA formality
+        type_code.text = formality_type  # Use the formality type
 
         # Add purpose code
         purpose_code = etree.SubElement(exchanged_doc, f"{{{self.namespaces['ram']}}}PurposeCode")
@@ -259,47 +270,242 @@ class XMLTransformer:
         # Create ATA element
         ata_element = etree.Element(f"{{{self.namespaces['ata']}}}ATA")
 
-        # Create ExchangedDocument element if remarks are available
+        # Create ExchangedDocument element for remarks
+        exchanged_doc = etree.SubElement(ata_element, f"{{{self.namespaces['ata']}}}ExchangedDocument")
+        
+        # Add remarks if available
         if "remarks" in portman_data:
-            exchanged_doc = etree.SubElement(ata_element, f"{{{self.namespaces['ata']}}}ExchangedDocument")
             remarks = etree.SubElement(exchanged_doc, f"{{{self.namespaces['ram']}}}Remarks")
             remarks.text = portman_data["remarks"]
 
         # Create SpecifiedLogisticsTransportMovement element
         transport = etree.SubElement(ata_element, f"{{{self.namespaces['ata']}}}SpecifiedLogisticsTransportMovement")
 
-        # Add ArrivalTransportEvent if arrival data is available
+        # Add arrival information
         if "arrival_datetime" in portman_data or "location" in portman_data:
             arrival_event = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}ArrivalTransportEvent")
-
+            
             # Add arrival date/time if available
             if "arrival_datetime" in portman_data:
                 arrival_dt = etree.SubElement(arrival_event, f"{{{self.namespaces['ram']}}}ActualArrivalRelatedDateTime")
                 dt_string = etree.SubElement(arrival_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
                 dt_string.text = portman_data["arrival_datetime"]
-
+            
             # Add location if available
             if "location" in portman_data:
                 location_element = etree.SubElement(arrival_event, f"{{{self.namespaces['ram']}}}OccurrenceLogisticsLocation")
                 location_id = etree.SubElement(location_element, f"{{{self.namespaces['ram']}}}ID")
                 location_id.text = portman_data["location"]
 
-        # Add CallTransportEvent if call data is available
+        # Add call information
         if "call_datetime" in portman_data or "anchorage_indicator" in portman_data:
             call_event = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}CallTransportEvent")
-
+            
             # Add call date/time if available
             if "call_datetime" in portman_data:
                 call_dt = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}ActualArrivalRelatedDateTime")
                 dt_string = etree.SubElement(call_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
                 dt_string.text = portman_data["call_datetime"]
-
+            
             # Add anchorage indicator if available
             if "anchorage_indicator" in portman_data:
                 anchorage = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}MaritimeAnchorageIndicator")
                 anchorage.text = portman_data["anchorage_indicator"]
 
         return ata_element
+        
+    def _generate_noa_element(self, portman_data: Dict[str, Any]) -> etree._Element:
+        """
+        Generate the NOA (Notice of pre-arrival) element from Portman data.
+
+        Args:
+            portman_data: Dictionary containing Portman agent data
+
+        Returns:
+            NOA element
+        """
+        # Create NOA element
+        noa_element = etree.Element(f"{{{self.namespaces['noa']}}}NOA")
+
+        # Create ExchangedDocument element for remarks
+        exchanged_doc = etree.SubElement(noa_element, f"{{{self.namespaces['noa']}}}ExchangedDocument")
+        
+        # Add remarks if available
+        if "remarks" in portman_data:
+            remarks = etree.SubElement(exchanged_doc, f"{{{self.namespaces['ram']}}}Remarks")
+            if isinstance(portman_data["remarks"], str):
+                remarks.text = portman_data["remarks"]
+                remarks.set("languageID", "EN")
+
+        # Create SpecifiedLogisticsTransportMovement element
+        transport = etree.SubElement(noa_element, f"{{{self.namespaces['noa']}}}SpecifiedLogisticsTransportMovement")
+
+        # Add mode code - Maritime
+        mode_code = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}ModeCode")
+        mode_code.text = portman_data.get("mode_code", "1")  # Default to 1 for maritime transport
+
+        # Add voyage ID if available or create one from call ID
+        voyage_id = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}ID")
+        voyage_id.text = portman_data.get("voyage_id", f"VYG-{portman_data.get('call_id', str(int(datetime.now().timestamp())))}")
+
+        # Get passenger count from passengersOnArrival field - optional element, but value must be >= 1 when included
+        passenger_count = None
+        if "passengersOnArrival" in portman_data and portman_data["passengersOnArrival"] is not None:
+            try:
+                # Handle both string and integer inputs
+                passenger_value = portman_data["passengersOnArrival"]
+                if isinstance(passenger_value, int):
+                    passenger_count = passenger_value
+                else:
+                    passenger_count = int(passenger_value)
+                
+                # Only add the element if we have a valid value
+                if passenger_count > 0:
+                    passenger_qty = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}PassengerQuantity")
+                    passenger_qty.text = str(passenger_count)
+                else:
+                    # If zero passengers, don't include the element
+                    passenger_count = None
+            except (ValueError, TypeError):
+                # If conversion fails, don't add the element
+                passenger_count = None
+            
+        # Get crew count from crewOnArrival field - optional element, but value must be >= 1 when included
+        crew_count = None
+        if "crewOnArrival" in portman_data and portman_data["crewOnArrival"] is not None:
+            try:
+                # Handle both string and integer inputs
+                crew_value = portman_data["crewOnArrival"]
+                if isinstance(crew_value, int):
+                    crew_count = crew_value
+                else:
+                    crew_count = int(crew_value)
+                
+                # Only add the element if we have a valid value
+                if crew_count > 0:
+                    crew_qty = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}CrewQuantity")
+                    crew_qty.text = str(crew_count)
+                else:
+                    # If zero crew, don't include the element
+                    crew_count = None
+            except (ValueError, TypeError):
+                # If conversion fails, don't add the element
+                crew_count = None
+
+        # Add cargo description if available (generic if not provided)
+        cargo_desc = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}CargoDescription")
+        cargo_desc.text = portman_data.get("cargo_description", "Standard cargo")
+        cargo_desc.set("languageID", "EN")
+        
+        # Add dangerous goods indicator (default to 0/no)
+        dangerous_goods = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}DangerousGoodsIndicator")
+        dangerous_goods.text = portman_data.get("dangerous_goods_indicator", "0")
+        
+        # Add call purpose code (default to 1 - Other)
+        call_purpose = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}CallPurposeCode")
+        call_purpose.text = portman_data.get("call_purpose_code", "1")
+        
+        # Add regular service indicator
+        regular_service = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}RegularServiceIndicator")
+        regular_service.text = portman_data.get("regular_service_indicator", "0")
+        
+        # Add total onboard person quantity (passengers + crew)
+        # Schema requires this to be greater than 0
+        total_count = 0
+        if passenger_count is not None:
+            total_count += passenger_count
+        if crew_count is not None:
+            total_count += crew_count
+            
+        # Ensure at least 1 person on board to meet schema validation
+        total_count = max(1, total_count)
+            
+        total_onboard = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}TotalOnboardPersonQuantity")
+        total_onboard.text = str(total_count)
+        
+        # Add found stowaway indicator
+        stowaway_indicator = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}FoundStowawayIndicator")
+        stowaway_indicator.text = portman_data.get("found_stowaway_indicator", "0")
+        
+        # Debug output to help diagnose issues
+        logger.info(f"NOA XML generation - PassengersOnArrival: {portman_data.get('passengersOnArrival')}, CrewOnArrival: {portman_data.get('crewOnArrival')}")
+        logger.info(f"Processed values - Passenger count: {passenger_count}, Crew count: {crew_count}, Total count: {total_count}")
+        
+        # Add vessel information
+        if "imoLloyds" in portman_data or "vesselName" in portman_data:
+            used_means = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}UsedLogisticsTransportMeans")
+            
+            # Add vessel type code if available
+            if "vesselTypeCode" in portman_data:
+                type_code = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}TypeCode")
+                type_code.text = str(portman_data["vesselTypeCode"])
+            
+            # Add IMO number if available
+            if "imoLloyds" in portman_data:
+                reg_event = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}RegistrationTransportEvent")
+                reg_id = etree.SubElement(reg_event, f"{{{self.namespaces['ram']}}}ID")
+                reg_id.text = str(portman_data["imoLloyds"])
+            
+            # Add shipping company if available
+            if "shippingCompany" in portman_data:
+                ship_company = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}ShipCompanyTradeParty")
+                company_name = etree.SubElement(ship_company, f"{{{self.namespaces['ram']}}}Name")
+                company_name.text = portman_data["shippingCompany"]
+        
+        # Add port information
+        if "portToVisit" in portman_data or "location" in portman_data:
+            itinerary = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}ItineraryTransportRoute")
+            stop_event = etree.SubElement(itinerary, f"{{{self.namespaces['ram']}}}ItineraryStopTransportEvent")
+            
+            # IMPORTANT: Elements must be in the correct order
+            # 1. First add ArrivalRelatedDateTime
+            arr_dt = etree.SubElement(stop_event, f"{{{self.namespaces['ram']}}}ArrivalRelatedDateTime")
+            dt_string = etree.SubElement(arr_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
+            dt_string.text = portman_data.get("eta", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+                
+            # 2. Add DepartureRelatedDateTime 
+            dep_dt = etree.SubElement(stop_event, f"{{{self.namespaces['ram']}}}DepartureRelatedDateTime")
+            dt_string = etree.SubElement(dep_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
+            dt_string.text = portman_data.get("etd", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+                
+            # 3. Add sequence number
+            seq_num = etree.SubElement(stop_event, f"{{{self.namespaces['ram']}}}SequenceNumeric")
+            seq_num.text = "1"
+                
+            # 4. Finally add location
+            location = etree.SubElement(stop_event, f"{{{self.namespaces['ram']}}}OccurrenceLogisticsLocation")
+            loc_id = etree.SubElement(location, f"{{{self.namespaces['ram']}}}ID")
+            
+            # Get port ID and ensure it's exactly 5 characters
+            port_id = portman_data.get("portToVisit", portman_data.get("location", "PORT1"))
+            # If longer than 5 chars, truncate; if shorter, pad with zeros
+            if len(port_id) > 5:
+                port_id = port_id[:5]
+            elif len(port_id) < 5:
+                port_id = port_id.ljust(5, '0')
+                
+            loc_id.text = port_id
+        
+        # Now add the CallTransportEvent after all required elements
+        call_event = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}CallTransportEvent")
+            
+        # Add estimated arrival date/time
+        est_arrival_dt = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}EstimatedTransportMeansArrivalOccurrenceDateTime")
+        dt_string = etree.SubElement(est_arrival_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
+        dt_string.text = portman_data.get("eta", portman_data.get("arrival_datetime", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")))
+            
+        # REQUIRED: Add estimated departure date/time (required by schema)
+        est_departure_dt = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}EstimatedTransportMeansDepartureOccurrenceDateTime")
+        dt_string = etree.SubElement(est_departure_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
+        dt_string.text = portman_data.get("etd", portman_data.get("departure_datetime", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")))
+        
+        # Add berth information if available
+        if "berthCode" in portman_data or "berthName" in portman_data:
+            location_element = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}ExpectedArrivalPortAreaRelatedLogisticsLocation")
+            name = etree.SubElement(location_element, f"{{{self.namespaces['ram']}}}Name")
+            name.text = portman_data.get("berthName", portman_data.get("berthCode", ""))
+            
+        return noa_element
 
     def _transform_to_portman_format(self, extracted_data: Dict[str, Any]) -> Dict[str, Any]:
         """

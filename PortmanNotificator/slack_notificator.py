@@ -7,8 +7,66 @@ from azure.storage.blob import BlobServiceClient, BlobSasPermissions, generate_b
 from datetime import datetime, timedelta, UTC
 import xml.etree.ElementTree as ET
 
+# Import the shared blob utility function
+try:
+    from PortmanTrigger.blob_utils import generate_blob_storage_link
+except ImportError:
+    try:
+        # Try alternative import path
+        from blob_utils import generate_blob_storage_link
+    except ImportError:
+        # If import fails, keep the local implementation
+        def generate_blob_storage_link(blob_name, connection_string=None):
+            """Generate a URL with SAS token to access the blob directly."""
+            try:
+                # Get storage account connection string if not provided
+                if not connection_string:
+                    connection_string = os.environ.get("AzureWebJobsStorage")
+                
+                if not connection_string:
+                    logging.warning("AzureWebJobsStorage not set, cannot generate direct link")
+                    return ""
+
+                container_name = blob_name.split('/')[0]
+                blob_path = '/'.join(blob_name.split('/')[1:])
+
+                # Create the BlobServiceClient
+                blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+
+                # Get account name from connection string
+                account_name = blob_service_client.account_name
+
+                # Get account key (needed for SAS token generation)
+                account_key = connection_string.split('AccountKey=')[1].split(';')[0]
+
+                # Generate SAS token with read permission that expires in 7 days
+                sas_token = generate_blob_sas(
+                    account_name=account_name,
+                    container_name=container_name,
+                    blob_name=blob_path,
+                    account_key=account_key,
+                    permission=BlobSasPermissions(read=True),
+                    expiry=datetime.now(UTC) + timedelta(days=7),
+                    content_type="application/xml",
+                    content_disposition=f"attachment; filename={os.path.basename(blob_path)}"
+                )
+
+                # Create the URL with SAS token
+                blob_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_path}?{sas_token}"
+
+                return blob_url
+            except Exception as e:
+                logging.error(f"Error generating blob storage link: {e}")
+                return ""
+
 def blob_trigger(blob: func.InputStream):
     logging.info(f"Python blob trigger function processed blob: {blob.name}")
+
+    # Check if blob name matches expected format (starts with ATA_ or NOA_)
+    blob_basename = os.path.basename(blob.name)
+    if not (blob_basename.startswith("ATA_") or blob_basename.startswith("NOA_")):
+        logging.info(f"Blob {blob.name} does not match expected naming pattern (ATA_* or NOA_*). Skipping notification.")
+        return
 
     # Check if notifications are enabled
     if os.environ.get("SLACK_WEBHOOK_ENABLED", "false").lower() == "false":
@@ -22,59 +80,123 @@ def blob_trigger(blob: func.InputStream):
         # Read the blob content
         blob_content = blob.read().decode('utf-8')
 
-        # Parse the XML to extract port call ID and ATA
-        port_call_id, ata, remarks = extract_info_from_xml(blob_content)
+        # Determine XML type based on blob name
+        xml_type = "NOA" if blob_basename.startswith("NOA_") else "ATA"
+        
+        # Parse the XML to extract information
+        port_call_id, time_value, remarks, _, passengers_count, crew_count = extract_info_from_xml(blob_content, xml_type)
 
         # Generate a URL with SAS token to access the blob directly
         blob_url = generate_blob_storage_link(blob.name)
 
         # Send notification to Slack with XML content
-        send_slack_notification(webhook_url, blob.name, port_call_id, ata, remarks, blob_content, channel, username, blob_url)
+        send_slack_notification(webhook_url, blob.name, port_call_id, time_value, remarks, blob_content, channel, username, blob_url, passengers_count, crew_count)
 
-        logging.info(f"Successfully processed and notified about arrival {port_call_id}")
+        logging.info(f"Successfully processed and notified about {xml_type} for {port_call_id}")
 
     except Exception as e:
         logging.error(f"Error processing blob {blob.name}: {str(e)}")
         # Send error notification to Slack
         send_slack_error(webhook_url, blob.name, str(e), channel, username)
 
-def extract_info_from_xml(xml_content):
-    """Extract portCallId and ATA from the XML."""
+def extract_info_from_xml(xml_content, xml_type="ATA"):
+    """Extract information from the XML based on type (ATA or NOA)."""
     try:
-        # Register namespaces
+        # Register namespaces - include both ATA and NOA namespaces
         namespaces = {
             'mai': 'urn:un:unece:uncefact:data:standard:MAI:MMTPlus',
             'ata': 'urn:un:unece:uncefact:data:standard:ATA:MMTPlus',
+            'noa': 'urn:un:unece:uncefact:data:standard:NOA:MMTPlus',
             'ram': 'urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30',
             'qdt': 'urn:un:unece:uncefact:data:Standard:QualifiedDataType:30'
         }
         
         root = ET.fromstring(xml_content)
         
-        # Extract port call ID from MAI part
+        # Extract port call ID from MAI part - common for both ATA and NOA
         port_call_id_element = root.find('.//mai:SpecifiedLogisticsTransportMovement/ram:CallTransportEvent/ram:ID', namespaces)
         port_call_id = port_call_id_element.text if port_call_id_element is not None else "Unknown"
         
-        # Extract ATA from the ATA part - last timestamp in the file
-        ata_elements = root.findall('.//qdt:DateTimeString', namespaces)
-        ata = ata_elements[-1].text if ata_elements and len(ata_elements) > 0 else "Unknown"
-
-        # Extract remarks from the ATA part
-        remarks_element = root.find('.//ata:ExchangedDocument/ram:Remarks', namespaces)
+        # Initialize passenger and crew counts
+        passengers_count = "N/A"
+        crew_count = "N/A"
+        
+        # Extract time, remarks, and counts based on XML type
+        if xml_type == "ATA":
+            # For ATA XML, extract ATA (actual time of arrival)
+            ata_elements = root.findall('.//qdt:DateTimeString', namespaces)
+            time_value = ata_elements[-1].text if ata_elements and len(ata_elements) > 0 else "Unknown"
+            
+            # Extract remarks from the ATA part
+            remarks_element = root.find('.//ata:ExchangedDocument/ram:Remarks', namespaces)
+        else:  # NOA type
+            # For NOA XML, extract ETA (estimated time of arrival)
+            eta_elements = root.findall('.//qdt:DateTimeString', namespaces)
+            time_value = eta_elements[-1].text if eta_elements and len(eta_elements) > 0 else "Unknown"
+            
+            # Extract remarks from the NOA part
+            remarks_element = root.find('.//noa:ExchangedDocument/ram:Remarks', namespaces)
+            
+            # Extract passenger and crew counts for NOA XML
+            try:
+                # Look for passenger count
+                passenger_element = root.find('.//noa:SpecifiedLogisticsTransportMovement/ram:PassengerQuantity', namespaces)
+                if passenger_element is not None:
+                    passengers_count = passenger_element.text
+                
+                # Look for crew count
+                crew_element = root.find('.//noa:SpecifiedLogisticsTransportMovement/ram:CrewQuantity', namespaces)
+                if crew_element is not None:
+                    crew_count = crew_element.text
+                
+                # Look for total person count as a fallback
+                if passengers_count == "N/A" and crew_count == "N/A":
+                    total_element = root.find('.//noa:SpecifiedLogisticsTransportMovement/ram:TotalOnboardPersonQuantity', namespaces)
+                    if total_element is not None:
+                        total_count = total_element.text
+                        logging.info(f"Only total person count found in NOA XML: {total_count}")
+            except Exception as e:
+                logging.warning(f"Error extracting passenger/crew counts from NOA XML: {str(e)}")
+        
         remarks = remarks_element.text if remarks_element is not None else "Unknown"
         
-        return port_call_id, ata, remarks
+        return port_call_id, time_value, remarks, xml_type, passengers_count, crew_count
     
     except Exception as e:
-        logging.error(f"Error parsing XML: {str(e)}")
-        return "Unknown", "Unknown"
+        logging.error(f"Error parsing {xml_type} XML: {str(e)}")
+        return "Unknown", "Unknown", "Unknown", xml_type, "Unknown", "Unknown"
 
-def send_slack_notification(webhook_url, blob_name, port_call_id, ata, remarks, xml_content, channel, username, blob_url):
-    """Send a notification to Slack about the new arrival XML."""
-    # Format the XML content nicely (limit to 2500 characters to avoid message size limits)
-    formatted_xml = format_xml_for_display(xml_content, max_length=2500)
+def send_slack_notification(webhook_url, blob_name, port_call_id, time_value, remarks, xml_content, channel, username, blob_url, passengers_count="N/A", crew_count="N/A"):
+    """Send a notification to Slack about the new arrival or notification of arrival XML."""
+    # Determine if this is an ATA or NOA message
+    xml_type = "NOA" if "NOA_" in blob_name else "ATA"
+    emoji = "🚢" if xml_type == "ATA" else "📢"
+    title = "New port arrival detected" if xml_type == "ATA" else "Notice of pre arrival"
+    time_label = "ATA" if xml_type == "ATA" else "ETA"
     
-    logging.info(f"Sending Slack notification with webhook url {webhook_url} for {blob_name} with port_call_id {port_call_id} and ata {ata}")
+    logging.info(f"Sending Slack notification with webhook url {webhook_url} for {blob_name} with port_call_id {port_call_id} and {time_label} {time_value}")
+
+    # Create the message text based on XML type
+    message_text = f"*Visit ID:* {port_call_id}\n*{time_label}:* {time_value}\n\n{remarks}"
+    
+    # Add passenger and crew counts for NOA messages
+    if xml_type == "NOA":
+        # Add passenger count if available
+        if passengers_count != "N/A":
+            message_text += f"\n\n*Passengers:* {passengers_count}"
+        
+        # Add crew count if available
+        if crew_count != "N/A":
+            message_text += f"\n*Crew:* {crew_count}"
+        
+        # If we have both counts, show the total
+        if passengers_count != "N/A" and crew_count != "N/A":
+            try:
+                total = int(passengers_count) + int(crew_count)
+                message_text += f"\n*Total persons:* {total}"
+            except ValueError:
+                # Skip adding total if conversion fails
+                pass
 
     # Create a message for Slack with XML content
     message = {
@@ -85,14 +207,14 @@ def send_slack_notification(webhook_url, blob_name, port_call_id, ata, remarks, 
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"🚢 *New port arrival detected* 🚢"
+                    "text": f"{emoji} *{title}* {emoji}"
                 }
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*Visit ID:* {port_call_id}\n*ATA:* {ata}\n\n{remarks}"
+                    "text": message_text
                 }
             },
             {
@@ -120,47 +242,6 @@ def send_slack_notification(webhook_url, blob_name, port_call_id, ata, remarks, 
     
     if response.status_code != 200:
         logging.error(f"Error sending to Slack: {response.status_code}, {response.text}")
-
-def generate_blob_storage_link(blob_name):
-    """Generate a URL with SAS token to access the blob directly."""
-    try:
-        # Get storage account connection string
-        connection_string = os.environ.get("AzureWebJobsStorage")
-        if not connection_string:
-            logging.warning("AzureWebJobsStorage not set, cannot generate direct link")
-            return ""
-
-        container_name = blob_name.split('/')[0]
-        blob_path = '/'.join(blob_name.split('/')[1:])
-
-        # Create the BlobServiceClient
-        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-
-        # Get account name from connection string
-        account_name = blob_service_client.account_name
-
-        # Get account key (needed for SAS token generation)
-        account_key = connection_string.split('AccountKey=')[1].split(';')[0]
-
-        # Generate SAS token with read permission that expires in 7 days
-        sas_token = generate_blob_sas(
-            account_name=account_name,
-            container_name=container_name,
-            blob_name=blob_path,
-            account_key=account_key,
-            permission=BlobSasPermissions(read=True),
-            expiry=datetime.now(UTC) + timedelta(days=7),
-            content_type="application/xml",
-            content_disposition=f"attachment; filename={os.path.basename(blob_path)}"
-        )
-
-        # Create the URL with SAS token
-        blob_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_path}?{sas_token}"
-
-        return blob_url
-    except Exception as e:
-        logging.error(f"Error generating blob storage link: {e}")
-        return ""
 
 def format_xml_for_display(xml_content, max_length=2500):
     """Format XML content for better display in Slack message and limit to max_length."""

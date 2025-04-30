@@ -33,6 +33,29 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
         berth_name = digitraffic_data.get("berthName", "unknown")
         port_to_visit = digitraffic_data.get("portToVisit", "unknown")
 
+        # Passenger and crew information - ensure they're integers or None
+        # We use None to indicate "not provided" rather than 0 (which means "zero passengers/crew")
+        passengers_on_arrival = digitraffic_data.get("passengersOnArrival")
+        crew_on_arrival = digitraffic_data.get("crewOnArrival")
+
+        # Ensure we have valid integer values or None
+        if passengers_on_arrival is not None:
+            try:
+                passengers_on_arrival = int(passengers_on_arrival)
+            except (ValueError, TypeError):
+                # If conversion fails, set to None to indicate missing data
+                passengers_on_arrival = None
+        
+        if crew_on_arrival is not None:
+            try:
+                crew_on_arrival = int(crew_on_arrival)
+            except (ValueError, TypeError):
+                # If conversion fails, set to None to indicate missing data
+                crew_on_arrival = None
+
+        # Log passenger and crew counts for debugging
+        logger.info(f"Adapting port call {port_call_id} with passengers: {passengers_on_arrival}, crew: {crew_on_arrival}")
+
         # Build destination string, excluding unknown or "ei tiedossa" values
         destination_parts = [port_to_visit]
         if port_area_name.lower() not in ["unknown", "ei tiedossa"]:
@@ -80,6 +103,13 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
                 }
             }
         }
+        
+        # Add passenger and crew counts if available (only if they have actual values)
+        if passengers_on_arrival is not None:
+            portman_data["passengersOnArrival"] = passengers_on_arrival
+            
+        if crew_on_arrival is not None:
+            portman_data["crewOnArrival"] = crew_on_arrival
 
         return portman_data
 

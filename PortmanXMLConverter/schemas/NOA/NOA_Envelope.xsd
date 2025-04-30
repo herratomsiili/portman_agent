@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:mai="urn:un:unece:uncefact:data:standard:MAI:MMTPlus"
+    xmlns:noa="urn:un:unece:uncefact:data:standard:NOA:MMTPlus">
+  <xs:import namespace="urn:un:unece:uncefact:data:standard:MAI:MMTPlus" schemaLocation="NOA_Envelope_MAI_MMTPluspD22B.xsd"/>
+  <xs:import namespace="urn:un:unece:uncefact:data:standard:NOA:MMTPlus" schemaLocation="NOA_Envelope_NOA_MMTPluspD22B.xsd"/>
+  <xs:element name="Envelope">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mai:MAI"/>
+        <xs:element ref="noa:NOA"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
