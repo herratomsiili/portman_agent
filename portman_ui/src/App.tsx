@@ -57,6 +57,12 @@ function AppRoutes() {
             } />
             
             {/* Protected routes */}
+            <Route path="/vessel-tracking" element={
+                <Layout>
+                    <VesselTracking />
+                </Layout>
+            } />
+            
             <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={
                     <Layout>
@@ -66,11 +72,6 @@ function AppRoutes() {
                 <Route path="/vessel/:imo" element={
                     <Layout>
                         <VesselDetails />
-                    </Layout>
-                } />
-                <Route path="/vessel-tracking" element={
-                    <Layout>
-                        <VesselTracking />
                     </Layout>
                 } />
                 <Route path="/reports" element={

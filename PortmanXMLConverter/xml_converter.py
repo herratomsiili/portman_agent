@@ -19,6 +19,19 @@ import azure.functions as func
 from azure.storage.blob import BlobServiceClient
 from config import AZURE_STORAGE_CONFIG
 
+# Try to import the shared blob utilities
+try:
+    from PortmanTrigger.blob_utils import generate_blob_storage_link
+except ImportError:
+    try:
+        # Try alternative import path
+        from blob_utils import generate_blob_storage_link
+    except ImportError:
+        # Fallback definition if the module can't be imported
+        def generate_blob_storage_link(blob_name, connection_string=None):
+            logging.warning("generate_blob_storage_link function not available in XML Converter")
+            return None
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -277,10 +290,13 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     # Adapt Digitraffic data to Portman format
     portman_data = adapt_digitraffic_to_portman(port_call)
 
-    # Generate a unique filename
+    # Generate a unique filename based on formality type
     port_call_id = portcall_data.get('portCallId')
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    filename = f"ATA_{port_call_id}_{timestamp}.xml"
+    
+    # Use appropriate prefix based on the XML type (default to ATA if not specified)
+    xml_prefix = xml_type if xml_type in ["ATA", "NOA"] else "ATA"
+    filename = f"{xml_prefix}_{port_call_id}_{timestamp}.xml"
 
     # Convert to EMSWe XML
     success, result = converter.convert_to_emswe(portman_data)
@@ -296,10 +312,7 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     
     if (not connection_string or not container_name):
         logger.info("Storage connection string or container name not found")
-        #logger.info(f"Generated XML file:\n{result}")
-        #print("Storage connection string or container name not found")
         logger.info(result)
-        #print(f"Generated XML file:\n{result}")
         return None
 
     # Connect to blob storage
@@ -309,21 +322,25 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     # Create container if it doesn't exist
     if not container_client.exists():
         container_client.create_container()
-
-    #if not container_client.exists():
-    #    # Use PublicAccess.Blob to allow anonymous access to blobs but not container listings
-    #    from azure.storage.blob import PublicAccess
-    #    container_client.create_container(public_access=PublicAccess.Blob)
-    #    logger.info(f"Created container '{container_name}' with blob-level public access")
     
     # Upload XML to Blob Storage
     blob_client = container_client.get_blob_client(filename)
     blob_client.upload_blob(result, overwrite=True, content_type="application/xml")
     
-    # Return success response with the blob URL
-    blob_url = blob_client.url
-
-    return blob_url
+    # Get the full blob path for generating SAS URL
+    blob_path = f"{container_name}/{filename}"
+    
+    # Generate SAS URL using the shared utility function
+    sas_url = generate_blob_storage_link(blob_path, connection_string)
+    
+    # If SAS URL generation failed, fall back to plain URL
+    if not sas_url:
+        logger.warning(f"Failed to generate SAS URL, falling back to plain URL")
+        sas_url = blob_client.url
+    
+    logger.info(f"XML stored with SAS URL: {sas_url}")
+    
+    return sas_url
 
 def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Portman XML converter function processing a request')
@@ -337,21 +354,34 @@ def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
             )
         
         portcall_data = req_body.get('portcall_data')
-        formality_type = req_body.get('formality_type')
-        blob_url = convert_from_portcall_data(portcall_data, formality_type)
-
-        # The condition is reversed - when blob_url is None, (not blob_url) is True
-        # So we're correctly entering this block when blob_url is None
-        if blob_url is None:
+        
+        formality_type = req_body.get('formality_type', 'ATA')  # Default to ATA if not specified
+        
+        # Validate formality type
+        if formality_type not in ['ATA', 'NOA']:
             return func.HttpResponse(
-                json.dumps({"status": "success", "message": "XML generated but not stored"}),
+                json.dumps({"status": "error", "message": f"Invalid formality_type: {formality_type}. Supported types are ATA and NOA."}),
+                mimetype="application/json",
+                status_code=400
+            )
+        
+        logging.info(f"Generating {formality_type}-XML message from: {portcall_data}")
+        sas_url = convert_from_portcall_data(portcall_data, formality_type)
+
+        if sas_url is None:
+            return func.HttpResponse(
+                json.dumps({"status": "success", "message": f"{formality_type} XML generated but not stored"}),
                 mimetype="application/json",
                 status_code=200
             )
-        # This else block only executes when blob_url is not None
         else:
+            # Use only sasUrl in the response - standardize the format
             return func.HttpResponse(
-                json.dumps({"status": "success", "message": "XML generated and stored successfully", "url": blob_url}),
+                json.dumps({
+                    "status": "success", 
+                    "message": f"{formality_type} XML generated and stored successfully", 
+                    "sasUrl": sas_url
+                }),
                 mimetype="application/json",
                 status_code=200
             )
