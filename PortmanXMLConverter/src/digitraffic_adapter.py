@@ -30,8 +30,44 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
         eta = digitraffic_data.get("eta")
         ata = digitraffic_data.get("ata")
         port_area_name = digitraffic_data.get("portAreaName", "unknown")
+        port_area_code = digitraffic_data.get("portAreaCode", "PORT1")
         berth_name = digitraffic_data.get("berthName", "unknown")
+        berth_code = digitraffic_data.get("berthCode", "BRTH1")
         port_to_visit = digitraffic_data.get("portToVisit", "unknown")
+        
+        # Ensure port codes are exactly 5 characters (required by schema)
+        # Process port_to_visit
+        if port_to_visit:
+            if len(port_to_visit) > 5:
+                port_to_visit = port_to_visit[:5]
+                logger.info(f"Truncated portToVisit to 5 characters: {port_to_visit}")
+            elif len(port_to_visit) < 5:
+                port_to_visit = port_to_visit.ljust(5, 'X')
+                logger.info(f"Padded portToVisit to 5 characters: {port_to_visit}")
+        else:
+            port_to_visit = "PORTX"  # Default 5-character code
+            
+        # Process port_area_code
+        if port_area_code:
+            if len(port_area_code) > 5:
+                port_area_code = port_area_code[:5]
+                logger.info(f"Truncated portAreaCode to 5 characters: {port_area_code}")
+            elif len(port_area_code) < 5:
+                port_area_code = port_area_code.ljust(5, 'X')
+                logger.info(f"Padded portAreaCode to 5 characters: {port_area_code}")
+        else:
+            port_area_code = "AREAX"  # Default 5-character code
+            
+        # Process berth_code
+        if berth_code:
+            if len(berth_code) > 5:
+                berth_code = berth_code[:5]
+                logger.info(f"Truncated berthCode to 5 characters: {berth_code}")
+            elif len(berth_code) < 5:
+                berth_code = berth_code.ljust(5, 'X')
+                logger.info(f"Padded berthCode to 5 characters: {berth_code}")
+        else:
+            berth_code = "BRTHX"  # Default 5-character code
 
         # Passenger and crew information - ensure they're integers or None
         # We use None to indicate "not provided" rather than 0 (which means "zero passengers/crew")
@@ -78,11 +114,18 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
 
             # Required fields for ArrivalTransportEvent
             "arrival_datetime": ata or eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "location": berth_name or port_area_name or "Unknown Terminal",
+            "location": port_to_visit,  # Use validated port code here
 
             # Required field for CallTransportEvent
             "call_datetime": ata or eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "anchorage_indicator": "0",
+            
+            # Add standardized port and berth codes
+            "portToVisit": port_to_visit,
+            "portAreaCode": port_area_code,
+            "portAreaName": port_area_name,
+            "berthCode": berth_code,
+            "berthName": berth_name,
 
             # Required declarant information
             "declarant": {
@@ -110,6 +153,11 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             
         if crew_on_arrival is not None:
             portman_data["crewOnArrival"] = crew_on_arrival
+        
+        # Log the standardized codes for debugging
+        logger.info(f"Using standardized codes - portToVisit: {port_to_visit} ({len(port_to_visit)} chars), "
+                    f"portAreaCode: {port_area_code} ({len(port_area_code)} chars), "
+                    f"berthCode: {berth_code} ({len(berth_code)} chars)")
 
         return portman_data
 
@@ -123,9 +171,14 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             "call_id": f"CALL-{datetime.now().strftime('%Y%m%d')}-001",
             "remarks": "Adapted from Digitraffic data",
             "arrival_datetime": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "location": "Unknown Terminal",
+            "location": "UNKNW",  # Ensure 5 characters
             "call_datetime": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "anchorage_indicator": "0",
+            "portToVisit": "PORTX",
+            "portAreaCode": "AREAX", 
+            "portAreaName": "Unknown Area",
+            "berthCode": "BRTHX",
+            "berthName": "Unknown Berth",
             "declarant": {
                 "id": "FI123456789012",
                 "name": "Unknown Agent",
