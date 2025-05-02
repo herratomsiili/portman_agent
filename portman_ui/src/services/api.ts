@@ -44,7 +44,7 @@ apiClient.interceptors.request.use(
 // API functions
 export const api = {
   // Port calls
-  getPortCalls: async (params?: { imo?: string; from?: string; to?: string }) => {
+  getPortCalls: async (params?: { imo?: string; from?: string; to?: string; after?: string }) => {
     if (USE_MOCK_DATA) {
       // Filter mock data based on params if needed
       let filteredCalls = [...mockPortCalls];
@@ -58,6 +58,25 @@ export const api = {
     try {
       const response = await apiClient.get('/voyages', { params });
       return response.data.value;
+    } catch (error) {
+      console.error('Error fetching port calls:', error);
+      throw error;
+    }
+  },
+
+  // Port calls with pagination support
+  getPortCallsPaginated: async (afterParam?: string) => {
+    if (USE_MOCK_DATA) {
+      return { data: { value: mockPortCalls, nextLink: null } };
+    }
+
+    try {
+      const params: any = {};
+      if (afterParam) {
+        params['$after'] = afterParam;
+      }
+      const response = await apiClient.get('/voyages', { params });
+      return response;
     } catch (error) {
       console.error('Error fetching port calls:', error);
       throw error;
