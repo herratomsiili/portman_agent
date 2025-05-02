@@ -8,29 +8,15 @@ import {
     Divider,
     Drawer,
     IconButton,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
     Toolbar,
     Typography
 } from '@mui/material';
 import {
-    DirectionsBoat as VesselIcon,
-    Assessment as ReportIcon,
-    // Settings as SettingsIcon,
-    // Menu as MenuIcon,
-    Dashboard as DashboardIcon,
-    Assessment as AssessmentIcon,
-    DirectionsBoat as DirectionsBoatIcon,
-    DirectionsBoatFilledOutlined as PortCallManagementIcon,
-    LocationOn as LocationOnIcon,
     Login as LoginIcon,
     Menu as MenuIcon,
-    Settings as SettingsIcon,
-    Sailing as SailingIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import Navigation from './Navigation';
 
 const drawerWidth = 240;
 
@@ -53,18 +39,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     navigate('/login');
   };
 
-  const menuItems = [
-    { text: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
-    { text: 'Port Calls', path: '/port-calls', icon: <DirectionsBoatIcon /> },
-    { text: 'Vessel Tracking', path: '/vessel-tracking', icon: <LocationOnIcon /> },
-    { text: 'Arrivals', path: '/arrivals', icon: <SailingIcon /> },
-    { text: 'Reports', path: '/reports', icon: <AssessmentIcon /> },
-  ];
-
-  const adminMenuItems = [
-    { text: 'Port Call Management', path: '/port-call-management', icon: <PortCallManagementIcon /> },
-    { text: 'Settings', path: '/settings', icon: <SettingsIcon /> },
-  ];
+  // Get current page title for the app bar
+  const getCurrentPageTitle = () => {
+    const pathMap: {[key: string]: string} = {
+      '/dashboard': 'Dashboard',
+      '/port-calls': 'Port Calls',
+      '/vessel-tracking': 'Vessel Tracking',
+      '/arrivals': 'Arrivals',
+      '/reports': 'Reports',
+      '/port-call-management': 'Port Call Management',
+      '/settings': 'Settings'
+    };
+    
+    return pathMap[location.pathname] || 'Portman';
+  };
 
   const drawer = (
     <div>
@@ -74,44 +62,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Typography>
       </Toolbar>
       <Divider />
-      <List>
-        {menuItems.map((item) => (
-          <ListItem
-            key={item.text}
-            onClick={() => navigate(item.path)}
-            sx={{ 
-              cursor: 'pointer',
-              bgcolor: location.pathname === item.path ? 'action.selected' : 'inherit'
-            }}
-          >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
-      </List>
-      {isAuthenticated && user?.role === 'admin' && (
-        <>
-          <Divider />
-          <List>
-            <ListItem>
-              <ListItemText primary="Admin Tools" />
-            </ListItem>
-            {adminMenuItems.map((item) => (
-              <ListItem
-                key={item.text}
-                onClick={() => navigate(item.path)}
-                sx={{ 
-                  cursor: 'pointer',
-                  bgcolor: location.pathname === item.path ? 'action.selected' : 'inherit'
-                }}
-              >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItem>
-            ))}
-          </List>
-        </>
-      )}
+      <Navigation />
     </div>
   );
 
@@ -138,7 +89,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </IconButton>
           )}
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {menuItems.find(item => item.path === location.pathname)?.text || 'Portman'}
+            {getCurrentPageTitle()}
           </Typography>
           {!isAuthenticated ? (
             <Button

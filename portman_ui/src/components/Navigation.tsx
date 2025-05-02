@@ -9,16 +9,14 @@ import {
   Divider,
   Tooltip
 } from '@mui/material';
-import { 
-  Dashboard as DashboardIcon,
-  DirectionsBoat as VesselIcon,
-  ShoppingCart as PortCallIcon,
-  LocationOn as TrackingIcon,
-  Description as ReportIcon,
+import {
+  Assessment as ReportIcon,
   Settings as SettingsIcon,
-  AccessTime as TimelineIcon,
+  Dashboard as DashboardIcon,
+  DirectionsBoat as DirectionsBoatIcon,
+  LocationOn as TrackingIcon,
+  Sailing as ArrivalsIcon,
   Anchor as AnchorIcon,
-  AssignmentTurnedIn as ArrivalsIcon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
@@ -30,45 +28,45 @@ const Navigation: React.FC = () => {
   const isAdmin = user?.role === 'admin';
 
   const navItems = [
-    { 
-      title: 'Dashboard', 
-      path: '/dashboard', 
+    {
+      title: 'Dashboard',
+      path: '/dashboard',
       icon: <DashboardIcon />,
       requires: 'user'
     },
-    { 
-      title: 'Port Calls', 
-      path: '/port-calls', 
-      icon: <PortCallIcon />,
+    {
+      title: 'Port Calls',
+      path: '/port-calls',
+      icon: <DirectionsBoatIcon />,
       requires: 'none'
     },
-    { 
-      title: 'Vessel Tracking', 
-      path: '/vessel-tracking', 
+    {
+      title: 'Vessel Tracking',
+      path: '/vessel-tracking',
       icon: <TrackingIcon />,
       requires: 'none'
     },
-    { 
-      title: 'Arrivals', 
-      path: '/arrivals', 
+    {
+      title: 'Arrivals',
+      path: '/arrivals',
       icon: <ArrivalsIcon />,
       requires: 'none'
     },
-    { 
-      title: 'Port Call Management', 
-      path: '/port-call-management', 
+    {
+      title: 'Port Call Management',
+      path: '/port-call-management',
       icon: <AnchorIcon />,
       requires: 'admin'
     },
-    { 
-      title: 'Reports', 
-      path: '/reports', 
+    {
+      title: 'Reports',
+      path: '/reports',
       icon: <ReportIcon />,
       requires: 'user'
     },
-    { 
-      title: 'Settings', 
-      path: '/settings', 
+    {
+      title: 'Settings',
+      path: '/settings',
       icon: <SettingsIcon />,
       requires: 'admin'
     }
