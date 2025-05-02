@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {
   Alert,
   Box,
+  Button,
   CircularProgress,
   IconButton,
   InputAdornment,
@@ -20,7 +21,8 @@ import {
 import {
   Search as SearchIcon, 
   Visibility as VisibilityIcon, 
-  Info as InfoIcon
+  Info as InfoIcon,
+  ExpandMore as ExpandMoreIcon
 } from '@mui/icons-material';
 import {Arrival} from '../types';
 import api from "../services/api";
@@ -30,17 +32,31 @@ const Arrivals: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [arrivals, setArrivals] = useState<Arrival[]>([]);
+  const [totalArrivals, setTotalArrivals] = useState<number>(0);
+  const [nextPageUrl, setNextPageUrl] = useState<string | null>(null);
+  const [loadingAllData, setLoadingAllData] = useState(false);
 
+  // Initial data load
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await api.getArrivalUpdates();
-        setArrivals(response || []);
+        const response = await api.getArrivals();
+        const data = response?.data?.value || [];
+        setArrivals(data);
+        setTotalArrivals(data.length);
+        
+        // Store the next page URL if available
+        if (response?.data?.nextLink) {
+          setNextPageUrl(response.data.nextLink);
+          // Automatically start loading all data
+          loadAllData(response.data.nextLink, data);
+        }
       } catch (err) {
         console.error('Error fetching arrivals:', err);
         setError('Failed to load arrivals. Please try again later.');
@@ -51,6 +67,46 @@ const Arrivals: React.FC = () => {
 
     fetchData();
   }, []);
+
+  // Function to load all data recursively
+  const loadAllData = async (url: string, currentData: Arrival[]) => {
+    if (!url) return;
+    
+    setLoadingAllData(true);
+    setLoadingMore(true);
+    
+    try {
+      const urlObj = new URL(url);
+      const params = new URLSearchParams(urlObj.search);
+      const afterParam = params.get('$after');
+      
+      if (afterParam) {
+        const response = await api.getArrivals(afterParam);
+        const newData = response?.data?.value || [];
+        
+        const combinedData = [...currentData, ...newData];
+        setArrivals(combinedData);
+        setTotalArrivals(combinedData.length);
+        
+        // If there's more data, continue loading
+        if (response?.data?.nextLink) {
+          // Short delay to prevent overloading the server
+          setTimeout(() => {
+            loadAllData(response.data.nextLink, combinedData);
+          }, 300);
+        } else {
+          setNextPageUrl(null);
+          setLoadingAllData(false);
+          setLoadingMore(false);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading more arrivals:', err);
+      setError('Failed to load all arrivals. Some data might be missing.');
+      setLoadingAllData(false);
+      setLoadingMore(false);
+    }
+  };
 
   // Filter arrivals based on search term
   const filteredArrivals = (arrivals || []).filter((arrival: Arrival) =>
@@ -77,7 +133,7 @@ const Arrivals: React.FC = () => {
     window.open(url, '_blank');
   };
 
-  if (loading) {
+  if (loading && arrivals.length === 0) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
         <CircularProgress data-cy="arrivals-loading" />
@@ -124,14 +180,17 @@ const Arrivals: React.FC = () => {
         </Alert>
       )}
 
-      {/* TODO: Add later maybe? */}
       {/* Statistics Summary */}
-      {/*<Box sx={{ mb: 3, p: 2, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>*/}
-      {/*  <Typography variant="h6" gutterBottom>Summary</Typography>*/}
-      {/*  <Typography>*/}
-      {/*    Total Arrivals: <strong>{arrivals.length}</strong>*/}
-      {/*  </Typography>*/}
-      {/*</Box>*/}
+      <Box sx={{ mb: 3, p: 2, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
+        <Typography variant="h6" gutterBottom>Summary</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography>
+            Total Arrivals: <strong>{totalArrivals}</strong>
+            {loadingAllData && ' (loading more...)'}
+          </Typography>
+          {loadingAllData && <CircularProgress size={20} />}
+        </Box>
+      </Box>
 
       <Paper sx={{ 
         width: '100%', 
@@ -145,12 +204,13 @@ const Arrivals: React.FC = () => {
             <TableHead>
               <TableRow sx={{ bgcolor: 'primary.main' }}>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white' }} data-cy="table-header-vessel">Vessel</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: 'white', width: 110 }} data-cy="table-header-status">Status</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white' }} data-cy="table-header-port">Port</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white', display: { xs: 'none', md: 'table-cell' } }} data-cy="table-header-eta">ETA</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white', display: { xs: 'none', md: 'table-cell' } }} data-cy="table-header-old-ata">Previous ATA</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white' }} data-cy="table-header-ata">ATA</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'white', display: { xs: 'none', md: 'table-cell' } }} data-cy="table-header-timestamp">Timestamp</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: 'white' }} data-cy="table-header-actions">Actions</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: 'white', width: 100, textAlign: 'center' }} data-cy="table-header-actions">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-cy="arrivals-table-body">
@@ -169,21 +229,20 @@ const Arrivals: React.FC = () => {
                   >
                     <TableCell>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Typography variant="body1" sx={{ fontWeight: 500 }} data-cy="vessel-name">
-                            {arrival.vesselname || 'N/A'}
-                          </Typography>
-                          <Chip 
-                            label={arrival.old_ata ? "Updated" : "New Arrival"}
-                            color={arrival.old_ata ? "warning" : "success"}
-                            size="small"
-                            sx={{ ml: 1 }}
-                          />
-                        </Box>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }} data-cy="vessel-name">
+                          {arrival.vesselname || 'N/A'}
+                        </Typography>
                         <Typography variant="body2" color="text.secondary" data-cy="vessel-port-call-id">
                           ID: {arrival.portcallid || 'N/A'}
                         </Typography>
                       </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={arrival.old_ata ? "Updated" : "New Arrival"}
+                        color={arrival.old_ata ? "warning" : "success"}
+                        size="small"
+                      />
                     </TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -207,8 +266,8 @@ const Arrivals: React.FC = () => {
                     <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="timestamp-value">
                       {formatDateTime(arrival.created)}
                     </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                         {arrival.ata_xml_url && (
                           <Tooltip title="View ATA XML">
                             <IconButton 
@@ -235,7 +294,7 @@ const Arrivals: React.FC = () => {
                 ))}
               {filteredArrivals.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={8} align="center">
                     No arrivals found
                   </TableCell>
                 </TableRow>
@@ -243,6 +302,11 @@ const Arrivals: React.FC = () => {
             </TableBody>
           </Table>
         </Box>
+        {loadingMore && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+            <CircularProgress size={24} />
+          </Box>
+        )}
         <TablePagination
           component="div"
           count={filteredArrivals.length}
@@ -250,7 +314,7 @@ const Arrivals: React.FC = () => {
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 25, 50, 100]}
         />
       </Paper>
     </Box>

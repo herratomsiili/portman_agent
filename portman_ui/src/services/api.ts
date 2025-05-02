@@ -147,7 +147,26 @@ export const api = {
     }
   },
 
-  // Arrival updates
+  // Arrivals with pagination support
+  getArrivals: async (afterParam?: string) => {
+    if (USE_MOCK_DATA) {
+      return { data: { value: mockArrivalUpdates, nextLink: null } };
+    }
+
+    try {
+      const params: any = {};
+      if (afterParam) {
+        params['$after'] = afterParam;
+      }
+      const response = await apiClient.get('/arrivals', { params });
+      return response;
+    } catch (error) {
+      console.error('Error fetching arrivals:', error);
+      throw error;
+    }
+  },
+
+  // Arrival updates (legacy method)
   getArrivalUpdates: async (params?: { vesselname?: string; portcallid?: number }) => {
     if (USE_MOCK_DATA) {
       // Filter mock data based on params if needed
@@ -163,6 +182,7 @@ export const api = {
 
     try {
       const response = await apiClient.get('/arrivals', { params });
+      console.log("response:", response)
       return response.data.value;
     } catch (error) {
       console.error('Error fetching arrival updates:', error);
