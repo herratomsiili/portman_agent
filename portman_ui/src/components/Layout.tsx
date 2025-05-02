@@ -28,13 +28,9 @@ import {
     Login as LoginIcon,
     Menu as MenuIcon,
     Settings as SettingsIcon,
-    Map as MapIcon,
-    EventNote as PortCallIcon,
-    ExitToApp as LogoutIcon,
-    AccountCircle,
+    Sailing as SailingIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
-import Dashboard from "../pages/Dashboard";
 
 const drawerWidth = 240;
 
@@ -61,6 +57,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
     { text: 'Port Calls', path: '/port-calls', icon: <DirectionsBoatIcon /> },
     { text: 'Vessel Tracking', path: '/vessel-tracking', icon: <LocationOnIcon /> },
+    { text: 'Arrivals', path: '/arrivals', icon: <SailingIcon /> },
     { text: 'Reports', path: '/reports', icon: <AssessmentIcon /> },
   ];
 

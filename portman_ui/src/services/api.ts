@@ -148,19 +148,22 @@ export const api = {
   },
 
   // Arrival updates
-  getArrivalUpdates: async (params?: { imo?: string; portCallId?: number }) => {
+  getArrivalUpdates: async (params?: { vesselname?: string; portcallid?: number }) => {
     if (USE_MOCK_DATA) {
       // Filter mock data based on params if needed
       let filteredUpdates = [...mockArrivalUpdates];
-      if (params?.portCallId) {
-        filteredUpdates = filteredUpdates.filter(update => update.portCallId === params.portCallId);
+      if (params?.portcallid) {
+        filteredUpdates = filteredUpdates.filter(update => update.portcallid === params.portcallid);
+      }
+      if (params?.vesselname) {
+        filteredUpdates = filteredUpdates.filter(update => update.vesselname === params.vesselname);
       }
       return { arrivalUpdates: filteredUpdates };
     }
 
     try {
       const response = await apiClient.get('/arrivals', { params });
-      return response.data;
+      return response.data.value;
     } catch (error) {
       console.error('Error fetching arrival updates:', error);
       throw error;
