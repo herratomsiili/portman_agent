@@ -295,7 +295,7 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     logger.info(f"Original values before adaptation - vesselName: {original_vessel_name}, imoLloyds: {original_imo_lloyds}, eta: {original_eta}")
 
     # Adapt Digitraffic data to Portman format
-    portman_data = adapt_digitraffic_to_portman(port_call)
+    portman_data = adapt_digitraffic_to_portman(port_call, xml_type)
     
     # Ensure critical fields are preserved
     if original_vessel_name and not portman_data.get('vesselName'):

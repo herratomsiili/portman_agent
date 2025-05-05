@@ -798,6 +798,7 @@ def save_results_to_db(results, conn=None):
         cursor = conn.cursor()
 
         new_arrival_count = 0   # Track the count of new arrivals
+        new_eta_count = 0       # Track the count of new eta timestamps for NOA generation
         new_voyage_count = 0    # Track count of new voyages for VID generation
         updated_voyage_count = 0 # Track count of updated existing voyages
 
@@ -806,16 +807,17 @@ def save_results_to_db(results, conn=None):
 
         # Fetch all old ata values and existing port calls in one query
         old_ata_map = {}
+        old_eta_map = {}
         existing_port_calls = set()
         if port_call_ids:
             # Detect if using SQLite
             is_sqlite = isinstance(conn, sqlite3.Connection)
             placeholder = "?" if is_sqlite else "%s"
 
-            # Fetch old ATA values and port call IDs using proper placeholders
+            # Fetch old ATA, ETA values and port call IDs using proper placeholders
             port_call_ids = list(set(entry["portCallId"] for entry in results))
             query = f"""
-                SELECT portCallId, ata FROM voyages WHERE portCallId IN ({','.join([placeholder] * len(port_call_ids))});
+                SELECT portCallId, ata, eta FROM voyages WHERE portCallId IN ({','.join([placeholder] * len(port_call_ids))});
             """
             cursor.execute(query, tuple(port_call_ids))
 
@@ -823,10 +825,12 @@ def save_results_to_db(results, conn=None):
 
             # Populate maps with data
             for row in fetched_data:
-                port_call_id, old_ata = row
+                port_call_id, old_ata, old_eta = row
                 existing_port_calls.add(int(port_call_id))
                 if old_ata:  # Only store valid timestamps
                     old_ata_map[int(port_call_id)] = old_ata.strftime("%Y-%m-%dT%H:%M:00.000Z")  # Normalize to minute level
+                if old_eta:  # Store valid ETA timestamps
+                    old_eta_map[int(port_call_id)] = old_eta.strftime("%Y-%m-%dT%H:%M:00.000Z")  # Normalize to minute level
 
         for entry in results:
             port_call_id = int(entry["portCallId"])  # Ensure it's stored as an integer
@@ -837,8 +841,13 @@ def save_results_to_db(results, conn=None):
             if new_ata:
                 new_ata = datetime.strptime(new_ata, "%Y-%m-%dT%H:%M:%S.%f%z").strftime("%Y-%m-%dT%H:%M:00.000Z")  # Normalize
 
-            # Fetch old ata from the map (default to None)
+            new_eta = entry["eta"]
+            if new_eta:
+                new_eta = datetime.strptime(new_eta, "%Y-%m-%dT%H:%M:%S.%f%z").strftime("%Y-%m-%dT%H:%M:00.000Z")  # Normalize
+
+            # Fetch old values from the maps (default to None)
             old_ata = old_ata_map.get(port_call_id, None)
+            old_eta = old_eta_map.get(port_call_id, None)
 
             # Check if this is a new port call that needs VID
             is_new_port_call = port_call_id not in existing_port_calls
@@ -936,6 +945,39 @@ def save_results_to_db(results, conn=None):
                 # Generate and store the VID XML
                 createVidXml(vid_data)
 
+            # Generate NOA XML when ETA changes are detected
+            if old_eta is not None and old_eta != new_eta and new_eta is not None:
+                log(f"ETA change detected for portCallId {port_call_id}. Generating NOA-XML.")
+                log(f"Old ETA: {old_eta}, New ETA: {new_eta}")
+                
+                # Commit to ensure all changes are saved
+                conn.commit()
+                
+                # Prepare data for NOA XML generation
+                noa_data = {
+                    "portCallId": port_call_id,
+                    "imoLloyds": imo_number,
+                    "mmsi": mmsi,  # Include mmsi for NOA generation
+                    "vesselName": entry.get("vesselName") or "",
+                    "eta": new_eta,
+                    "portAreaCode": entry.get("portAreaCode") or "",
+                    "portAreaName": entry.get("portAreaName") or "",
+                    "berthCode": entry.get("berthCode") or "", 
+                    "berthName": entry.get("berthName") or "",
+                    "passengersOnArrival": entry.get("passengersOnArrival") or 0,
+                    "crewOnArrival": entry.get("crewOnArrival") or 0,
+                    "portToVisit": entry.get("portToVisit") or "",
+                    "prevPort": entry.get("prevPort") or "",
+                    "agentName": entry.get("agentName") or "",
+                    "shippingCompany": entry.get("shippingCompany") or ""
+                }
+                
+                # Generate and store the NOA XML
+                noa_url = createNoaXml(noa_data)
+                if noa_url:
+                    new_eta_count += 1
+                    log(f"NOA XML generated for portCallId {port_call_id} due to ETA change")
+
             # Generate ATA XML for arrivals with updated ATA
             if old_ata != new_ata and new_ata is not None:
                 insert_arrival_query = f"""
@@ -1000,7 +1042,7 @@ def save_results_to_db(results, conn=None):
         if not connection_managed_elsewhere:
             conn.close()
         log(f"{len(results)} records saved/updated in the database.")
-        log(f"Total new voyages: {new_voyage_count}, updated voyages: {updated_voyage_count}, new arrivals: {new_arrival_count}")
+        log(f"Total new voyages: {new_voyage_count}, updated voyages: {updated_voyage_count}, new arrivals: {new_arrival_count}, eta updated: {new_eta_count}")
 
     except Exception as e:
         log(f"Error saving results to the database: {e}")

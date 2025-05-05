@@ -10,7 +10,7 @@ from typing import Dict, Any
 logger = logging.getLogger(__name__)
 
 
-def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, Any]:
+def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None) -> Dict[str, Any]:
     """
     Adapt Digitraffic port call data to the Portman format expected by the EMSWe converter.
 
@@ -66,32 +66,12 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
                 logger.warning(f"Could not format ETA: {str(e)}, using original value")
                 formatted_eta = eta
         
-        port_area_name = digitraffic_data.get("portAreaName", "unknown")
-        port_area_code = digitraffic_data.get("portAreaCode", "PORT1")
-        berth_name = digitraffic_data.get("berthName", "unknown")
-        berth_code = digitraffic_data.get("berthCode", "BRTH1")
-        port_to_visit = digitraffic_data.get("portToVisit", "unknown")
+        port_area_name = digitraffic_data.get("portAreaName", "")
+        port_area_code = digitraffic_data.get("portAreaCode", "")
+        berth_name = digitraffic_data.get("berthName", "")
+        berth_code = digitraffic_data.get("berthCode", "")
+        port_to_visit = digitraffic_data.get("portToVisit", "")
         
-        # Ensure port codes are exactly 5 characters (required by schema)
-        # Process port_to_visit
-        if port_to_visit:
-            if len(port_to_visit) > 5:
-                port_to_visit = port_to_visit[:5]
-                logger.info(f"Truncated portToVisit to 5 characters: {port_to_visit}")
-            elif len(port_to_visit) < 5:
-                port_to_visit = port_to_visit.ljust(5, 'X')
-                logger.info(f"Padded portToVisit to 5 characters: {port_to_visit}")
-        else:
-            port_to_visit = "PORTX"  # Default 5-character code
-            
-        # No longer forcing portAreaCode to be 5 characters
-        if not port_area_code:
-            port_area_code = ""  # Allow it to be empty
-            
-        # No longer forcing berthCode to be 5 characters
-        if not berth_code:
-            berth_code = ""  # Allow it to be empty
-
         # Passenger and crew information - ensure they're integers or None
         # We use None to indicate "not provided" rather than 0 (which means "zero passengers/crew")
         passengers_on_arrival = digitraffic_data.get("passengersOnArrival")
@@ -115,17 +95,17 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
         # Log passenger and crew counts for debugging
         logger.info(f"Adapting port call {port_call_id} with passengers: {passengers_on_arrival}, crew: {crew_on_arrival}")
 
-        # Build destination string, excluding unknown or "ei tiedossa" values
+        # Build destination string, excluding unknown or empty values
         destination_parts = [port_to_visit]
-        if port_area_name.lower() not in ["unknown", "ei tiedossa"]:
+        if port_area_name.lower() not in ["unknown", ""]:
             destination_parts.append(port_area_name)
-        if berth_name.lower() not in ["unknown", "ei tiedossa"]:
+        if berth_name.lower() not in ["unknown", ""]:
             destination_parts.append(berth_name)
         destination = "/".join(destination_parts)
 
         # Agent information
-        agent_name = digitraffic_data.get("agentName", "unknown")
-        shipping_company = digitraffic_data.get("shippingCompany", "unknown")
+        agent_name = digitraffic_data.get("agentName", "")
+        shipping_company = digitraffic_data.get("shippingCompany", "")
 
         # Create portman data structure with required fields for EMSWe conversion
         portman_data = {
@@ -133,7 +113,7 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             "declaration_id": f"DECL-PT-{port_call_id}",
             "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "call_id": str(port_call_id),
-            "remarks": f"{vessel_name} (IMO: {imo_lloyds}) port arrival to {destination}",
+            "remarks": f"{vessel_name} (IMO: {imo_lloyds}) {'port arrival ->' if xml_type == 'ATA' else '->'} {destination}",
 
             # Required fields for ArrivalTransportEvent
             "arrival_datetime": ata or formatted_eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -184,12 +164,7 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             
         if crew_on_arrival is not None:
             portman_data["crewOnArrival"] = crew_on_arrival
-        
-        # Log the standardized codes for debugging
-        logger.info(f"Using standardized codes - portToVisit: {port_to_visit} (5 chars), "
-                    f"portAreaCode: {port_area_code}, "
-                    f"berthCode: {berth_code}")
-        
+                
         # Log the vessel info we're passing through
         logger.info(f"Adapted Portman data contains vesselName: {portman_data.get('vesselName')}, imoLloyds: {portman_data.get('imoLloyds')}, mmsi: {portman_data.get('mmsi')}, eta: {portman_data.get('eta')}")
 
