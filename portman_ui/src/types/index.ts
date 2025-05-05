@@ -67,6 +67,19 @@ export interface ArrivalUpdate {
   created: string;
 }
 
+export interface Arrival {
+  id: number;
+  portcallid: number;
+  eta: string;
+  old_ata: string | null;
+  ata: string;
+  vesselname: string;
+  portareaname: string;
+  berthname: string;
+  created: string;
+  ata_xml_url?: string;
+}
+
 export interface User {
   id: string;
   username: string;
