@@ -103,6 +103,7 @@ def create_database_and_tables():
         CREATE TABLE IF NOT EXISTS voyages (
             portCallId INTEGER PRIMARY KEY,
             imoLloyds INTEGER,
+            mmsi INTEGER,
             vesselTypeCode TEXT,
             vesselName TEXT,
             prevPort TEXT,
@@ -172,7 +173,9 @@ def update_database_schema():
         # Add new columns to voyages table if they don't exist
         columns_to_add = {
             'noa_xml_url': 'TEXT DEFAULT NULL',
-            'ata_xml_url': 'TEXT DEFAULT NULL'
+            'ata_xml_url': 'TEXT DEFAULT NULL',
+            'vid_xml_url': 'TEXT DEFAULT NULL',
+            'mmsi': 'INTEGER DEFAULT NULL'
         }
         
         for column_name, column_def in columns_to_add.items():
@@ -339,6 +342,8 @@ def process_query(data, tracked_vessels=None):
             continue  # Skip invalid values
 
         imo_number = int(entry.get("imoLloyds")) if entry.get("imoLloyds") is not None else None  # Ensure it's always an integer
+        mmsi = int(entry.get("mmsi")) if entry.get("mmsi") is not None else None  # Extract mmsi if available
+        
         #log(f"Checking vessel {imo_number} with portCallId {port_call_id}...")  # Debugging
 
         # Skip if filtering is enabled and the IMO number is not in the list
@@ -380,6 +385,7 @@ def process_query(data, tracked_vessels=None):
             "portCallId": port_call_id,
             "portCallTimestamp": entry.get("portCallTimestamp"),
             "imoLloyds": imo_number if imo_number else 0,
+            "mmsi": mmsi,  # Include mmsi in the results
             "vesselTypeCode": entry.get("vesselTypeCode"),
             "vesselName": entry.get("vesselName"),
             "prevPort": entry.get("prevPort"),
@@ -636,6 +642,119 @@ def createArrivalXml(arrival_data):
     
     return None  # Return None if unsuccessful
 
+def createVidXml(voyage_data):
+    """Generate and store Vessel Information Data (VID) XML document."""
+    try:
+        # Validate mandatory fields and data types
+        required_fields = ["portCallId", "imoLloyds", "vesselName", "eta", "portAreaName"]
+        for field in required_fields:
+            if field not in voyage_data or voyage_data[field] is None:
+                log(f"Cannot generate VID XML: Missing required field '{field}' for portCallId {voyage_data.get('portCallId', 'unknown')}")
+                return None
+        
+        # Convert numeric fields to strings to avoid NoneType issues
+        for field in ["portCallId", "imoLloyds", "mmsi"]:
+            if field in voyage_data and voyage_data[field] is not None:
+                voyage_data[field] = str(voyage_data[field])
+        
+        # Store original portCallId for database operations
+        original_port_call_id = voyage_data.get("portCallId")
+        
+        # Ensure string fields have proper values
+        for field in ["vesselName", "portAreaName", "portToVisit", "prevPort", "berthName"]:
+            if field in voyage_data and voyage_data[field] is None:
+                voyage_data[field] = ""  # Replace None with empty string
+        
+        # Truncate IDs if needed to prevent validation errors (max 17 chars)
+        if "portCallId" in voyage_data and len(str(voyage_data["portCallId"])) > 17:
+            original_id = voyage_data["portCallId"]
+            voyage_data["portCallId"] = str(voyage_data["portCallId"])[-17:]  # Keep the last 17 chars
+            log(f"Warning: Truncated portCallId from {original_id} to {voyage_data['portCallId']} for XML compatibility")
+            
+        # Call the XML Storage Function
+        xml_converterfunction_url = XML_CONVERTER_CONFIG["function_url"]
+        xml_converter_function_key = XML_CONVERTER_CONFIG["function_key"]
+        
+        # Add the function key to the URL if it exists
+        if xml_converter_function_key:
+            if "?" in xml_converterfunction_url:
+                xml_converterfunction_url += f"&code={xml_converter_function_key}"
+            else:
+                xml_converterfunction_url += f"?code={xml_converter_function_key}"
+        
+        log(f"Calling xml-converter for VID: {xml_converterfunction_url}")
+
+        # Send the voyage data to the function for VID generation
+        response = requests.post(
+            xml_converterfunction_url,
+            json={"portcall_data": voyage_data, "formality_type": "VID"},
+            headers={"Content-Type": "application/json"}
+        )
+        
+        if response.status_code == 200:
+            response_data = response.json()
+            # Get SAS URL from the response (new format uses sasUrl instead of url)
+            sas_url = response_data.get('sasUrl')
+            
+            if not sas_url:
+                # Fallback to old response format if sasUrl is not found
+                plain_url = response_data.get('url')
+                if not plain_url:
+                    log(f"No URL found in XML converter response for portCallId {voyage_data.get('portCallId')}")
+                    return None
+                    
+                # Extract the blob name from the URL for SAS token generation
+                try:
+                    blob_path = plain_url.split('.net/')[1]  # Get container_name/blob_path
+                except (IndexError, AttributeError):
+                    log(f"Could not parse blob path from URL: {plain_url}")
+                    blob_path = plain_url  # Fallback to using the URL as is
+                
+                # Generate the SAS URL using the shared utility function
+                storage_connection_string = os.getenv("AzureWebJobsStorage")
+                sas_url = generate_blob_storage_link(blob_path, storage_connection_string)
+                
+                if not sas_url:
+                    log(f"Failed to generate SAS URL for blob: {blob_path}")
+                    sas_url = plain_url  # Fallback to plain URL if SAS generation fails
+            
+            log(f"VID XML for portCallId {voyage_data.get('portCallId')} successfully generated and stored.")
+            
+            # Store the XML URL in the voyages table
+            try:
+                conn = get_db_connection(DATABASE_CONFIG["dbname"])
+                if conn is None:
+                    log(f"Failed to connect to database when storing VID XML URL")
+                    return None
+                
+                cursor = conn.cursor()
+                
+                # Update the record with the VID XML URL (use SAS URL if available)
+                cursor.execute(
+                    "UPDATE voyages SET vid_xml_url = %s WHERE portCallId = %s",
+                    (sas_url, original_port_call_id)
+                )
+                
+                affected = cursor.rowcount
+                if affected > 0:
+                    log(f"VID XML URL (with SAS token) stored in voyages table for portCallId {original_port_call_id}")
+                else:
+                    log(f"No rows updated for portCallId {original_port_call_id}")
+                
+                conn.commit()
+                cursor.close()
+                conn.close()
+                return sas_url
+            except Exception as e:
+                log(f"Error storing VID XML URL in voyages table: {str(e)}")
+        else:
+            log(f"Error with VID XML generation/storage for portCallId {voyage_data.get('portCallId')}: Status {response.status_code}")
+            
+    except Exception as e:
+        log(f"Error triggering VID XML function for portCallId {voyage_data.get('portCallId', 'unknown')}: {str(e)}")
+    
+    return None
+
 def diagnose_database_structure():
     """Diagnose database structure to help identify issues with XML URL storage."""
     try:
@@ -679,7 +798,7 @@ def save_results_to_db(results, conn=None):
         cursor = conn.cursor()
 
         new_arrival_count = 0   # Track the count of new arrivals
-        new_voyage_count = 0    # Track count of new voyages for NOA generation
+        new_voyage_count = 0    # Track count of new voyages for VID generation
         updated_voyage_count = 0 # Track count of updated existing voyages
 
         # Extract unique portCallIds from JSON data
@@ -711,7 +830,9 @@ def save_results_to_db(results, conn=None):
 
         for entry in results:
             port_call_id = int(entry["portCallId"])  # Ensure it's stored as an integer
-            imo_number = int(entry["imoLloyds"])  # Ensure it's stored as an integer
+            imo_number = int(entry["imoLloyds"]) if entry["imoLloyds"] is not None else None  # Ensure it's always an integer
+            mmsi = int(entry["mmsi"]) if entry.get("mmsi") is not None else None  # Get mmsi if available
+            
             new_ata = entry["ata"]
             if new_ata:
                 new_ata = datetime.strptime(new_ata, "%Y-%m-%dT%H:%M:%S.%f%z").strftime("%Y-%m-%dT%H:%M:00.000Z")  # Normalize
@@ -719,24 +840,24 @@ def save_results_to_db(results, conn=None):
             # Fetch old ata from the map (default to None)
             old_ata = old_ata_map.get(port_call_id, None)
 
-            # Check if this is a new port call that needs NOA
+            # Check if this is a new port call that needs VID
             is_new_port_call = port_call_id not in existing_port_calls
 
             # Determine operation - new insert or update existing
             if is_new_port_call:
                 # For new port calls, use INSERT
                 insert_query = f"""
-                INSERT INTO voyages (portCallId, imoLloyds, vesselTypeCode, vesselName, prevPort,
+                INSERT INTO voyages (portCallId, imoLloyds, mmsi, vesselTypeCode, vesselName, prevPort,
                     portToVisit, nextPort, agentName, shippingCompany, eta, ata, portAreaCode,
                     portAreaName, berthCode, berthName, etd, atd,
                     passengersOnArrival, passengersOnDeparture, crewOnArrival, crewOnDeparture,
                     modified)
-                VALUES ({','.join([placeholder] * 21)}, CURRENT_TIMESTAMP)
+                VALUES ({','.join([placeholder] * 22)}, CURRENT_TIMESTAMP)
                 RETURNING portCallId;
                 """
                 
                 cursor.execute(insert_query, (
-                    port_call_id, imo_number, entry["vesselTypeCode"], entry["vesselName"],
+                    port_call_id, imo_number, mmsi, entry["vesselTypeCode"], entry["vesselName"],
                     entry["prevPort"], entry["portToVisit"], entry["nextPort"], entry["agentName"],
                     entry["shippingCompany"], entry["eta"], new_ata, entry["portAreaCode"], entry["portAreaName"],
                     entry["berthCode"], entry["berthName"], entry["etd"], entry["atd"],
@@ -750,6 +871,7 @@ def save_results_to_db(results, conn=None):
                 update_query = f"""
                 UPDATE voyages SET
                     imoLloyds = %s,
+                    mmsi = %s,
                     vesselTypeCode = %s,
                     vesselName = %s,
                     prevPort = %s,
@@ -774,7 +896,7 @@ def save_results_to_db(results, conn=None):
                 """
                 
                 cursor.execute(update_query, (
-                    imo_number, entry["vesselTypeCode"], entry["vesselName"],
+                    imo_number, mmsi, entry["vesselTypeCode"], entry["vesselName"],
                     entry["prevPort"], entry["portToVisit"], entry["nextPort"], entry["agentName"],
                     entry["shippingCompany"], entry["eta"], new_ata, entry["portAreaCode"], entry["portAreaName"],
                     entry["berthCode"], entry["berthName"], entry["etd"], entry["atd"],
@@ -784,18 +906,19 @@ def save_results_to_db(results, conn=None):
                 
                 updated_voyage_count += 1
 
-            # Generate NOA XML for new port calls with ETA data
+            # Generate VID XML for new port calls with ETA data
             if is_new_port_call and entry.get("eta"):
-                log(f"New port call detected for portCallId {port_call_id}. Generating NOA-XML.")
+                log(f"New port call detected for portCallId {port_call_id}. Generating VID-XML.")
                 
                 # IMPORTANT: Commit the transaction to ensure the new record is stored
                 # before generating the XML
                 conn.commit()
                 
-                # Prepare data for NOA XML generation, ensuring no None values
-                noa_data = {
+                # Prepare data for VID XML generation, ensuring no None values
+                vid_data = {
                     "portCallId": port_call_id,
                     "imoLloyds": imo_number,
+                    "mmsi": mmsi,  # Include mmsi for VID generation
                     "vesselName": entry.get("vesselName") or "",
                     "eta": entry.get("eta") or "",
                     "portAreaCode": entry.get("portAreaCode") or "",
@@ -810,8 +933,8 @@ def save_results_to_db(results, conn=None):
                     "shippingCompany": entry.get("shippingCompany") or ""
                 }
                 
-                # Generate and store the NOA XML
-                createNoaXml(noa_data)
+                # Generate and store the VID XML
+                createVidXml(vid_data)
 
             # Generate ATA XML for arrivals with updated ATA
             if old_ata != new_ata and new_ata is not None:
@@ -832,7 +955,8 @@ def save_results_to_db(results, conn=None):
                     f"-----------------------------\n"
                     f"Port Call ID: {port_call_id}\n"
                     f"Port Call Time Stamp: {entry['portCallTimestamp']}\n\n"
-                    f"Aluksen IMO/nimi: {imo_number}/{entry['vesselName']}\n\n"
+                    f"Aluksen IMO/nimi: {imo_number}/{entry['vesselName']}\n"
+                    f"Aluksen MMSI: {mmsi}\n\n"
                     f"Satamakoodi: {entry['portToVisit']}\n"
                     f"Satama: {entry['portAreaName']}\n"
                     f"Laituri: {entry['berthName']}\n\n"
@@ -852,6 +976,7 @@ def save_results_to_db(results, conn=None):
                 ata_data = {
                     "portCallId": port_call_id,
                     "imoLloyds": imo_number,
+                    "mmsi": mmsi,  # Include mmsi for ATA generation
                     "vesselName": entry.get("vesselName") or "",
                     "eta": entry.get("eta") or "",
                     "ata": new_ata,

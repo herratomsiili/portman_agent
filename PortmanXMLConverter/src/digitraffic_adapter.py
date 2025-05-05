@@ -25,10 +25,47 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
         port_call_id = digitraffic_data.get("portCallId", "unknown")
         vessel_name = digitraffic_data.get("vesselName", "unknown")
         imo_lloyds = digitraffic_data.get("imoLloyds", "unknown")
+        mmsi = digitraffic_data.get("mmsi", "unknown")  # Extract MMSI
+        
+        # Log original values for debugging
+        logger.info(f"Adapting data for port call {port_call_id} - Original vesselName: {vessel_name}, imoLloyds: {imo_lloyds}, mmsi: {mmsi}")
 
         # Arrival information
         eta = digitraffic_data.get("eta")
         ata = digitraffic_data.get("ata")
+        
+        # Log original eta value
+        logger.info(f"Original ETA value: {eta}")
+        
+        # Format ETA for XML usage if available
+        formatted_eta = None
+        if eta:
+            try:
+                # Handle different datetime formats
+                if isinstance(eta, str):
+                    # Try to standardize the format for ETA
+                    if '+' in eta:
+                        # Handle timezone offset format
+                        dt_part = eta.split('+')[0]
+                        if '.' not in dt_part:
+                            dt_part += '.000'
+                        formatted_eta = dt_part + 'Z'
+                    elif 'Z' in eta:
+                        # Already in UTC format
+                        dt_part = eta.replace('Z', '')
+                        if '.' not in dt_part:
+                            dt_part += '.000'
+                        formatted_eta = dt_part + 'Z'
+                    else:
+                        # Add timezone if not present
+                        if '.' not in eta:
+                            eta += '.000'
+                        formatted_eta = eta + 'Z'
+                logger.info(f"Formatted ETA: {formatted_eta}")
+            except Exception as e:
+                logger.warning(f"Could not format ETA: {str(e)}, using original value")
+                formatted_eta = eta
+        
         port_area_name = digitraffic_data.get("portAreaName", "unknown")
         port_area_code = digitraffic_data.get("portAreaCode", "PORT1")
         berth_name = digitraffic_data.get("berthName", "unknown")
@@ -47,27 +84,13 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
         else:
             port_to_visit = "PORTX"  # Default 5-character code
             
-        # Process port_area_code
-        if port_area_code:
-            if len(port_area_code) > 5:
-                port_area_code = port_area_code[:5]
-                logger.info(f"Truncated portAreaCode to 5 characters: {port_area_code}")
-            elif len(port_area_code) < 5:
-                port_area_code = port_area_code.ljust(5, 'X')
-                logger.info(f"Padded portAreaCode to 5 characters: {port_area_code}")
-        else:
-            port_area_code = "AREAX"  # Default 5-character code
+        # No longer forcing portAreaCode to be 5 characters
+        if not port_area_code:
+            port_area_code = ""  # Allow it to be empty
             
-        # Process berth_code
-        if berth_code:
-            if len(berth_code) > 5:
-                berth_code = berth_code[:5]
-                logger.info(f"Truncated berthCode to 5 characters: {berth_code}")
-            elif len(berth_code) < 5:
-                berth_code = berth_code.ljust(5, 'X')
-                logger.info(f"Padded berthCode to 5 characters: {berth_code}")
-        else:
-            berth_code = "BRTHX"  # Default 5-character code
+        # No longer forcing berthCode to be 5 characters
+        if not berth_code:
+            berth_code = ""  # Allow it to be empty
 
         # Passenger and crew information - ensure they're integers or None
         # We use None to indicate "not provided" rather than 0 (which means "zero passengers/crew")
@@ -113,12 +136,15 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             "remarks": f"{vessel_name} (IMO: {imo_lloyds}) port arrival to {destination}",
 
             # Required fields for ArrivalTransportEvent
-            "arrival_datetime": ata or eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "arrival_datetime": ata or formatted_eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "location": port_to_visit,  # Use validated port code here
 
             # Required field for CallTransportEvent
-            "call_datetime": ata or eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "call_datetime": ata or formatted_eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "anchorage_indicator": "0",
+            
+            # Add original ETA for VID XML
+            "eta": formatted_eta or eta,
             
             # Add standardized port and berth codes
             "portToVisit": port_to_visit,
@@ -126,6 +152,11 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             "portAreaName": port_area_name,
             "berthCode": berth_code,
             "berthName": berth_name,
+
+            # Add vessel information directly - IMPORTANT for VID schema
+            "vesselName": vessel_name,
+            "imoLloyds": imo_lloyds,
+            "mmsi": mmsi,  # Include MMSI in the output
 
             # Required declarant information
             "declarant": {
@@ -155,9 +186,12 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             portman_data["crewOnArrival"] = crew_on_arrival
         
         # Log the standardized codes for debugging
-        logger.info(f"Using standardized codes - portToVisit: {port_to_visit} ({len(port_to_visit)} chars), "
-                    f"portAreaCode: {port_area_code} ({len(port_area_code)} chars), "
-                    f"berthCode: {berth_code} ({len(berth_code)} chars)")
+        logger.info(f"Using standardized codes - portToVisit: {port_to_visit} (5 chars), "
+                    f"portAreaCode: {port_area_code}, "
+                    f"berthCode: {berth_code}")
+        
+        # Log the vessel info we're passing through
+        logger.info(f"Adapted Portman data contains vesselName: {portman_data.get('vesselName')}, imoLloyds: {portman_data.get('imoLloyds')}, mmsi: {portman_data.get('mmsi')}, eta: {portman_data.get('eta')}")
 
         return portman_data
 
@@ -174,11 +208,15 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any]) -> Dict[str, 
             "location": "UNKNW",  # Ensure 5 characters
             "call_datetime": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "anchorage_indicator": "0",
+            "eta": digitraffic_data.get("eta", datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z")),
             "portToVisit": "PORTX",
-            "portAreaCode": "AREAX", 
+            "portAreaCode": "",  # Allow empty value 
             "portAreaName": "Unknown Area",
-            "berthCode": "BRTHX",
+            "berthCode": "",  # Allow empty value
             "berthName": "Unknown Berth",
+            "vesselName": digitraffic_data.get("vesselName", "Unknown Vessel"),
+            "imoLloyds": digitraffic_data.get("imoLloyds", "00000000"),
+            "mmsi": digitraffic_data.get("mmsi", "00000000"),  # Include MMSI in fallback
             "declarant": {
                 "id": "FI123456789012",
                 "name": "Unknown Agent",

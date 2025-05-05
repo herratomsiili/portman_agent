@@ -4,7 +4,7 @@ Transformer module for converting between Portman agent data and EMSWe-compliant
 
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, Union
 from lxml import etree
 
@@ -54,6 +54,8 @@ class XMLTransformer:
                 nsmap["ata"] = self.namespaces["ata"]
             elif formality_type == "NOA":
                 nsmap["noa"] = self.namespaces["noa"]
+            elif formality_type == "VID":
+                nsmap["vid"] = self.namespaces["vid"]
                 
             root = etree.Element("Envelope", nsmap=nsmap)
 
@@ -68,7 +70,9 @@ class XMLTransformer:
             elif formality_type == "NOA":
                 formality_element = self._generate_noa_element(portman_data)
                 root.append(formality_element)
-            # Add support for other formality types as needed
+            elif formality_type == "VID":
+                formality_element = self._generate_vid_element(portman_data)
+                root.append(formality_element)
 
             return root
         except Exception as e:
@@ -248,12 +252,15 @@ class XMLTransformer:
                     building = etree.SubElement(address_element, f"{{{self.namespaces['ram']}}}BuildingNumber")
                     building.text = address["building"]
 
-        # Add transport movement with call ID if available
-        if "call_id" in portman_data:
+        # Add transport movement with call ID if available - ONLY for ATA and NOA, NOT for VID
+        if "call_id" in portman_data and formality_type != "VID":
             transport = etree.SubElement(mai_element, f"{{{self.namespaces['mai']}}}SpecifiedLogisticsTransportMovement")
             call_event = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}CallTransportEvent")
             call_id = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}ID")
             call_id.text = portman_data["call_id"]
+            logger.info(f"Added CallTransportEvent with ID {portman_data['call_id']} for {formality_type}")
+        elif formality_type == "VID":
+            logger.info("Skipping CallTransportEvent/ID in MAI section for VID message")
 
         return mai_element
 
@@ -476,14 +483,8 @@ class XMLTransformer:
             location = etree.SubElement(stop_event, f"{{{self.namespaces['ram']}}}OccurrenceLogisticsLocation")
             loc_id = etree.SubElement(location, f"{{{self.namespaces['ram']}}}ID")
             
-            # Get port ID and ensure it's exactly 5 characters
+            # Get port ID - only portToVisit needs to be standardized as UN/LOCODE (5 chars)
             port_id = portman_data.get("portToVisit", portman_data.get("location", "PORT1"))
-            # If longer than 5 chars, truncate; if shorter, pad with zeros
-            if len(port_id) > 5:
-                port_id = port_id[:5]
-            elif len(port_id) < 5:
-                port_id = port_id.ljust(5, '0')
-                
             loc_id.text = port_id
         
         # Now add the CallTransportEvent after all required elements
@@ -506,6 +507,100 @@ class XMLTransformer:
             name.text = portman_data.get("berthName", portman_data.get("berthCode", ""))
             
         return noa_element
+
+    def _generate_vid_element(self, portman_data: Dict[str, Any]) -> etree._Element:
+        """
+        Generate the VID (Vessel Information Data) element from Portman data.
+
+        Args:
+            portman_data: Dictionary containing Portman agent data
+
+        Returns:
+            VID element
+        """
+        # Create VID element
+        vid_element = etree.Element(f"{{{self.namespaces['vid']}}}VID")
+
+        # Create SpecifiedLogisticsTransportMovement element
+        transport = etree.SubElement(vid_element, f"{{{self.namespaces['vid']}}}SpecifiedLogisticsTransportMovement")
+
+        # IMPORTANT: The VID schema requires a very specific sequence per EMSWe specification:
+        # 1. First must be UsedLogisticsTransportMeans
+        used_means = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}UsedLogisticsTransportMeans")
+            
+        # Add vessel name - REQUIRED by schema
+        # Always add this element, even if empty
+        name = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}Name")
+        name.text = portman_data.get("vesselName", "")
+        
+        # Add IMONumberIndicator - REQUIRED by schema
+        imo_indicator = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}IMONumberIndicator")
+        # Set to "1" (yes) if IMO number is present
+        imo_indicator.text = "1" if portman_data.get("imoLloyds") else "0"
+        
+        # Add IMO number if available - conditional on IMONumberIndicator
+        # Always add IMO ID when it's available
+        if portman_data.get("imoLloyds"):
+            imo_id = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}IMOID")
+            imo_id.text = str(portman_data["imoLloyds"])
+        
+        # Add MMSI number if available and valid - using MMSIID as per schema
+        # MMSIID must be exactly 9 characters long
+        if portman_data.get("mmsi"):
+            mmsi_value = str(portman_data["mmsi"]).strip()
+            
+            # Check if MMSI is valid (exactly 9 numeric characters and not 0)
+            mmsi_is_valid = (
+                len(mmsi_value) == 9 and 
+                mmsi_value.isdigit() and 
+                mmsi_value != "000000000"
+            )
+            
+            if mmsi_is_valid:
+                mmsi = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}MMSIID")
+                mmsi.text = mmsi_value
+                logger.info(f"Added MMSI {mmsi_value} to VID XML")
+            else:
+                logger.warning(f"MMSI value {mmsi_value} is invalid (must be 9 digits). Skipping MMSIID element.")
+        
+        # Add vessel type code if available
+        if "vesselTypeCode" in portman_data:
+            type_code = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}TypeCode")
+            type_code.text = str(portman_data["vesselTypeCode"])
+
+        # 2. Second must be CallTransportEvent
+        call_event = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}CallTransportEvent")
+        
+        # Add EstimatedTransportMeansArrivalOccurrenceDateTime - REQUIRED by schema
+        # Get the eta from the input data - prioritize standard 'eta' field, then try arrival_datetime
+        eta_value = None
+        if "eta" in portman_data and portman_data["eta"]:
+            eta_value = portman_data["eta"]
+        elif "arrival_datetime" in portman_data and portman_data["arrival_datetime"]:
+            eta_value = portman_data["arrival_datetime"]
+            
+        est_arrival_dt = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}EstimatedTransportMeansArrivalOccurrenceDateTime")
+        dt_string = etree.SubElement(est_arrival_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
+        
+        if eta_value:
+            dt_string.text = eta_value
+        else:
+            # Only use current time + 1 hour as a fallback if no ETA provided
+            dt_string.text = (datetime.now() + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+            logger.warning(f"No ETA provided for VID, using generated timestamp: {dt_string.text}")
+            
+        # Add OccurrenceLogisticsLocation - REQUIRED by schema
+        location_element = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}OccurrenceLogisticsLocation")
+        
+        # Add location ID (UN/LOCODE) - REQUIRED by schema
+        location_id = etree.SubElement(location_element, f"{{{self.namespaces['ram']}}}ID")
+        if "portToVisit" in portman_data and portman_data["portToVisit"]:
+            location_id.text = portman_data["portToVisit"]
+        else:
+            # Default fallback to meet schema requirements
+            location_id.text = "XXXXX"  
+        
+        return vid_element
 
     def _transform_to_portman_format(self, extracted_data: Dict[str, Any]) -> Dict[str, Any]:
         """

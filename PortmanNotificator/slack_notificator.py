@@ -62,10 +62,10 @@ except ImportError:
 def blob_trigger(blob: func.InputStream):
     logging.info(f"Python blob trigger function processed blob: {blob.name}")
 
-    # Check if blob name matches expected format (starts with ATA_ or NOA_)
+    # Check if blob name matches expected format (starts with ATA_, NOA_, or VID_)
     blob_basename = os.path.basename(blob.name)
-    if not (blob_basename.startswith("ATA_") or blob_basename.startswith("NOA_")):
-        logging.info(f"Blob {blob.name} does not match expected naming pattern (ATA_* or NOA_*). Skipping notification.")
+    if not (blob_basename.startswith("ATA_") or blob_basename.startswith("NOA_") or blob_basename.startswith("VID_")):
+        logging.info(f"Blob {blob.name} does not match expected naming pattern (ATA_*, NOA_*, or VID_*). Skipping notification.")
         return
 
     # Check if notifications are enabled
@@ -81,7 +81,12 @@ def blob_trigger(blob: func.InputStream):
         blob_content = blob.read().decode('utf-8')
 
         # Determine XML type based on blob name
-        xml_type = "NOA" if blob_basename.startswith("NOA_") else "ATA"
+        if blob_basename.startswith("NOA_"):
+            xml_type = "NOA"
+        elif blob_basename.startswith("VID_"):
+            xml_type = "VID"
+        else:
+            xml_type = "ATA"
         
         # Parse the XML to extract information
         port_call_id, time_value, remarks, _, passengers_count, crew_count = extract_info_from_xml(blob_content, xml_type)
@@ -100,22 +105,25 @@ def blob_trigger(blob: func.InputStream):
         send_slack_error(webhook_url, blob.name, str(e), channel, username)
 
 def extract_info_from_xml(xml_content, xml_type="ATA"):
-    """Extract information from the XML based on type (ATA or NOA)."""
+    """Extract information from the XML based on type (ATA, NOA, or VID)."""
     try:
-        # Register namespaces - include both ATA and NOA namespaces
+        # Register namespaces - include ATA, NOA, and VID namespaces
         namespaces = {
             'mai': 'urn:un:unece:uncefact:data:standard:MAI:MMTPlus',
             'ata': 'urn:un:unece:uncefact:data:standard:ATA:MMTPlus',
             'noa': 'urn:un:unece:uncefact:data:standard:NOA:MMTPlus',
+            'vid': 'urn:un:unece:uncefact:data:standard:VID:MMTPlus',
             'ram': 'urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30',
             'qdt': 'urn:un:unece:uncefact:data:Standard:QualifiedDataType:30'
         }
         
         root = ET.fromstring(xml_content)
         
-        # Extract port call ID from MAI part - common for both ATA and NOA
-        port_call_id_element = root.find('.//mai:SpecifiedLogisticsTransportMovement/ram:CallTransportEvent/ram:ID', namespaces)
-        port_call_id = port_call_id_element.text if port_call_id_element is not None else "Unknown"
+        # Extract port call ID from MAI part - common for both ATA and NOA, not in VID
+        port_call_id = "N/A"
+        if xml_type != "VID":
+            port_call_id_element = root.find('.//mai:SpecifiedLogisticsTransportMovement/ram:CallTransportEvent/ram:ID', namespaces)
+            port_call_id = port_call_id_element.text if port_call_id_element is not None else "Unknown"
         
         # Initialize passenger and crew counts
         passengers_count = "N/A"
@@ -129,13 +137,16 @@ def extract_info_from_xml(xml_content, xml_type="ATA"):
             
             # Extract remarks from the ATA part
             remarks_element = root.find('.//ata:ExchangedDocument/ram:Remarks', namespaces)
-        else:  # NOA type
+            remarks = remarks_element.text if remarks_element is not None else "Unknown"
+            
+        elif xml_type == "NOA":
             # For NOA XML, extract ETA (estimated time of arrival)
             eta_elements = root.findall('.//qdt:DateTimeString', namespaces)
             time_value = eta_elements[-1].text if eta_elements and len(eta_elements) > 0 else "Unknown"
             
             # Extract remarks from the NOA part
             remarks_element = root.find('.//noa:ExchangedDocument/ram:Remarks', namespaces)
+            remarks = remarks_element.text if remarks_element is not None else "Unknown"
             
             # Extract passenger and crew counts for NOA XML
             try:
@@ -158,7 +169,34 @@ def extract_info_from_xml(xml_content, xml_type="ATA"):
             except Exception as e:
                 logging.warning(f"Error extracting passenger/crew counts from NOA XML: {str(e)}")
         
-        remarks = remarks_element.text if remarks_element is not None else "Unknown"
+        else:  # VID type
+            # For VID XML, extract vessel name and IMO/MMSI
+            vessel_name_element = root.find('.//vid:SpecifiedLogisticsTransportMovement/ram:UsedLogisticsTransportMeans/ram:Name', namespaces)
+            vessel_name = vessel_name_element.text if vessel_name_element is not None else "Unknown Vessel"
+            
+            imo_element = root.find('.//vid:SpecifiedLogisticsTransportMovement/ram:UsedLogisticsTransportMeans/ram:IMOID', namespaces)
+            imo = imo_element.text if imo_element is not None else "N/A"
+            
+            mmsi_element = root.find('.//vid:SpecifiedLogisticsTransportMovement/ram:UsedLogisticsTransportMeans/ram:MMSIID', namespaces)
+            mmsi = mmsi_element.text if mmsi_element is not None else "N/A"
+            
+            # Extract ETA
+            eta_element = root.find('.//vid:SpecifiedLogisticsTransportMovement/ram:CallTransportEvent/ram:EstimatedTransportMeansArrivalOccurrenceDateTime/qdt:DateTimeString', namespaces)
+            time_value = eta_element.text if eta_element is not None else "Unknown"
+            
+            # Extract port location
+            port_element = root.find('.//vid:SpecifiedLogisticsTransportMovement/ram:CallTransportEvent/ram:OccurrenceLogisticsLocation/ram:ID', namespaces)
+            port = port_element.text if port_element is not None else "Unknown"
+            
+            # Look for document ID from MAI part for VID
+            doc_id_element = root.find('.//mai:ExchangedDocument/ram:ID', namespaces)
+            doc_id = doc_id_element.text if doc_id_element is not None else "Unknown"
+            
+            # For VID, port_call_id will be used to store the ID for display
+            port_call_id = doc_id
+            
+            # Create a custom remarks string for VID with vessel info
+            remarks = f"Vessel: {vessel_name}\nIMO: {imo}\nMMSI: {mmsi}\nDestination: {port}"
         
         return port_call_id, time_value, remarks, xml_type, passengers_count, crew_count
     
@@ -167,17 +205,32 @@ def extract_info_from_xml(xml_content, xml_type="ATA"):
         return "Unknown", "Unknown", "Unknown", xml_type, "Unknown", "Unknown"
 
 def send_slack_notification(webhook_url, blob_name, port_call_id, time_value, remarks, xml_content, channel, username, blob_url, passengers_count="N/A", crew_count="N/A"):
-    """Send a notification to Slack about the new arrival or notification of arrival XML."""
-    # Determine if this is an ATA or NOA message
-    xml_type = "NOA" if "NOA_" in blob_name else "ATA"
-    emoji = "🚢" if xml_type == "ATA" else "📢"
-    title = "New port arrival detected" if xml_type == "ATA" else "Notice of pre arrival"
-    time_label = "ATA" if xml_type == "ATA" else "ETA"
+    """Send a notification to Slack about the new arrival, notification of arrival, or request for visit ID XML."""
+    # Determine the XML type
+    if "NOA_" in blob_name:
+        xml_type = "NOA"
+        emoji = "📢"
+        title = "Notice of pre arrival"
+        time_label = "ETA"
+    elif "VID_" in blob_name:
+        xml_type = "VID"
+        emoji = "🆔"
+        title = "Request for Visit ID received"
+        time_label = "ETA"
+    else:
+        xml_type = "ATA"
+        emoji = "🚢"
+        title = "New port arrival detected"
+        time_label = "ATA"
     
     logging.info(f"Sending Slack notification with webhook url {webhook_url} for {blob_name} with port_call_id {port_call_id} and {time_label} {time_value}")
 
     # Create the message text based on XML type
-    message_text = f"*Visit ID:* {port_call_id}\n*{time_label}:* {time_value}\n\n{remarks}"
+    if xml_type == "VID":
+        # For VID, the remarks already contain formatted vessel info and we don't include Document ID
+        message_text = f"*{time_label}:* {time_value}\n\n{remarks}"
+    else:
+        message_text = f"*Visit ID:* {port_call_id}\n*{time_label}:* {time_value}\n\n{remarks}"
     
     # Add passenger and crew counts for NOA messages
     if xml_type == "NOA":
