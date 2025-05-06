@@ -5,6 +5,7 @@ from PortmanXMLConverter.xml_converter import xml_converter
 from PortmanNotificator.slack_notificator import blob_trigger
 from CargoGenerator.cargo_generator import cargo_generator
 from VesselDetails.vessel_details import vessel_details
+from PortmanTrigger.noa_generator import noa_generator
 
 app = func.FunctionApp()
 
@@ -25,3 +26,6 @@ app.route(route="cargo-generator", auth_level=func.AuthLevel.FUNCTION, methods=[
 
 # Register Vessel Details
 app.route(route="vessel-details", auth_level=func.AuthLevel.FUNCTION, methods=["GET", "POST"])(vessel_details)
+
+# Register NOA Generator
+app.route(route="noa-generator", auth_level=func.AuthLevel.FUNCTION, methods=["GET", "POST"])(noa_generator)

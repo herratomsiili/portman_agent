@@ -14,6 +14,7 @@ class TestPortmanMockDb(unittest.TestCase):
         self.sample_port_call = {
             "portCallId": 3190880,
             "imoLloyds": 9606900,
+            "mmsi": 257800000,
             "vesselTypeCode": "20",
             "vesselName": "Viking Grace",
             "prevPort": "FIMHQ",
@@ -36,13 +37,13 @@ class TestPortmanMockDb(unittest.TestCase):
                 }
             ],
             "portAreaDetails": [{
-                "eta": "2024-03-13T10:00:00Z",
+                "eta": "2024-03-13T10:00:00.000+00:00",
                 "ata": None,
                 "portAreaCode": "PASSE",
                 "portAreaName": "Matkustajasatama",
                 "berthCode": "v1",
                 "berthName": "viking1",
-                "etd": "2024-03-13T20:00:00Z",
+                "etd": "2024-03-13T20:00:00.000+00:00",
                 "atd": None
             }]
         }
@@ -57,6 +58,7 @@ class TestPortmanMockDb(unittest.TestCase):
         result = results[0]
         self.assertEqual(result["portCallId"], 3190880)
         self.assertEqual(result["vesselName"], "Viking Grace")
+        self.assertEqual(result["mmsi"], 257800000)
         self.assertEqual(result["crewOnArrival"], 1849)
         self.assertEqual(result["crewOnDeparture"], 1346)
 

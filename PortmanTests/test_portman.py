@@ -28,6 +28,7 @@ class TestPortman(unittest.TestCase):
         self.sample_port_call = {
             "portCallId": 3190880,
             "imoLloyds": 9606900,
+            "mmsi": 257800000,
             "vesselTypeCode": "20",
             "vesselName": "Viking Grace",
             "prevPort": "FIMHQ",
@@ -50,13 +51,13 @@ class TestPortman(unittest.TestCase):
                 }
             ],
             "portAreaDetails": [{
-                "eta": "2024-03-13T10:00:00Z",
+                "eta": "2024-03-13T10:00:00.000+00:00",
                 "ata": None,
                 "portAreaCode": "PASSE",
                 "portAreaName": "Matkustajasatama",
                 "berthCode": "v1",
                 "berthName": "viking1",
-                "etd": "2024-03-13T20:00:00Z",
+                "etd": "2024-03-13T20:00:00.000+00:00",
                 "atd": None
             }]
         }

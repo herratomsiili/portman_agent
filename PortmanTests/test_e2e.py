@@ -44,8 +44,8 @@ def test_end_to_end_flow(test_db_connection, sample_port_call_data):
     
     assert voyage is not None
     assert voyage[0] == sample_port_call_data["portCallId"]  # portCallId
-    assert voyage[2] == sample_port_call_data["vesselTypeCode"]  # vesselTypeCode
-    assert voyage[3] == sample_port_call_data["vesselName"]  # vesselName
+    assert voyage[3] == sample_port_call_data["vesselTypeCode"]  # vesselTypeCode
+    assert voyage[4] == sample_port_call_data["vesselName"]  # vesselName
     
     # Check arrivals table
     cursor.execute("SELECT * FROM arrivals WHERE portCallId = %s", (sample_port_call_data["portCallId"],))
