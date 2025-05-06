@@ -15,7 +15,7 @@ import {
   TableRow,
   TextField,
   Typography,
-  Tooltip, Collapse, Grid2
+  Tooltip, Collapse, Grid2, Button
 } from '@mui/material';
 import { Search as SearchIcon, Info as InfoIcon } from '@mui/icons-material';
 import { PortCall } from '../types';
@@ -135,24 +135,24 @@ const PortCalls: React.FC = () => {
     if (call.ata) {
       return { label: 'Arrived', color: 'success' as const };
     }
-    
+
     const now = new Date();
     const etaDate = call.eta ? new Date(call.eta) : null;
-    
+
     if (!etaDate) {
       return { label: 'Unknown', color: 'default' as const };
     }
-    
+
     // If ETA is in the past by more than 3 hours and no ATA
     if (etaDate < new Date(now.getTime() - 3 * 60 * 60 * 1000)) {
       return { label: 'Delayed', color: 'warning' as const };
     }
-    
+
     // If ETA is within the next 24 hours
     if (etaDate < new Date(now.getTime() + 24 * 60 * 60 * 1000)) {
       return { label: 'Arriving Soon', color: 'info' as const };
     }
-    
+
     return { label: 'Expected', color: 'primary' as const };
   };
 
@@ -163,8 +163,8 @@ const PortCalls: React.FC = () => {
 
   const GridItem: React.FC<GridItemProps> = ({ title, value }) => {
     return (
-      <Box sx={{ 
-        width: "20%", 
+      <Box sx={{
+        width: "20%",
         paddingLeft: "12px",
         paddingRight: "8px",
         paddingY: "6px",
@@ -206,26 +206,11 @@ const PortCalls: React.FC = () => {
         <TableRow
           hover
           key={call?.portcallid}
+          onClick={() => setOpen(!open)}
           sx={{ '&:hover .action-buttons': { opacity: 1 } }}
           data-cy={`portcall-row-${call?.portcallid}`}
         >
-          <TableCell>
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              onClick={() => setOpen(!open)}
-              sx={{
-                transition: 'transform 0.2s',
-                transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-                color: open ? 'primary.main' : 'text.secondary',
-                '&:hover': {
-                  backgroundColor: 'rgba(25, 118, 210, 0.04)'
-                }
-              }}
-            >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </TableCell>
+
 
           <TableCell>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -237,6 +222,21 @@ const PortCalls: React.FC = () => {
               </Typography>
             </Box>
           </TableCell>
+
+          <TableCell>
+            <Chip
+              label={getStatus(call).label}
+              color={getStatus(call).color}
+              size="small"
+              data-cy="status-chip"
+              sx={{
+                fontWeight: 'medium',
+                minWidth: 85,
+                '& .MuiChip-label': { px: 1 }
+              }}
+            />
+          </TableCell>
+
           <TableCell>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Typography variant="body1" data-cy="port-area">
@@ -247,36 +247,30 @@ const PortCalls: React.FC = () => {
               </Typography>
             </Box>
           </TableCell>
+
           <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="eta-value">
             {formatDateTime(call?.eta)}
           </TableCell>
+
           <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="ata-value">
             {call?.ata ? formatDateTime(call.ata) : '-'}
           </TableCell>
+
           <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="etd-value">
             {formatDateTime(call?.etd)}
           </TableCell>
-          <TableCell>
-            <Chip
-              label={getStatus(call).label}
-              color={getStatus(call).color}
-              size="small"
-              data-cy="status-chip"
-              sx={{ 
-                fontWeight: 'medium',
-                minWidth: 85,
-                '& .MuiChip-label': { px: 1 }
-              }}
-            />
-          </TableCell>
+
+          <TableCell />
+
+
         </TableRow>
 
         <TableRow sx={{ backgroundColor: open ? "rgba(25, 118, 210, 0.04)" : "#eeeeee" }}>
           <TableCell style={{ padding: 0 }} colSpan={8}>
             <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box sx={{ 
-                padding: '16px 24px 16px 60px', 
-                display: 'flex', 
+              <Box sx={{
+                padding: '16px 24px 16px 60px',
+                display: 'flex',
                 flexDirection: 'column',
                 borderTop: '1px dashed #cccccc'
               }}>
