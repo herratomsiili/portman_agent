@@ -18,13 +18,13 @@ def create_test_data():
             # Create test voyages
             now = datetime.utcnow()
             voyages = [
-                (3190880, 9606900, '20', 'Viking Grace', 'FIMHQ', 'FITKU', 'FILAN',
+                (3190880, 9606900, 230629000, '20', 'Viking Grace', 'FIMHQ', 'FITKU', 'FILAN',
                  'Viking Line Abp / Helsinki', 'Viking Line Abp', now + timedelta(hours=24), None, 'PASSE', 'Matkustajasatama',
                  'v1', 'viking1', now + timedelta(hours=48), None, 235, 188, 1849, 1346),
-                (3191032, 9827877, '20', 'Viking Glory', 'FILAN', 'FITKU', 'FIMHQ',
+                (3191032, 9827877, 230041000, '20', 'Viking Glory', 'FILAN', 'FITKU', 'FIMHQ',
                  'Viking Line Abp / Helsinki', 'Viking Line Abp', now, now, 'PASSE', 'Matkustajasatama',
                  'v1', 'viking1', now + timedelta(hours=24), None, 223, 185, 1265, 662),
-                (3194267, 9354284, '20', 'Baltic Princess', 'FIMHQ', 'FITKU', 'FILAN',
+                (3194267, 9354284, 230639000, '20', 'Baltic Princess', 'FIMHQ', 'FITKU', 'FILAN',
                  'Tallink Silja Oy', 'Tallink Silja Oy', now + timedelta(hours=48), None, 'PASSE', 'Matkustajasatama',
                  's2', 'silja2', now + timedelta(hours=72), None, 241, 171, 1147, 607)
             ]
@@ -32,7 +32,7 @@ def create_test_data():
                 cur,
                 """
                 INSERT INTO voyages (
-                    portCallId, imoLloyds, vesselTypeCode, vesselName, prevPort, portToVisit, nextPort,
+                    portCallId, imoLloyds, mmsi, vesselTypeCode, vesselName, prevPort, portToVisit, nextPort,
                     agentName, shippingCompany, eta, ata, portAreaCode, portAreaName, berthCode, berthName,
                     etd, atd, crewOnArrival, crewOnDeparture, passengersOnArrival, passengersOnDeparture
                 )

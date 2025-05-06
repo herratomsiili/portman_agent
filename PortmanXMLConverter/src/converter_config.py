@@ -23,6 +23,14 @@ SCHEMA_PATHS = {
         "qdt": os.path.join(PROJECT_ROOT, "schemas", "NOA", "NOA_Envelope_QualifiedDataType_30p0.xsd"),
         "ram": os.path.join(PROJECT_ROOT, "schemas", "NOA", "NOA_Envelope_ReusableAggregateBusinessInformationEntity_30p0.xsd"),
         "udt": os.path.join(PROJECT_ROOT, "schemas", "NOA", "NOA_Envelope_UnqualifiedDataType_100pD22B.xsd"),
+    },
+    "VID": {
+        "main": os.path.join(PROJECT_ROOT, "schemas", "VID", "VID_Envelope.xsd"),
+        "vid": os.path.join(PROJECT_ROOT, "schemas", "VID", "VID_Envelope_VID_MMTPluspD22B.xsd"),
+        "mai": os.path.join(PROJECT_ROOT, "schemas", "VID", "VID_Envelope_MAI_MMTPluspD22B.xsd"),
+        "qdt": os.path.join(PROJECT_ROOT, "schemas", "VID", "VID_Envelope_QualifiedDataType_30p0.xsd"),
+        "ram": os.path.join(PROJECT_ROOT, "schemas", "VID", "VID_Envelope_ReusableAggregateBusinessInformationEntity_30p0.xsd"),
+        "udt": os.path.join(PROJECT_ROOT, "schemas", "VID", "VID_Envelope_UnqualifiedDataType_100pD22B.xsd"),
     }
 }
 
@@ -31,6 +39,7 @@ NAMESPACES = {
     "mai": "urn:un:unece:uncefact:data:standard:MAI:MMTPlus",
     "ata": "urn:un:unece:uncefact:data:standard:ATA:MMTPlus",
     "noa": "urn:un:unece:uncefact:data:standard:NOA:MMTPlus",
+    "vid": "urn:un:unece:uncefact:data:standard:VID:MMTPlus",
     "qdt": "urn:un:unece:uncefact:data:Standard:QualifiedDataType:30",
     "ram": "urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30",
     "udt": "urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100",

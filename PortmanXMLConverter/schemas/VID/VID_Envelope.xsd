@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:mai="urn:un:unece:uncefact:data:standard:MAI:MMTPlus"
+    xmlns:vid="urn:un:unece:uncefact:data:standard:VID:MMTPlus">
+  <xs:import namespace="urn:un:unece:uncefact:data:standard:MAI:MMTPlus" schemaLocation="VID_Envelope_MAI_MMTPluspD22B.xsd"/>
+  <xs:import namespace="urn:un:unece:uncefact:data:standard:VID:MMTPlus" schemaLocation="VID_Envelope_VID_MMTPluspD22B.xsd"/>
+  <xs:element name="Envelope">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mai:MAI"/>
+        <xs:element ref="vid:VID"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

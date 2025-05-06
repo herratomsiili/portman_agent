@@ -13,10 +13,24 @@ import logging
 import datetime
 from typing import Dict, Any
 
-from PortmanXMLConverter.src.converter import EMSWeConverter
-from PortmanXMLConverter.src.digitraffic_adapter import adapt_digitraffic_to_portman
-import azure.functions as func
-from azure.storage.blob import BlobServiceClient
+try:
+    # Try importing with package prefix
+    from PortmanXMLConverter.src.converter import EMSWeConverter
+    from PortmanXMLConverter.src.digitraffic_adapter import adapt_digitraffic_to_portman
+except ImportError:
+    # Try importing directly when running from within the package directory
+    from src.converter import EMSWeConverter
+    from src.digitraffic_adapter import adapt_digitraffic_to_portman
+try:
+    import azure.functions as func
+except ImportError:
+    # For command-line usage
+    func = None
+try:
+    from azure.storage.blob import BlobServiceClient
+except ImportError:
+    # For command-line usage without Azure SDK
+    BlobServiceClient = None
 from config import AZURE_STORAGE_CONFIG
 
 # Try to import the shared blob utilities
@@ -39,6 +53,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger('PortmanXMLConverter')
 
+# Try to import storage configuration or use fallback
+try:
+    from config import AZURE_STORAGE_CONFIG
+except ImportError:
+    logging.warning("Config module not available, using fallback storage config")
+    AZURE_STORAGE_CONFIG = {
+        "connection_string": None,
+        "container_name": None
+    }
+
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
@@ -47,16 +71,16 @@ def parse_arguments():
         epilog="""
 Examples:
   # Validate an XML file
-  python3 main.py validate --xml-file /path/to/file.xml
+  python3 xml_converter.py validate --xml-file /path/to/file.xml --formality-type ATA
 
   # Convert EMSWe XML to Portman JSON
-  python3 main.py from-emswe --xml-file /path/to/file.xml --output-file portman_data.json
+  python3 xml_converter.py from-emswe --xml-file /path/to/file.xml --output-file portman_data.json --formality-type ATA
 
   # Convert Portman JSON to EMSWe XML
-  python3 main.py to-emswe --json-file /path/to/data.json --output-file emswe_output.xml
+  python3 xml_converter.py to-emswe --json-file /path/to/data.json --output-file emswe_output.xml --formality-type ATA
 
   # Convert Digitraffic port call data to EMSWe XML
-  python3 main.py from-digitraffic --json-file /path/to/portcall.json --output-file emswe_output.xml
+  python3 xml_converter.py from-digitraffic --json-file /path/to/portcall.json --output-file emswe_output.xml --formality-type ATA
         """
     )
 
@@ -287,15 +311,69 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     else:
         port_call = portcall_data
 
+    # Preserve original values for important fields
+    original_vessel_name = port_call.get('vesselName')
+    original_imo_lloyds = port_call.get('imoLloyds')
+    original_eta = port_call.get('eta')
+    
+    logger.info(f"Original values before adaptation - vesselName: {original_vessel_name}, imoLloyds: {original_imo_lloyds}, eta: {original_eta}")
+
     # Adapt Digitraffic data to Portman format
-    portman_data = adapt_digitraffic_to_portman(port_call)
+    portman_data = adapt_digitraffic_to_portman(port_call, xml_type)
+    
+    # Ensure critical fields are preserved
+    if original_vessel_name and not portman_data.get('vesselName'):
+        portman_data['vesselName'] = original_vessel_name
+        logger.info(f"Restored original vesselName: {original_vessel_name}")
+        
+    if original_imo_lloyds and not portman_data.get('imoLloyds'):
+        portman_data['imoLloyds'] = original_imo_lloyds
+        logger.info(f"Restored original imoLloyds: {original_imo_lloyds}")
+    
+    # Ensure ETA is properly formatted for VID XML
+    if original_eta and (not portman_data.get('eta') or xml_type == 'VID'):
+        # Ensure a consistent format for the ETA with millisecond precision
+        try:
+            # First check if it's already an ISO 8601 string
+            if isinstance(original_eta, str):
+                # Parse the input datetime string
+                if '+' in original_eta:
+                    # Handle timezone offset format like 2025-05-12T04:00:00.000+00:00
+                    dt = datetime.datetime.strptime(original_eta.split('+')[0], '%Y-%m-%dT%H:%M:%S.%f')
+                    formatted_eta = dt.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+                elif 'Z' in original_eta:
+                    # Already in UTC format
+                    dt = datetime.datetime.strptime(original_eta.replace('Z', ''), '%Y-%m-%dT%H:%M:%S.%f')
+                    formatted_eta = dt.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+                else:
+                    # Basic ISO format without timezone
+                    dt = datetime.datetime.strptime(original_eta, '%Y-%m-%dT%H:%M:%S.%f')
+                    formatted_eta = dt.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+            else:
+                # If it's not a string, convert using a default format
+                formatted_eta = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+                
+            portman_data['eta'] = formatted_eta
+            logger.info(f"Formatted ETA for {xml_type}: {formatted_eta}")
+        except Exception as e:
+            logger.warning(f"Could not format ETA '{original_eta}': {str(e)}. Using as is.")
+            portman_data['eta'] = original_eta
+        
+    # Special handling for VID format
+    if xml_type == 'VID':
+        # For VID, ensure these fields are always present
+        if not portman_data.get('vesselName') and 'vesselName' in port_call:
+            portman_data['vesselName'] = port_call['vesselName']
+        if not portman_data.get('imoLloyds') and 'imoLloyds' in port_call:
+            portman_data['imoLloyds'] = port_call['imoLloyds']
+        logger.info(f"Final Portman data for VID - vesselName: {portman_data.get('vesselName')}, imoLloyds: {portman_data.get('imoLloyds')}, eta: {portman_data.get('eta')}")
 
     # Generate a unique filename based on formality type
     port_call_id = portcall_data.get('portCallId')
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     
     # Use appropriate prefix based on the XML type (default to ATA if not specified)
-    xml_prefix = xml_type if xml_type in ["ATA", "NOA"] else "ATA"
+    xml_prefix = xml_type if xml_type in ["ATA", "NOA", "VID"] else "ATA"
     filename = f"{xml_prefix}_{port_call_id}_{timestamp}.xml"
 
     # Convert to EMSWe XML
@@ -310,37 +388,52 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     connection_string = AZURE_STORAGE_CONFIG["connection_string"]
     container_name = AZURE_STORAGE_CONFIG["container_name"]
     
-    if (not connection_string or not container_name):
-        logger.info("Storage connection string or container name not found")
-        logger.info(result)
-        return None
-
-    # Connect to blob storage
-    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-    container_client = blob_service_client.get_container_client(container_name)
+    if (not connection_string or not container_name or 'PYTEST_CURRENT_TEST' in os.environ):
+        # For local/command-line usage, save to a local file
+        os.makedirs("output", exist_ok=True)
+        local_filename = os.path.join("output", filename)
+        with open(local_filename, "w", encoding="utf-8") as f:
+            f.write(result)
+        logger.info(f"Saved XML to local file: {local_filename}")
+        return local_filename
     
-    # Create container if it doesn't exist
-    if not container_client.exists():
-        container_client.create_container()
-    
-    # Upload XML to Blob Storage
-    blob_client = container_client.get_blob_client(filename)
-    blob_client.upload_blob(result, overwrite=True, content_type="application/xml")
-    
-    # Get the full blob path for generating SAS URL
-    blob_path = f"{container_name}/{filename}"
-    
-    # Generate SAS URL using the shared utility function
-    sas_url = generate_blob_storage_link(blob_path, connection_string)
-    
-    # If SAS URL generation failed, fall back to plain URL
-    if not sas_url:
-        logger.warning(f"Failed to generate SAS URL, falling back to plain URL")
-        sas_url = blob_client.url
-    
-    logger.info(f"XML stored with SAS URL: {sas_url}")
-    
-    return sas_url
+    try:
+        # Connect to blob storage
+        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        container_client = blob_service_client.get_container_client(container_name)
+        
+        # Create container if it doesn't exist
+        if not container_client.exists():
+            container_client.create_container()
+        
+        # Upload XML to Blob Storage
+        blob_client = container_client.get_blob_client(filename)
+        blob_client.upload_blob(result, overwrite=True, content_type="application/xml")
+        
+        # Get the full blob path for generating SAS URL
+        blob_path = f"{container_name}/{filename}"
+        
+        # Generate SAS URL using the shared utility function
+        sas_url = generate_blob_storage_link(blob_path, connection_string)
+        
+        # If SAS URL generation failed, fall back to plain URL
+        if not sas_url:
+            logger.warning(f"Failed to generate SAS URL, falling back to plain URL")
+            sas_url = blob_client.url
+        
+        logger.info(f"XML stored with SAS URL: {sas_url}")
+        
+        return sas_url
+    except Exception as e:
+        # Handle storage-related exceptions
+        logger.error(f"Error storing XML to Azure Blob Storage: {str(e)}")
+        # Fall back to local file storage
+        os.makedirs("output", exist_ok=True)
+        local_filename = os.path.join("output", filename)
+        with open(local_filename, "w", encoding="utf-8") as f:
+            f.write(result)
+        logger.info(f"Saved XML to local file: {local_filename}")
+        return local_filename
 
 def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Portman XML converter function processing a request')
@@ -355,12 +448,21 @@ def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
         
         portcall_data = req_body.get('portcall_data')
         
+        # Log detailed port call data for debugging
+        logging.info(f"Received port call data: {json.dumps(portcall_data)}")
+        logging.info(f"vesselName present: {'vesselName' in portcall_data}")
+        logging.info(f"imoLloyds present: {'imoLloyds' in portcall_data}")
+        if 'vesselName' in portcall_data:
+            logging.info(f"vesselName value: {portcall_data['vesselName']}")
+        if 'imoLloyds' in portcall_data:
+            logging.info(f"imoLloyds value: {portcall_data['imoLloyds']}")
+        
         formality_type = req_body.get('formality_type', 'ATA')  # Default to ATA if not specified
         
         # Validate formality type
-        if formality_type not in ['ATA', 'NOA']:
+        if formality_type not in ['ATA', 'NOA', 'VID']:
             return func.HttpResponse(
-                json.dumps({"status": "error", "message": f"Invalid formality_type: {formality_type}. Supported types are ATA and NOA."}),
+                json.dumps({"status": "error", "message": f"Invalid formality_type: {formality_type}. Supported types are ATA, NOA, and VID."}),
                 mimetype="application/json",
                 status_code=400
             )
@@ -392,3 +494,19 @@ def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
             mimetype="application/json", 
             status_code=500
         )
+
+if __name__ == "__main__":
+    """Main entry point for command-line usage."""
+    args = parse_arguments()
+    
+    if args.command == "validate":
+        sys.exit(validate_xml(args))
+    elif args.command == "from-emswe":
+        sys.exit(convert_from_emswe(args))
+    elif args.command == "to-emswe":
+        sys.exit(convert_to_emswe(args))
+    elif args.command == "from-digitraffic":
+        sys.exit(convert_from_digitraffic(args))
+    else:
+        print("Invalid command. Run with --help for usage information.")
+        sys.exit(1)
