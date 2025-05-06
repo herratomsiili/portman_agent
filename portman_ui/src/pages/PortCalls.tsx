@@ -127,17 +127,33 @@ const PortCalls: React.FC = () => {
     return new Date(dateString).toLocaleString();
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'SCHEDULED':
-        return 'primary';
-      case 'COMPLETED':
-        return 'default';
-      default:
-        return 'default';
+  // Helper function to determine the status label and color
+  const getStatus = (call: PortCall) => {
+    if (call.atd) {
+      return { label: 'Completed', color: 'default' as const };
     }
+    if (call.ata) {
+      return { label: 'Arrived', color: 'success' as const };
+    }
+    
+    const now = new Date();
+    const etaDate = call.eta ? new Date(call.eta) : null;
+    
+    if (!etaDate) {
+      return { label: 'Unknown', color: 'default' as const };
+    }
+    
+    // If ETA is in the past by more than 3 hours and no ATA
+    if (etaDate < new Date(now.getTime() - 3 * 60 * 60 * 1000)) {
+      return { label: 'Delayed', color: 'warning' as const };
+    }
+    
+    // If ETA is within the next 24 hours
+    if (etaDate < new Date(now.getTime() + 24 * 60 * 60 * 1000)) {
+      return { label: 'Arriving Soon', color: 'info' as const };
+    }
+    
+    return { label: 'Expected', color: 'primary' as const };
   };
 
   interface GridItemProps {
@@ -147,16 +163,31 @@ const PortCalls: React.FC = () => {
 
   const GridItem: React.FC<GridItemProps> = ({ title, value }) => {
     return (
-      <Box sx={{ width: "20%", paddingLeft: "3px" }}>
+      <Box sx={{ 
+        width: "20%", 
+        paddingLeft: "12px",
+        paddingRight: "8px",
+        paddingY: "6px",
+        marginBottom: "4px"
+      }}>
         <Typography variant="body1" sx={{
+          fontSize: '0.875rem',
+          fontWeight: 500,
+          color: 'text.secondary',
           textDecoration: "underline",
-          textDecorationColor: '9e9e9e',
+          textDecorationColor: 'rgba(0, 0, 0, 0.2)',
           textDecorationStyle: 'dotted',
+          marginBottom: '4px'
         }}>
           {title}
         </Typography>
-        <Typography variant="body2">
-          {value}
+        <Typography variant="body2" sx={{
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          color: 'text.primary',
+          fontWeight: value ? 'normal' : 'light'
+        }}>
+          {value || 'N/A'}
         </Typography>
       </Box>
     );
@@ -179,15 +210,21 @@ const PortCalls: React.FC = () => {
           data-cy={`portcall-row-${call?.portcallid}`}
         >
           <TableCell>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <IconButton
-                aria-label="expand row"
-                size="small"
-                onClick={() => setOpen(!open)}
-              >
-                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-              </IconButton>
-            </Box>
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+              sx={{
+                transition: 'transform 0.2s',
+                transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+                color: open ? 'primary.main' : 'text.secondary',
+                '&:hover': {
+                  backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                }
+              }}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
           </TableCell>
 
           <TableCell>
@@ -221,24 +258,34 @@ const PortCalls: React.FC = () => {
           </TableCell>
           <TableCell>
             <Chip
-              label={call?.ata ? 'Arrived' : 'Expected'}
-              color={call?.ata ? 'success' : 'primary'}
+              label={getStatus(call).label}
+              color={getStatus(call).color}
               size="small"
               data-cy="status-chip"
+              sx={{ 
+                fontWeight: 'medium',
+                minWidth: 85,
+                '& .MuiChip-label': { px: 1 }
+              }}
             />
           </TableCell>
         </TableRow>
 
-        <TableRow sx={{ backgroundColor: "#eeeeee" }}>
-          <TableCell style={{ padding: 0 }} colSpan={8} >
+        <TableRow sx={{ backgroundColor: open ? "rgba(25, 118, 210, 0.04)" : "#eeeeee" }}>
+          <TableCell style={{ padding: 0 }} colSpan={8}>
             <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box sx={{ paddingLeft: '50px', display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ 
+                padding: '16px 24px 16px 60px', 
+                display: 'flex', 
+                flexDirection: 'column',
+                borderTop: '1px dashed #cccccc'
+              }}>
                 <Grid2 container spacing={0} sx={{
                   '--Grid-borderWidth': '1px',
                   borderColor: 'divider',
                   '& > div': {
                     borderLeft: 'var(--Grid-borderWidth) solid',
-                    borderColor: 'grey',
+                    borderColor: 'rgba(25, 118, 210, 0.2)',
                   },
                   paddingLeft: "1px",
                   justifyContent: "flex-start"
@@ -356,67 +403,6 @@ const PortCalls: React.FC = () => {
               {filteredPortCalls
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((call: PortCall) => (
-                  // <TableRow
-                  //   hover
-                  //   key={call?.portcallid}
-                  //   sx={{
-                  //     '&:nth-of-type(odd)': { backgroundColor: 'rgba(0, 0, 0, 0.03)' },
-                  //     transition: 'all 0.2s ease-in-out',
-                  //     '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.06)' }
-                  //   }}
-                  //   data-cy={`portcall-row-${call?.portcallid}`}
-                  // >
-                  //   <TableCell>
-                  //     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  //       <Typography variant="body1" sx={{ fontWeight: 500 }} data-cy="vessel-name">
-                  //         {call?.vesselname || 'N/A'}
-                  //       </Typography>
-                  //       <Typography variant="body2" color="text.secondary" data-cy="vessel-imo">
-                  //         IMO: {call?.imolloyds || 'N/A'}
-                  //       </Typography>
-                  //     </Box>
-                  //   </TableCell>
-                  //   <TableCell>
-                  //     <Chip
-                  //         label={call?.ata ? 'Arrived' : 'Expected'}
-                  //         color={call?.ata ? 'success' : 'primary'}
-                  //         size="small"
-                  //         data-cy="status-chip"
-                  //     />
-                  //   </TableCell>
-                  //   <TableCell>
-                  //     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  //       <Typography variant="body1" data-cy="port-area">
-                  //         {call?.portareaname || 'N/A'}
-                  //       </Typography>
-                  //       <Typography variant="body2" color="text.secondary" data-cy="berth-name">
-                  //         {call?.berthname || 'N/A'}
-                  //       </Typography>
-                  //     </Box>
-                  //   </TableCell>
-                  //   <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="eta-value">
-                  //     {formatDateTime(call?.eta)}
-                  //   </TableCell>
-                  //   <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="ata-value">
-                  //     {call?.ata ? formatDateTime(call.ata) : '-'}
-                  //   </TableCell>
-                  //   <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }} data-cy="etd-value">
-                  //     {formatDateTime(call?.etd)}
-                  //   </TableCell>
-                  //   <TableCell sx={{ textAlign: 'center' }}>
-                  //     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                  //       <Tooltip title="View Details">
-                  //         <IconButton
-                  //           color="info"
-                  //           size="small"
-                  //           onClick={() => window.location.href = `/port-call/${call?.portcallid}`}
-                  //         >
-                  //           <InfoIcon fontSize="small" />
-                  //         </IconButton>
-                  //       </Tooltip>
-                  //     </Box>
-                  //   </TableCell>
-                  // </TableRow>
                   <Row call={call} />
                 ))}
               {filteredPortCalls.length === 0 && (
@@ -442,6 +428,25 @@ const PortCalls: React.FC = () => {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25, 50, 100, 150, 200, 300, 500]}
+          sx={{
+            '.MuiTablePagination-select': {
+              paddingY: 1,
+              paddingX: 2,
+              borderRadius: 1,
+              border: '1px solid #e0e0e0',
+              '&:focus': {
+                borderColor: 'primary.main',
+                boxShadow: '0 0 0 2px rgba(25, 118, 210, 0.2)',
+              }
+            },
+            '.MuiTablePagination-selectIcon': {
+              color: 'primary.main'
+            },
+            '.MuiTablePagination-displayedRows': {
+              fontWeight: 'medium'
+            }
+          }}
+          labelRowsPerPage="Rows:"
         />
       </Paper>
     </Box>
