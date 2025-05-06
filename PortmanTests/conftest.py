@@ -33,6 +33,7 @@ def setup_test_tables(test_db_cursor):
         CREATE TABLE IF NOT EXISTS voyages (
             portCallId INTEGER PRIMARY KEY,
             imoLloyds INTEGER,
+            mmsi INTEGER,
             vesselTypeCode TEXT,
             vesselName TEXT,
             prevPort TEXT,
@@ -85,6 +86,7 @@ def sample_port_call_data():
     return {
         "portCallId": 3190880,
         "imoLloyds": 9606900,
+        "mmsi": 257800000,
         "vesselTypeCode": "20",
         "vesselName": "Viking Grace",
         "prevPort": "FIMHQ",
