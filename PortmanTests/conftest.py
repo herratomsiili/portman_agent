@@ -3,7 +3,7 @@
 import pytest
 import pg8000
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 @pytest.fixture(scope="session")
 def test_db_connection():
@@ -82,7 +82,7 @@ def setup_test_tables(test_db_cursor):
 @pytest.fixture
 def sample_port_call_data():
     """Sample port call data for testing."""
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     return {
         "portCallId": 3190880,
         "imoLloyds": 9606900,
@@ -109,13 +109,13 @@ def sample_port_call_data():
             }
         ],
         "portAreaDetails": [{
-            "eta": (now + timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "eta": (now + timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S.%f+00:00"),
             "ata": None,
             "portAreaCode": "PASSE",
             "portAreaName": "Matkustajasatama",
             "berthCode": "v1",
             "berthName": "viking1",
-            "etd": (now + timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "etd": (now + timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%S.%f+00:00"),
             "atd": None
         }]
     } 
