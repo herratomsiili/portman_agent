@@ -134,36 +134,100 @@ export const mockPortCalls: PortCall[] = [
 export const mockArrivalUpdates = [
   {
     id: 1,
-    portCallId: 1001,
+    portcallid: 1001,
     eta: "2025-03-20T08:30:00Z",
-    oldEta: "2025-03-20T07:00:00Z",
+    old_eta: "2025-03-20T07:00:00Z",
     ata: "2025-03-20T08:45:00Z",
-    vesselName: "Nordic Princess",
-    portAreaName: "Eteläsatama",
-    berthName: "Eteläsatama K7",
+    vesselname: "Nordic Princess",
+    portareaname: "Eteläsatama",
+    berthname: "Eteläsatama K7",
     created: "2025-03-19T14:00:00Z"
   },
   {
     id: 2,
-    portCallId: 1002,
+    portcallid: 1002,
     eta: "2025-03-21T06:00:00Z",
-    oldEta: "2025-03-21T04:30:00Z",
+    old_eta: "2025-03-21T04:30:00Z",
     ata: null,
-    vesselName: "Baltic Carrier",
-    portAreaName: "Vuosaari",
+    vesselname: "Baltic Carrier",
+    portareaname: "Vuosaari",
     berthName: "Vuosaari L1",
     created: "2025-03-20T10:15:00Z"
   },
   {
     id: 3,
-    portCallId: 1003,
+    portcallid: 1003,
     eta: "2025-03-19T22:00:00Z",
-    oldEta: "2025-03-19T23:30:00Z",
+    old_eta: "2025-03-19T23:30:00Z",
     ata: "2025-03-19T21:45:00Z",
-    vesselName: "Arctic Explorer",
-    portAreaName: "Deep Port",
+    vesselname: "Arctic Explorer",
+    portareaname: "Deep Port",
     berthName: "Deep Port D12",
     created: "2025-03-19T18:00:00Z"
+  }
+];
+
+// Mock arrivals data based on the database structure
+export const mockArrivals = [
+  {
+    id: 1,
+    portcallid: 3190880,
+    eta: "2024-03-13T10:00:00.000Z",
+    old_ata: null,
+    ata: "2024-03-13T10:15:00.000Z",
+    vesselname: "Viking Grace",
+    portareaname: "Matkustajasatama",
+    berthname: "viking1",
+    created: "2024-03-13T10:20:00.000Z",
+    ata_xml_url: "https://storageaccount.blob.core.windows.net/xmlfiles/ata_3190880.xml"
+  },
+  {
+    id: 2,
+    portcallid: 3190881,
+    eta: "2024-03-14T08:30:00.000Z",
+    old_ata: null,
+    ata: "2024-03-14T08:45:00.000Z",
+    vesselname: "Silja Symphony",
+    portareaname: "Länsisatama",
+    berthname: "LJ7",
+    created: "2024-03-14T09:00:00.000Z",
+    ata_xml_url: "https://storageaccount.blob.core.windows.net/xmlfiles/ata_3190881.xml"
+  },
+  {
+    id: 3,
+    portcallid: 3190882,
+    eta: "2024-03-15T14:00:00.000Z",
+    old_ata: "2024-03-15T14:45:00.000Z",
+    ata: "2024-03-15T15:10:00.000Z",
+    vesselname: "Finnlady",
+    portareaname: "Vuosaaren satama",
+    berthname: "VC3",
+    created: "2024-03-15T15:30:00.000Z",
+    ata_xml_url: "https://storageaccount.blob.core.windows.net/xmlfiles/ata_3190882.xml"
+  },
+  {
+    id: 4,
+    portcallid: 3190883,
+    eta: "2024-03-16T16:00:00.000Z",
+    old_ata: null,
+    ata: "2024-03-16T16:20:00.000Z",
+    vesselname: "Baltic Princess",
+    portareaname: "Matkustajasatama",
+    berthname: "LJ8",
+    created: "2024-03-16T16:25:00.000Z",
+    ata_xml_url: "https://storageaccount.blob.core.windows.net/xmlfiles/ata_3190883.xml"
+  },
+  {
+    id: 5,
+    portcallid: 3190884,
+    eta: "2024-03-17T11:30:00.000Z",
+    old_ata: "2024-03-17T12:00:00.000Z",
+    ata: "2024-03-17T12:15:00.000Z",
+    vesselname: "Eckerö",
+    portareaname: "Länsisatama",
+    berthname: "LJ5",
+    created: "2024-03-17T12:20:00.000Z",
+    ata_xml_url: "https://storageaccount.blob.core.windows.net/xmlfiles/ata_3190884.xml"
   }
 ];
 

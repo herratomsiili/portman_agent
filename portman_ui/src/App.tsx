@@ -1,6 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Dashboard from './pages/Dashboard';
 import PortCalls from './pages/PortCalls';
@@ -13,6 +13,7 @@ import Authentication from './pages/Authentication';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import Arrivals from './pages/Arrivals';
 
 // Create a theme instance
 const theme = createTheme({
@@ -53,6 +54,18 @@ function AppRoutes() {
             <Route path="/port-calls" element={
                 <Layout>
                     <PortCalls />
+                </Layout>
+            } />
+            
+            <Route path="/vessel-tracking" element={
+                <Layout>
+                    <VesselTracking />
+                </Layout>
+            } />
+            
+            <Route path="/arrivals" element={
+                <Layout>
+                    <Arrivals />
                 </Layout>
             } />
             
