@@ -388,6 +388,7 @@ def process_query(data, tracked_vessels=None):
             "mmsi": mmsi,  # Include mmsi in the results
             "vesselTypeCode": entry.get("vesselTypeCode"),
             "vesselName": entry.get("vesselName"),
+            "radioCallSign": entry.get("radioCallSign", ""),  # Include radio call sign
             "prevPort": entry.get("prevPort"),
             "portToVisit": entry.get("portToVisit"),
             "nextPort": entry.get("nextPort"),
@@ -661,7 +662,7 @@ def createVidXml(voyage_data):
         original_port_call_id = voyage_data.get("portCallId")
         
         # Ensure string fields have proper values
-        for field in ["vesselName", "portAreaName", "portToVisit", "prevPort", "berthName"]:
+        for field in ["vesselName", "portAreaName", "portToVisit", "prevPort", "berthName", "radioCallSign"]:
             if field in voyage_data and voyage_data[field] is None:
                 voyage_data[field] = ""  # Replace None with empty string
         
@@ -939,7 +940,8 @@ def save_results_to_db(results, conn=None):
                     "portToVisit": entry.get("portToVisit") or "",
                     "prevPort": entry.get("prevPort") or "",
                     "agentName": entry.get("agentName") or "",
-                    "shippingCompany": entry.get("shippingCompany") or ""
+                    "shippingCompany": entry.get("shippingCompany") or "",
+                    "radioCallSign": entry.get("radioCallSign", "")
                 }
                 
                 # Generate and store the VID XML

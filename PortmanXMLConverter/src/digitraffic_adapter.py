@@ -16,6 +16,7 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
 
     Args:
         digitraffic_data: Dictionary containing Digitraffic port call data
+        xml_type: Type of XML formality (ATA, NOA, VID)
 
     Returns:
         Dictionary in Portman format suitable for EMSWe conversion
@@ -26,6 +27,11 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
         vessel_name = digitraffic_data.get("vesselName", "unknown")
         imo_lloyds = digitraffic_data.get("imoLloyds", "unknown")
         mmsi = digitraffic_data.get("mmsi", "unknown")  # Extract MMSI
+        
+        # Check and handle IMO number 0 case - treat as not present for all XML types
+        if imo_lloyds == "0" or imo_lloyds == 0 or imo_lloyds == "unknown":
+            logger.info(f"IMO number is {imo_lloyds} for port call {port_call_id}. Setting to None for XML generation.")
+            imo_lloyds = None
         
         # Log original values for debugging
         logger.info(f"Adapting data for port call {port_call_id} - Original vesselName: {vessel_name}, imoLloyds: {imo_lloyds}, mmsi: {mmsi}")
@@ -97,15 +103,21 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
 
         # Build destination string, excluding unknown or empty values
         destination_parts = [port_to_visit]
-        if port_area_name.lower() not in ["unknown", ""]:
+        if port_area_name.lower() not in ["unknown", "ei tiedossa", ""]:
             destination_parts.append(port_area_name)
-        if berth_name.lower() not in ["unknown", ""]:
+        if berth_name.lower() not in ["unknown", "ei tiedossa", ""]:
             destination_parts.append(berth_name)
         destination = "/".join(destination_parts)
 
         # Agent information
         agent_name = digitraffic_data.get("agentName", "")
         shipping_company = digitraffic_data.get("shippingCompany", "")
+        
+        # Format remarks based on available IMO
+        remarks_text = f"{vessel_name}"
+        if imo_lloyds:
+            remarks_text += f" (IMO: {imo_lloyds})"
+        remarks_text += f" {'port arrival ->' if xml_type == 'ATA' else '->'} {destination}"
 
         # Create portman data structure with required fields for EMSWe conversion
         portman_data = {
@@ -113,7 +125,7 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
             "declaration_id": f"DECL-PT-{port_call_id}",
             "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "call_id": str(port_call_id),
-            "remarks": f"{vessel_name} (IMO: {imo_lloyds}) {'port arrival ->' if xml_type == 'ATA' else '->'} {destination}",
+            "remarks": remarks_text,
 
             # Required fields for ArrivalTransportEvent
             "arrival_datetime": ata or formatted_eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -135,9 +147,11 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
 
             # Add vessel information directly - IMPORTANT for VID schema
             "vesselName": vessel_name,
-            "imoLloyds": imo_lloyds,
             "mmsi": mmsi,  # Include MMSI in the output
-
+            
+            # Pass radio call sign if available (for VID XML)
+            "radioCallSign": digitraffic_data.get("radioCallSign", ""),
+            
             # Required declarant information
             "declarant": {
                 "id": f"FI{imo_lloyds}" if imo_lloyds else "FI123456789012",
@@ -157,6 +171,10 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
                 }
             }
         }
+        
+        # Only add IMO if it's valid (not None)
+        if imo_lloyds is not None:
+            portman_data["imoLloyds"] = imo_lloyds
         
         # Add passenger and crew counts if available (only if they have actual values)
         if passengers_on_arrival is not None:
@@ -190,8 +208,9 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
             "berthCode": "",  # Allow empty value
             "berthName": "Unknown Berth",
             "vesselName": digitraffic_data.get("vesselName", "Unknown Vessel"),
-            "imoLloyds": digitraffic_data.get("imoLloyds", "00000000"),
-            "mmsi": digitraffic_data.get("mmsi", "00000000"),  # Include MMSI in fallback
+            # Do not include default IMO value for fallback
+            "mmsi": digitraffic_data.get("mmsi"),  # Include MMSI in fallback but no default
+            "radioCallSign": digitraffic_data.get("radioCallSign", ""),  # Include radio call sign in fallback
             "declarant": {
                 "id": "FI123456789012",
                 "name": "Unknown Agent",

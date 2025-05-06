@@ -1,9 +1,6 @@
 # EMSWe XML Converter for Portman Agent
 
-A Python-based converter for transforming Portman agent data format and EMSWe-compliant XML documents.  
-
-### Current implemented EMSWe-compliant XML documents:  
-- ATA (Notification of actual arrival)
+A Python-based converter for transforming Portman agent data format and EMSWe-compliant XML documents.
 
 ## Overview
 
@@ -15,18 +12,14 @@ This converter provides functionality to:
 
 The implementation complies with the European Maritime Single Window environment (EMSWe) standards as defined in the [EMSWe Message Implementation Guide](https://emsa.europa.eu/emswe-mig/).
 
-## Installation
+### Supported XML Types
 
-### Requirements
+The converter currently supports the following EMSWe-compliant XML documents:
+- ATA (Notification of actual arrival)
+- NOA (Notice of pre arrival)
+- VID (Request for Visit ID)
 
-- Python 3.8 or higher
-- lxml library
-
-### Setup
-Install dependencies:
-```bash
-pip install -r portman_agent/PortmanXMLConverter/src/requirements.txt
-```
+Each document type follows the EMSWe Message Implementation Guide specifications.
 
 ## Usage
 
@@ -37,20 +30,28 @@ The converter provides a command-line interface with the following commands:
 #### Validate an XML file
 
 ```bash
-python3 main.py validate --xml-file /path/to/file.xml
+python3 xml_converter.py validate --xml-file /path/to/file.xml --formality-type ATA|NOA|VID
 ```
 
 #### Convert EMSWe XML to Portman JSON
 
 ```bash
-python3 main.py from-emswe --xml-file /path/to/file.xml --output-file portman_data.json
+python3 xml_converter.py from-emswe --xml-file /path/to/file.xml --output-file portman_data.json --formality-type ATA|NOA|VID
 ```
 
 #### Convert Portman JSON to EMSWe XML
 
 ```bash
-python3 main.py to-emswe --json-file /path/to/data.json --output-file emswe_output.xml
+python3 xml_converter.py to-emswe --json-file /path/to/data.json --output-file emswe_output.xml --formality-type ATA|NOA|VID
 ```
+
+#### Convert Digitraffic port call data to EMSWe XML
+
+```bash
+python3 xml_converter.py from-digitraffic --json-file /path/to/portcall.json --output-file emswe_output.xml --formality-type ATA|NOA|VID --batch
+```
+
+The `--batch` flag can be used to process multiple port calls in batch mode.
 
 ### Using as a Library
 
@@ -59,8 +60,8 @@ You can also use the converter as a Python library in your own code:
 ```python
 from src.converter import EMSWeConverter
 
-# Initialize the converter
-converter = EMSWeConverter(formality_type="ATA")
+# Initialize the converter with desired formality type
+converter = EMSWeConverter(formality_type="ATA")  # Or "NOA" or "VID"
 
 # Validate an XML file
 is_valid, message = converter.validate_xml("/path/to/file.xml")
@@ -80,46 +81,41 @@ portman_data = {
 success, result = converter.convert_to_emswe(portman_data, "output.xml")
 ```
 
-## Project Structure
-
-- `src/` - Source code directory
-    - `__init__.py` - Package initialization
-    - `config.py` - Configuration settings
-    - `validator.py` - XML validation module
-    - `parser.py` - XML parsing module
-    - `transformer.py` - Data transformation module
-    - `converter.py` - Main converter module
-- `main.py` - Command-line interface
-- `test_*.py` - Unit tests
-- `validation_tests.py` - Comprehensive validation tests
-
 ## Data Format
 
 ### EMSWe XML Format
 
-The EMSWe XML format follows the structure defined in the EMSWe Message Implementation Guide, with an Envelope containing MAI (Main message header) and ATA (Notification of actual arrival) elements.
+The EMSWe XML format follows the structure defined in the EMSWe Message Implementation Guide, with an Envelope containing:
+- MAI (Main message header)
+- Document specific element (ATA, NOA, or VID)
 
 Example:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <Envelope xmlns:mai="urn:un:unece:uncefact:data:standard:MAI:MMTPlus"
     xmlns:ata="urn:un:unece:uncefact:data:standard:ATA:MMTPlus"
+    xmlns:noa="urn:un:unece:uncefact:data:standard:NOA:MMTPlus"
+    xmlns:vid="urn:un:unece:uncefact:data:standard:VID:MMTPlus"
     xmlns:qdt="urn:un:unece:uncefact:data:Standard:QualifiedDataType:30"
     xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:30"
     xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100">
   <mai:MAI>
     <!-- Main message header information -->
   </mai:MAI>
+  <!-- One of the following based on formality type -->
   <ata:ATA>
     <!-- Notification of actual arrival information -->
   </ata:ATA>
+  <!-- or -->
+  <noa:NOA>
+    <!-- Notice of arrival information -->
+  </noa:NOA>
+  <!-- or -->
+  <vid:VID>
+    <!-- Vessel Information Data -->
+  </vid:VID>
 </Envelope>
 ```
-
-
-## License
-
-[Specify license information]
 
 ## References
 

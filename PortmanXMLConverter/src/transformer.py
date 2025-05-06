@@ -259,8 +259,6 @@ class XMLTransformer:
             call_id = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}ID")
             call_id.text = portman_data["call_id"]
             logger.info(f"Added CallTransportEvent with ID {portman_data['call_id']} for {formality_type}")
-        elif formality_type == "VID":
-            logger.info("Skipping CallTransportEvent/ID in MAI section for VID message")
 
         return mai_element
 
@@ -447,8 +445,7 @@ class XMLTransformer:
                 type_code = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}TypeCode")
                 type_code.text = str(portman_data["vesselTypeCode"])
             
-            # Add IMO number if available
-            if "imoLloyds" in portman_data:
+            if "imoLloyds" in portman_data and portman_data["imoLloyds"] is not None and str(portman_data["imoLloyds"]) != "0":
                 reg_event = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}RegistrationTransportEvent")
                 reg_id = etree.SubElement(reg_event, f"{{{self.namespaces['ram']}}}ID")
                 reg_id.text = str(portman_data["imoLloyds"])
@@ -535,14 +532,28 @@ class XMLTransformer:
         
         # Add IMONumberIndicator - REQUIRED by schema
         imo_indicator = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}IMONumberIndicator")
-        # Set to "1" (yes) if IMO number is present
-        imo_indicator.text = "1" if portman_data.get("imoLloyds") else "0"
         
-        # Add IMO number if available - conditional on IMONumberIndicator
-        # Always add IMO ID when it's available
-        if portman_data.get("imoLloyds"):
+        # Check if IMO number is available and valid (not 0)
+        imo_value = portman_data.get("imoLloyds")
+        has_valid_imo = imo_value and str(imo_value) != "0" and str(imo_value) != "unknown"
+        
+        # Set to "1" (yes) if valid IMO number is present, "0" (no) otherwise
+        imo_indicator.text = "1" if has_valid_imo else "0"
+        
+        # Add IMO number only if it's valid (not None or zero)
+        # This ensures we don't add invalid IMO values to the XML
+        if has_valid_imo:
             imo_id = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}IMOID")
-            imo_id.text = str(portman_data["imoLloyds"])
+            # Format IMO number to ensure 7 digits for schema compliance
+            imo_text = str(imo_value)
+            # Pad with leading zeros if needed to reach 7 digits
+            if len(imo_text) < 7:
+                imo_text = imo_text.zfill(7)
+            # Truncate if longer than 7 digits
+            if len(imo_text) > 7:
+                imo_text = imo_text[-7:]
+            imo_id.text = imo_text
+            logger.info(f"Added IMO {imo_text} to VID XML")
         
         # Add MMSI number if available and valid - using MMSIID as per schema
         # MMSIID must be exactly 9 characters long
@@ -568,6 +579,14 @@ class XMLTransformer:
             type_code = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}TypeCode")
             type_code.text = str(portman_data["vesselTypeCode"])
 
+        # Add CallSignID element if radioCallSign is available
+        if "radioCallSign" in portman_data and portman_data["radioCallSign"]:
+            call_sign = portman_data["radioCallSign"].strip()
+            if call_sign:  # Only add if non-empty after stripping
+                call_sign_id = etree.SubElement(used_means, f"{{{self.namespaces['ram']}}}CallSignID")
+                call_sign_id.text = call_sign
+                logger.info(f"Added CallSignID {call_sign} to VID XML")
+        
         # 2. Second must be CallTransportEvent
         call_event = etree.SubElement(transport, f"{{{self.namespaces['ram']}}}CallTransportEvent")
         

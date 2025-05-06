@@ -13,10 +13,24 @@ import logging
 import datetime
 from typing import Dict, Any
 
-from PortmanXMLConverter.src.converter import EMSWeConverter
-from PortmanXMLConverter.src.digitraffic_adapter import adapt_digitraffic_to_portman
-import azure.functions as func
-from azure.storage.blob import BlobServiceClient
+try:
+    # Try importing with package prefix
+    from PortmanXMLConverter.src.converter import EMSWeConverter
+    from PortmanXMLConverter.src.digitraffic_adapter import adapt_digitraffic_to_portman
+except ImportError:
+    # Try importing directly when running from within the package directory
+    from src.converter import EMSWeConverter
+    from src.digitraffic_adapter import adapt_digitraffic_to_portman
+try:
+    import azure.functions as func
+except ImportError:
+    # For command-line usage
+    func = None
+try:
+    from azure.storage.blob import BlobServiceClient
+except ImportError:
+    # For command-line usage without Azure SDK
+    BlobServiceClient = None
 from config import AZURE_STORAGE_CONFIG
 
 # Try to import the shared blob utilities
@@ -39,6 +53,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger('PortmanXMLConverter')
 
+# Try to import storage configuration or use fallback
+try:
+    from config import AZURE_STORAGE_CONFIG
+except ImportError:
+    logging.warning("Config module not available, using fallback storage config")
+    AZURE_STORAGE_CONFIG = {
+        "connection_string": None,
+        "container_name": None
+    }
+
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
@@ -47,16 +71,16 @@ def parse_arguments():
         epilog="""
 Examples:
   # Validate an XML file
-  python3 main.py validate --xml-file /path/to/file.xml
+  python3 xml_converter.py validate --xml-file /path/to/file.xml --formality-type ATA
 
   # Convert EMSWe XML to Portman JSON
-  python3 main.py from-emswe --xml-file /path/to/file.xml --output-file portman_data.json
+  python3 xml_converter.py from-emswe --xml-file /path/to/file.xml --output-file portman_data.json --formality-type ATA
 
   # Convert Portman JSON to EMSWe XML
-  python3 main.py to-emswe --json-file /path/to/data.json --output-file emswe_output.xml
+  python3 xml_converter.py to-emswe --json-file /path/to/data.json --output-file emswe_output.xml --formality-type ATA
 
   # Convert Digitraffic port call data to EMSWe XML
-  python3 main.py from-digitraffic --json-file /path/to/portcall.json --output-file emswe_output.xml
+  python3 xml_converter.py from-digitraffic --json-file /path/to/portcall.json --output-file emswe_output.xml --formality-type ATA
         """
     )
 
@@ -364,37 +388,52 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     connection_string = AZURE_STORAGE_CONFIG["connection_string"]
     container_name = AZURE_STORAGE_CONFIG["container_name"]
     
-    if (not connection_string or not container_name):
-        logger.info("Storage connection string or container name not found")
-        logger.info(result)
-        return None
-
-    # Connect to blob storage
-    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-    container_client = blob_service_client.get_container_client(container_name)
+    if (not connection_string or not container_name or 'PYTEST_CURRENT_TEST' in os.environ):
+        # For local/command-line usage, save to a local file
+        os.makedirs("output", exist_ok=True)
+        local_filename = os.path.join("output", filename)
+        with open(local_filename, "w", encoding="utf-8") as f:
+            f.write(result)
+        logger.info(f"Saved XML to local file: {local_filename}")
+        return local_filename
     
-    # Create container if it doesn't exist
-    if not container_client.exists():
-        container_client.create_container()
-    
-    # Upload XML to Blob Storage
-    blob_client = container_client.get_blob_client(filename)
-    blob_client.upload_blob(result, overwrite=True, content_type="application/xml")
-    
-    # Get the full blob path for generating SAS URL
-    blob_path = f"{container_name}/{filename}"
-    
-    # Generate SAS URL using the shared utility function
-    sas_url = generate_blob_storage_link(blob_path, connection_string)
-    
-    # If SAS URL generation failed, fall back to plain URL
-    if not sas_url:
-        logger.warning(f"Failed to generate SAS URL, falling back to plain URL")
-        sas_url = blob_client.url
-    
-    logger.info(f"XML stored with SAS URL: {sas_url}")
-    
-    return sas_url
+    try:
+        # Connect to blob storage
+        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        container_client = blob_service_client.get_container_client(container_name)
+        
+        # Create container if it doesn't exist
+        if not container_client.exists():
+            container_client.create_container()
+        
+        # Upload XML to Blob Storage
+        blob_client = container_client.get_blob_client(filename)
+        blob_client.upload_blob(result, overwrite=True, content_type="application/xml")
+        
+        # Get the full blob path for generating SAS URL
+        blob_path = f"{container_name}/{filename}"
+        
+        # Generate SAS URL using the shared utility function
+        sas_url = generate_blob_storage_link(blob_path, connection_string)
+        
+        # If SAS URL generation failed, fall back to plain URL
+        if not sas_url:
+            logger.warning(f"Failed to generate SAS URL, falling back to plain URL")
+            sas_url = blob_client.url
+        
+        logger.info(f"XML stored with SAS URL: {sas_url}")
+        
+        return sas_url
+    except Exception as e:
+        # Handle storage-related exceptions
+        logger.error(f"Error storing XML to Azure Blob Storage: {str(e)}")
+        # Fall back to local file storage
+        os.makedirs("output", exist_ok=True)
+        local_filename = os.path.join("output", filename)
+        with open(local_filename, "w", encoding="utf-8") as f:
+            f.write(result)
+        logger.info(f"Saved XML to local file: {local_filename}")
+        return local_filename
 
 def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Portman XML converter function processing a request')
@@ -455,3 +494,19 @@ def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
             mimetype="application/json", 
             status_code=500
         )
+
+if __name__ == "__main__":
+    """Main entry point for command-line usage."""
+    args = parse_arguments()
+    
+    if args.command == "validate":
+        sys.exit(validate_xml(args))
+    elif args.command == "from-emswe":
+        sys.exit(convert_from_emswe(args))
+    elif args.command == "to-emswe":
+        sys.exit(convert_to_emswe(args))
+    elif args.command == "from-digitraffic":
+        sys.exit(convert_from_digitraffic(args))
+    else:
+        print("Invalid command. Run with --help for usage information.")
+        sys.exit(1)
