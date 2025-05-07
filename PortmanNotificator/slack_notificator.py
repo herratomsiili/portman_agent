@@ -132,8 +132,11 @@ def extract_info_from_xml(xml_content, xml_type="ATA"):
         # Extract time, remarks, and counts based on XML type
         if xml_type == "ATA":
             # For ATA XML, extract ATA (actual time of arrival)
-            ata_elements = root.findall('.//qdt:DateTimeString', namespaces)
-            time_value = ata_elements[-1].text if ata_elements and len(ata_elements) > 0 else "Unknown"
+            ata_element = root.find('.//ata:SpecifiedLogisticsTransportMovement' +
+                                    '/ram:CallTransportEvent' +
+                                    '/ram:ActualArrivalRelatedDateTime' +
+                                    '/qdt:DateTimeString', namespaces)
+            time_value = ata_element.text if ata_element is not None else "Unknown"
             
             # Extract remarks from the ATA part
             remarks_element = root.find('.//ata:ExchangedDocument/ram:Remarks', namespaces)
@@ -141,8 +144,11 @@ def extract_info_from_xml(xml_content, xml_type="ATA"):
             
         elif xml_type == "NOA":
             # For NOA XML, extract ETA (estimated time of arrival)
-            eta_elements = root.findall('.//qdt:DateTimeString', namespaces)
-            time_value = eta_elements[-1].text if eta_elements and len(eta_elements) > 0 else "Unknown"
+            eta_element = root.find('.//noa:SpecifiedLogisticsTransportMovement' +
+                                    '/ram:CallTransportEvent' +
+                                    '/ram:EstimatedTransportMeansArrivalOccurrenceDateTime' +
+                                    '/qdt:DateTimeString', namespaces)
+            time_value = eta_element.text if eta_element is not None else "Unknown"
             
             # Extract remarks from the NOA part
             remarks_element = root.find('.//noa:ExchangedDocument/ram:Remarks', namespaces)

@@ -51,7 +51,7 @@ def test_convert_from_emswe():
     assert "document_id" in result
     assert result["document_id"] == "MSGID1617779134129"
     assert "arrival_datetime" in result
-    assert result["arrival_datetime"] == "2024-05-25T13:25:00.000+00:00"
+    assert result["arrival_datetime"] == "2024-05-25T13:25:00Z"
 
 def test_convert_to_emswe():
     """Test conversion from Portman data to EMSWe XML."""

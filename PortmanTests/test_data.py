@@ -44,15 +44,15 @@ def create_test_data():
 
             # Create test arrivals
             arrivals = [
-                (1, 3190880, now + timedelta(hours=24), None, now + timedelta(hours=24), 'Viking Grace', 'Matkustajasatama', 'viking1'),
-                (2, 3191032, now, None, now, 'Viking Glory', 'Matkustajasatama', 'viking1'),
-                (3, 3194267, now + timedelta(hours=48), None, now + timedelta(hours=48), 'Baltic Princess', 'Matkustajasatama', 'silja2')
+                (3190880, now + timedelta(hours=24), None, now + timedelta(hours=24), 'Viking Grace', 'Matkustajasatama', 'viking1'),
+                (3191032, now, None, now, 'Viking Glory', 'Matkustajasatama', 'viking1'),
+                (3194267, now + timedelta(hours=48), None, now + timedelta(hours=48), 'Baltic Princess', 'Matkustajasatama', 'silja2')
             ]
             execute_values(
                 cur,
                 """
                 INSERT INTO arrivals (
-                    id, portCallId, eta, old_ata, ata, vesselName, portAreaName, berthName
+                    portCallId, eta, old_ata, ata, vesselName, portAreaName, berthName
                 )
                 VALUES %s
                 ON CONFLICT (id) DO NOTHING
