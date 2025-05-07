@@ -39,9 +39,11 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
         # Arrival information
         eta = digitraffic_data.get("eta")
         ata = digitraffic_data.get("ata")
-        
+        etd = digitraffic_data.get("etd")
+
         # Log original eta value
         logger.info(f"Original ETA value: {eta}")
+        logger.info(f"Original ETD value: {etd}")
         
         # Format ETA for XML usage if available
         formatted_eta = None
@@ -53,24 +55,65 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
                     if '+' in eta:
                         # Handle timezone offset format
                         dt_part = eta.split('+')[0]
-                        if '.' not in dt_part:
-                            dt_part += '.000'
-                        formatted_eta = dt_part + 'Z'
+                        if '.' in dt_part:
+                            dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S.%f")
+                        else:
+                            dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S")
+                        formatted_eta = dt_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
                     elif 'Z' in eta:
-                        # Already in UTC format
+                        # Already in UTC format but ensure no milliseconds
                         dt_part = eta.replace('Z', '')
-                        if '.' not in dt_part:
-                            dt_part += '.000'
-                        formatted_eta = dt_part + 'Z'
+                        if '.' in dt_part:
+                            dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S.%f")
+                        else:
+                            dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S")
+                        formatted_eta = dt_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
                     else:
-                        # Add timezone if not present
-                        if '.' not in eta:
-                            eta += '.000'
-                        formatted_eta = eta + 'Z'
+                        # No timezone, treat as UTC and add Z
+                        if '.' in eta:
+                            dt_obj = datetime.strptime(eta, "%Y-%m-%dT%H:%M:%S.%f")
+                        else:
+                            dt_obj = datetime.strptime(eta, "%Y-%m-%dT%H:%M:%S")
+                        formatted_eta = dt_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
                 logger.info(f"Formatted ETA: {formatted_eta}")
             except Exception as e:
                 logger.warning(f"Could not format ETA: {str(e)}, using original value")
                 formatted_eta = eta
+        
+        # Format ETD for XML usage if available
+        formatted_etd = None
+        if etd:
+            try:
+                # Handle different datetime formats
+                if isinstance(etd, str):
+                    # Try to standardize the format for ETD
+                    if '+' in etd:
+                        # Handle timezone offset format
+                        dt_part = etd.split('+')[0]
+                        if '.' in dt_part:
+                            dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S.%f")
+                        else:
+                            dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S")
+                        formatted_etd = dt_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    elif 'Z' in etd:
+                        # Already in UTC format but ensure no milliseconds
+                        dt_part = etd.replace('Z', '')
+                        if '.' in dt_part:
+                            dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S.%f")
+                        else:
+                            dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S")
+                        formatted_etd = dt_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    else:
+                        # No timezone, treat as UTC and add Z
+                        if '.' in etd:
+                            dt_obj = datetime.strptime(etd, "%Y-%m-%dT%H:%M:%S.%f")
+                        else:
+                            dt_obj = datetime.strptime(etd, "%Y-%m-%dT%H:%M:%S")
+                        formatted_etd = dt_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
+                logger.info(f"Formatted ETD: {formatted_etd}")
+            except Exception as e:
+                logger.warning(f"Could not format ETD: {str(e)}, using original value")
+                formatted_etd = etd
         
         port_area_name = digitraffic_data.get("portAreaName", "")
         port_area_code = digitraffic_data.get("portAreaCode", "")
@@ -135,8 +178,9 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
             "call_datetime": ata or formatted_eta or datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
             "anchorage_indicator": "0",
             
-            # Add original ETA for VID XML
+            # Add original ETA and ETD for XML
             "eta": formatted_eta or eta,
+            "etd": formatted_etd or etd,
             
             # Add standardized port and berth codes
             "portToVisit": port_to_visit,
@@ -147,7 +191,7 @@ def adapt_digitraffic_to_portman(digitraffic_data: Dict[str, Any], xml_type=None
 
             # Add vessel information directly - IMPORTANT for VID schema
             "vesselName": vessel_name,
-            "mmsi": mmsi,  # Include MMSI in the output
+            "mmsi": mmsi,
             
             # Pass radio call sign if available (for VID XML)
             "radioCallSign": digitraffic_data.get("radioCallSign", ""),
