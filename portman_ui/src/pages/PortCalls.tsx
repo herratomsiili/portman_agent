@@ -163,33 +163,36 @@ const PortCalls: React.FC = () => {
 
   const GridItem: React.FC<GridItemProps> = ({ title, value }) => {
     return (
-      <Box sx={{
-        width: "20%",
-        paddingLeft: "12px",
-        paddingRight: "8px",
-        paddingY: "6px",
-        marginBottom: "4px"
-      }}>
-        <Typography variant="body1" sx={{
-          fontSize: '0.875rem',
-          fontWeight: 500,
-          color: 'text.secondary',
-          textDecoration: "underline",
-          textDecorationColor: 'rgba(0, 0, 0, 0.2)',
-          textDecorationStyle: 'dotted',
-          marginBottom: '4px'
+      <Grid2 component="div" sx={{ width: '250px' }}>
+        <Box sx={{
+          padding: "8px 4px 8px 8px",
+          height: "100%",
+          borderLeft: '1px solid rgba(25, 118, 210, 0.2)',
+          '&:first-of-type': {
+            borderLeft: 'none'
+          }
         }}>
-          {title}
-        </Typography>
-        <Typography variant="body2" sx={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          color: 'text.primary',
-          fontWeight: value ? 'normal' : 'light'
-        }}>
-          {value || 'N/A'}
-        </Typography>
-      </Box>
+          <Typography variant="body1" sx={{
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            color: 'text.secondary',
+            textDecoration: "underline",
+            textDecorationColor: 'rgba(0, 0, 0, 0.2)',
+            textDecorationStyle: 'dotted',
+            marginBottom: '2px'
+          }}>
+            {title}
+          </Typography>
+          <Typography variant="body2" sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            color: 'text.primary',
+            fontWeight: value ? 'normal' : 'light'
+          }}>
+            {value || 'N/A'}
+          </Typography>
+        </Box>
+      </Grid2>
     );
   }
 
@@ -261,47 +264,40 @@ const PortCalls: React.FC = () => {
           </TableCell>
 
           <TableCell />
-
-
         </TableRow>
 
         <TableRow sx={{ backgroundColor: open ? "rgba(25, 118, 210, 0.04)" : "#eeeeee" }}>
           <TableCell style={{ padding: 0 }} colSpan={8}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{
-                padding: '16px 24px 16px 60px',
+                padding: '12px 12px 12px 12px',
                 display: 'flex',
                 flexDirection: 'column',
-                borderTop: '1px dashed #cccccc'
+                borderTop: '1px dashed #cccccc',
+                backgroundColor: 'rgba(25, 118, 210, 0.02)',
+                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)',
+                borderRadius: '0 0 4px 4px'
               }}>
-                <Grid2 container spacing={0} sx={{
-                  '--Grid-borderWidth': '1px',
-                  borderColor: 'divider',
-                  '& > div': {
-                    borderLeft: 'var(--Grid-borderWidth) solid',
-                    borderColor: 'rgba(25, 118, 210, 0.2)',
-                  },
-                  paddingLeft: "1px",
-                  justifyContent: "flex-start"
+                <Grid2 container component="div" spacing={1} sx={{
+                  width: '100%',
+                  margin: 0,
+                  '& > .MuiGrid2-root': {
+                    padding: 0
+                  }
                 }}>
                   <GridItem title="Port Call ID" value={call.portcallid} />
                   <GridItem title="Vessel Type Code" value={call.vesseltypecode} />
-
                   <GridItem title="Port to Visit" value={call.porttovisit} />
                   <GridItem title="Berth Code" value={call.berthcode} />
                   <GridItem title="Previous Port" value={call.prevport} />
                   <GridItem title="Next Port" value={call.nextport} />
-
                   <GridItem title="ATD" value={formatDateTime(call.atd)} />
-
                   <GridItem title="Crew on Arrival" value={call.crewonarrival} />
                   <GridItem title="Crew on Departure" value={call.crewondeparture} />
                   <GridItem title="Passengers on Arrival" value={call.passengersonarrival} />
                   <GridItem title="Passengers on Departure" value={call.passengersondeparture} />
-
                   <GridItem title="Agent Name" value={call.agentname} />
                   <GridItem title="Shipping Company" value={call.shippingcompany} />
-
                   <GridItem title="Created" value={formatDateTime(call.created)} />
                   <GridItem title="Modified" value={formatDateTime(call.modified)} />
                 </Grid2>
