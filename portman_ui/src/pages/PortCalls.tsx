@@ -17,7 +17,11 @@ import {
   Typography,
   Tooltip
 } from '@mui/material';
-import { Search as SearchIcon, Info as InfoIcon } from '@mui/icons-material';
+import { 
+  Search as SearchIcon, 
+  Info as InfoIcon,
+  Visibility as VisibilityIcon
+} from '@mui/icons-material';
 import { PortCall } from '../types';
 import api from "../services/api";
 
@@ -44,7 +48,7 @@ const PortCalls: React.FC = () => {
         const data = response?.data?.value || [];
         setPortCalls(data);
         setTotalPortCalls(data.length);
-        
+
         // Store the next page URL if available
         if (response?.data?.nextLink) {
           setNextPageUrl(response.data.nextLink);
@@ -65,23 +69,23 @@ const PortCalls: React.FC = () => {
   // Function to load all data recursively
   const loadAllData = async (url: string, currentData: PortCall[]) => {
     if (!url) return;
-    
+
     setLoadingAllData(true);
     setLoadingMore(true);
-    
+
     try {
       const urlObj = new URL(url);
       const params = new URLSearchParams(urlObj.search);
       const afterParam = params.get('$after');
-      
+
       if (afterParam) {
         const response = await api.getPortCallsPaginated(afterParam);
         const newData = response?.data?.value || [];
-        
+
         const combinedData = [...currentData, ...newData];
         setPortCalls(combinedData);
         setTotalPortCalls(combinedData.length);
-        
+
         // If there's more data, continue loading
         if (response?.data?.nextLink) {
           // Short delay to prevent overloading the server
@@ -121,6 +125,10 @@ const PortCalls: React.FC = () => {
   const formatDateTime = (dateString: string | null | undefined) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleString();
+  };
+
+  const handleViewXML = (url: string) => {
+    window.open(url, '_blank');
   };
 
   const getStatusColor = (status: string) => {
@@ -195,7 +203,7 @@ const PortCalls: React.FC = () => {
         </Box>
       </Box>
 
-      <Paper sx={{ 
+      <Paper sx={{
         width: '100%', 
         overflow: 'hidden',
         borderRadius: 2,
@@ -222,7 +230,7 @@ const PortCalls: React.FC = () => {
                   <TableRow 
                     hover 
                     key={call?.portcallid}
-                    sx={{ 
+                    sx={{
                       '&:nth-of-type(odd)': { backgroundColor: 'rgba(0, 0, 0, 0.03)' },
                       transition: 'all 0.2s ease-in-out',
                       '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.06)' }
@@ -268,9 +276,31 @@ const PortCalls: React.FC = () => {
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
                       <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                        {call?.noa_xml_url && (
+                          <Tooltip title="View NOA XML">
+                            <IconButton
+                              color="primary"
+                              size="small"
+                              onClick={() => handleViewXML(call.noa_xml_url!)}
+                            >
+                              <VisibilityIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {call?.ata_xml_url && (
+                          <Tooltip title="View ATA XML">
+                            <IconButton
+                              color="success"
+                              size="small"
+                              onClick={() => handleViewXML(call.ata_xml_url!)}
+                            >
+                              <VisibilityIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                         <Tooltip title="View Details">
-                          <IconButton 
-                            color="info" 
+                          <IconButton
+                            color="info"
                             size="small"
                             onClick={() => window.location.href = `/port-call/${call?.portcallid}`}
                           >
