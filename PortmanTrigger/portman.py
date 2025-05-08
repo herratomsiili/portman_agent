@@ -959,9 +959,10 @@ def save_results_to_db(results, conn=None):
                 noa_data = {
                     "portCallId": port_call_id,
                     "imoLloyds": imo_number,
-                    "mmsi": mmsi,  # Include mmsi for NOA generation
+                    "mmsi": mmsi,
                     "vesselName": entry.get("vesselName") or "",
                     "eta": new_eta,
+                    "etd": entry.get("etd"),
                     "portAreaCode": entry.get("portAreaCode") or "",
                     "portAreaName": entry.get("portAreaName") or "",
                     "berthCode": entry.get("berthCode") or "", 

@@ -171,7 +171,7 @@ class XMLTransformer:
         auth = etree.SubElement(exchanged_doc, f"{{{self.namespaces['ram']}}}FirstSignatoryDocumentAuthentication")
         auth_dt = etree.SubElement(auth, f"{{{self.namespaces['ram']}}}ActualDateTime")
         dt_string = etree.SubElement(auth_dt, f"{{{self.namespaces['udt']}}}DateTimeString")
-        dt_string.text = portman_data.get("timestamp", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+        dt_string.text = self._format_datetime_for_xml(portman_data.get("timestamp", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")))
 
         # Create ExchangedDeclaration element
         exchanged_decl = etree.SubElement(mai_element, f"{{{self.namespaces['mai']}}}ExchangedDeclaration")
@@ -294,7 +294,7 @@ class XMLTransformer:
             if "arrival_datetime" in portman_data:
                 arrival_dt = etree.SubElement(arrival_event, f"{{{self.namespaces['ram']}}}ActualArrivalRelatedDateTime")
                 dt_string = etree.SubElement(arrival_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
-                dt_string.text = portman_data["arrival_datetime"]
+                dt_string.text = self._format_datetime_for_xml(portman_data["arrival_datetime"])
             
             # Add location if available
             if "location" in portman_data:
@@ -310,7 +310,7 @@ class XMLTransformer:
             if "call_datetime" in portman_data:
                 call_dt = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}ActualArrivalRelatedDateTime")
                 dt_string = etree.SubElement(call_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
-                dt_string.text = portman_data["call_datetime"]
+                dt_string.text = self._format_datetime_for_xml(portman_data["call_datetime"])
             
             # Add anchorage indicator if available
             if "anchorage_indicator" in portman_data:
@@ -465,12 +465,12 @@ class XMLTransformer:
             # 1. First add ArrivalRelatedDateTime
             arr_dt = etree.SubElement(stop_event, f"{{{self.namespaces['ram']}}}ArrivalRelatedDateTime")
             dt_string = etree.SubElement(arr_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
-            dt_string.text = portman_data.get("eta", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+            dt_string.text = self._format_datetime_for_xml(portman_data.get("eta", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")))
                 
             # 2. Add DepartureRelatedDateTime 
             dep_dt = etree.SubElement(stop_event, f"{{{self.namespaces['ram']}}}DepartureRelatedDateTime")
             dt_string = etree.SubElement(dep_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
-            dt_string.text = portman_data.get("etd", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+            dt_string.text = self._format_datetime_for_xml(portman_data.get("etd", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")))
                 
             # 3. Add sequence number
             seq_num = etree.SubElement(stop_event, f"{{{self.namespaces['ram']}}}SequenceNumeric")
@@ -490,12 +490,15 @@ class XMLTransformer:
         # Add estimated arrival date/time
         est_arrival_dt = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}EstimatedTransportMeansArrivalOccurrenceDateTime")
         dt_string = etree.SubElement(est_arrival_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
-        dt_string.text = portman_data.get("eta", portman_data.get("arrival_datetime", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")))
-            
+        eta_value = portman_data.get("eta", portman_data.get("arrival_datetime", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")))
+        dt_string.text = self._format_datetime_for_xml(eta_value)
+        
         # REQUIRED: Add estimated departure date/time (required by schema)
         est_departure_dt = etree.SubElement(call_event, f"{{{self.namespaces['ram']}}}EstimatedTransportMeansDepartureOccurrenceDateTime")
         dt_string = etree.SubElement(est_departure_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
-        dt_string.text = portman_data.get("etd", portman_data.get("departure_datetime", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")))
+        # Use etd from portman_data if available, or fallback to departure_datetime or current time
+        etd_value = portman_data.get("etd", portman_data.get("departure_datetime", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")))
+        dt_string.text = self._format_datetime_for_xml(etd_value)
         
         # Add berth information if available
         if "berthCode" in portman_data or "berthName" in portman_data:
@@ -602,10 +605,10 @@ class XMLTransformer:
         dt_string = etree.SubElement(est_arrival_dt, f"{{{self.namespaces['qdt']}}}DateTimeString")
         
         if eta_value:
-            dt_string.text = eta_value
+            dt_string.text = self._format_datetime_for_xml(eta_value)
         else:
             # Only use current time + 1 hour as a fallback if no ETA provided
-            dt_string.text = (datetime.now() + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+            dt_string.text = self._format_datetime_for_xml((datetime.now() + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S.000Z"))
             logger.warning(f"No ETA provided for VID, using generated timestamp: {dt_string.text}")
             
         # Add OccurrenceLogisticsLocation - REQUIRED by schema
@@ -665,3 +668,56 @@ class XMLTransformer:
                     portman_data["berth"] = formality_data["location"]
 
         return portman_data
+
+    def _format_datetime_for_xml(self, dt_string):
+        """
+        Format datetime string to XML standard format (ISO 8601) without milliseconds.
+        
+        Args:
+            dt_string: Input datetime string in various formats
+            
+        Returns:
+            Formatted datetime string in format %Y-%m-%dT%H:%M:%SZ
+        """
+        if not dt_string:
+            return datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+            
+        try:
+            # Handle multiple possible formats
+            dt_obj = None
+            if '.' in dt_string and 'Z' in dt_string:
+                # Format with milliseconds and Z
+                dt_obj = datetime.strptime(dt_string, "%Y-%m-%dT%H:%M:%S.%fZ")
+            elif '+' in dt_string:
+                # Format with timezone offset
+                dt_part = dt_string.split('+')[0]
+                if '.' in dt_part:
+                    dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S.%f")
+                else:
+                    dt_obj = datetime.strptime(dt_part, "%Y-%m-%dT%H:%M:%S")
+            elif 'Z' in dt_string:
+                # Format without milliseconds but with Z
+                try:
+                    dt_obj = datetime.strptime(dt_string, "%Y-%m-%dT%H:%M:%SZ")
+                except ValueError:
+                    # Try removing Z and parsing
+                    dt_string_no_z = dt_string.replace('Z', '')
+                    dt_obj = datetime.strptime(dt_string_no_z, "%Y-%m-%dT%H:%M:%S")
+            else:
+                # Try basic format without Z
+                dt_obj = datetime.strptime(dt_string, "%Y-%m-%dT%H:%M:%S")
+            
+            # Format to the required XML format without milliseconds
+            return dt_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
+        except ValueError as e:
+            # If parsing fails, return as is
+            logger.warning(f"Could not format datetime string: {dt_string} - {str(e)}")
+            # Try to return a valid format anyway
+            if isinstance(dt_string, str) and 'T' in dt_string:
+                # Try to extract just the date and time part (remove timezone if present)
+                parts = dt_string.split('T')
+                if len(parts) == 2:
+                    date_part = parts[0]
+                    time_part = parts[1].split('+')[0].split('.')[0].replace('Z', '')
+                    return f"{date_part}T{time_part}Z"
+            return dt_string

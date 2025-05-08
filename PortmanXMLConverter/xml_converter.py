@@ -314,9 +314,8 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     # Preserve original values for important fields
     original_vessel_name = port_call.get('vesselName')
     original_imo_lloyds = port_call.get('imoLloyds')
-    original_eta = port_call.get('eta')
     
-    logger.info(f"Original values before adaptation - vesselName: {original_vessel_name}, imoLloyds: {original_imo_lloyds}, eta: {original_eta}")
+    logger.info(f"Original values before adaptation - vesselName: {original_vessel_name}, imoLloyds: {original_imo_lloyds}")
 
     # Adapt Digitraffic data to Portman format
     portman_data = adapt_digitraffic_to_portman(port_call, xml_type)
@@ -329,36 +328,7 @@ def convert_from_portcall_data(portcall_data, xml_type=None):
     if original_imo_lloyds and not portman_data.get('imoLloyds'):
         portman_data['imoLloyds'] = original_imo_lloyds
         logger.info(f"Restored original imoLloyds: {original_imo_lloyds}")
-    
-    # Ensure ETA is properly formatted for VID XML
-    if original_eta and (not portman_data.get('eta') or xml_type == 'VID'):
-        # Ensure a consistent format for the ETA with millisecond precision
-        try:
-            # First check if it's already an ISO 8601 string
-            if isinstance(original_eta, str):
-                # Parse the input datetime string
-                if '+' in original_eta:
-                    # Handle timezone offset format like 2025-05-12T04:00:00.000+00:00
-                    dt = datetime.datetime.strptime(original_eta.split('+')[0], '%Y-%m-%dT%H:%M:%S.%f')
-                    formatted_eta = dt.strftime('%Y-%m-%dT%H:%M:%S.000Z')
-                elif 'Z' in original_eta:
-                    # Already in UTC format
-                    dt = datetime.datetime.strptime(original_eta.replace('Z', ''), '%Y-%m-%dT%H:%M:%S.%f')
-                    formatted_eta = dt.strftime('%Y-%m-%dT%H:%M:%S.000Z')
-                else:
-                    # Basic ISO format without timezone
-                    dt = datetime.datetime.strptime(original_eta, '%Y-%m-%dT%H:%M:%S.%f')
-                    formatted_eta = dt.strftime('%Y-%m-%dT%H:%M:%S.000Z')
-            else:
-                # If it's not a string, convert using a default format
-                formatted_eta = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
-                
-            portman_data['eta'] = formatted_eta
-            logger.info(f"Formatted ETA for {xml_type}: {formatted_eta}")
-        except Exception as e:
-            logger.warning(f"Could not format ETA '{original_eta}': {str(e)}. Using as is.")
-            portman_data['eta'] = original_eta
-        
+            
     # Special handling for VID format
     if xml_type == 'VID':
         # For VID, ensure these fields are always present
@@ -450,12 +420,6 @@ def xml_converter(req: func.HttpRequest) -> func.HttpResponse:
         
         # Log detailed port call data for debugging
         logging.info(f"Received port call data: {json.dumps(portcall_data)}")
-        logging.info(f"vesselName present: {'vesselName' in portcall_data}")
-        logging.info(f"imoLloyds present: {'imoLloyds' in portcall_data}")
-        if 'vesselName' in portcall_data:
-            logging.info(f"vesselName value: {portcall_data['vesselName']}")
-        if 'imoLloyds' in portcall_data:
-            logging.info(f"imoLloyds value: {portcall_data['imoLloyds']}")
         
         formality_type = req_body.get('formality_type', 'ATA')  # Default to ATA if not specified
         

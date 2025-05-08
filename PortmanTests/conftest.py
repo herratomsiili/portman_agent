@@ -53,6 +53,9 @@ def setup_test_tables(test_db_cursor):
             passengersOnDeparture INTEGER DEFAULT 0,
             crewOnArrival INTEGER DEFAULT 0,
             crewOnDeparture INTEGER DEFAULT 0,
+            noa_xml_url TEXT,
+            ata_xml_url TEXT,
+            vid_xml_url TEXT,
             created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -69,6 +72,7 @@ def setup_test_tables(test_db_cursor):
             vesselName TEXT,
             portAreaName TEXT,
             berthName TEXT,
+            ata_xml_url TEXT,
             created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -109,8 +113,8 @@ def sample_port_call_data():
             }
         ],
         "portAreaDetails": [{
-            "eta": (now + timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S.%f+00:00"),
-            "ata": None,
+            "eta": (now + timedelta(hours=-1)).strftime("%Y-%m-%dT%H:%M:%S.%f+00:00"),
+            "ata": (now).strftime("%Y-%m-%dT%H:%M:%S.%f+00:00"),
             "portAreaCode": "PASSE",
             "portAreaName": "Matkustajasatama",
             "berthCode": "v1",
